@@ -637,7 +637,14 @@
         const ownership = entry.ownership || "Owned";
         const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
 
-        const genreBadges = (entry.genres || []).map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#7D9BBA'}; background: rgba(0,163,224,0.08); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.2);">${escapeHtml(g)}</span>`).join("");
+        const genreList = entry.genres || [];
+        const genreBadgeStyle = `color: ${c ? '#3A4452' : '#7D9BBA'}; background: rgba(0,163,224,0.08); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.2);`;
+        const genreBadgesFull = genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("");
+        const genrePreview = genreList.length ? `
+          <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
+          ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#5A6C7D'}; background: rgba(110,131,153,0.08); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.2);">+${genreList.length - 1}</span>`
+          : ''}
+        ` : '';
         const typeStyle = isTbd ? `color: #6E8399; border: 1px dashed rgba(110,131,153,0.4);` : `box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3); color: #CBD8E3;`;
         const titleHtml = isU ? `<span class="italic text-sm" style="color: ${c ? '#3A4452' : '#5A6C7D'};">[ UNTITLED PROJECT ]</span>` : escapeHtml(entry.draftTitle);
 
@@ -653,11 +660,11 @@
               <div class="flex-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="font-display font-700 text-lg uppercase leading-none ${c ? 'line-through decoration-2' : ''}" style="color: ${c ? '#4A5566' : '#EAF3FA'};">${escapeHtml(entry.game)}</span>
-                  ${genreBadges}
                 </div>
                 <div class="mt-1 flex items-center gap-2">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,153,0,0.15); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.4);">Finalize Details</span>` : ''}</div>
                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[10px] uppercase tracking-wide" style="color: #5A6C7D;">
                   <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TYPE: TBD' : escapeHtml(entry.videoType)}</span>
+                  ${genrePreview}
                   ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; box-shadow: inset 0 0 0 1px ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
                   <span class="ml-auto" style="color: #3A4452;">${fmtDate(entry.dateCreated)}</span>
                 </div>
@@ -670,6 +677,7 @@
             </div>
             ${isOpen ? `
               <div class="px-4 pb-4 pt-3 ml-11 ${c ? 'opacity-50' : ''}" style="box-shadow: inset 0 1px 0 0 rgba(0,163,224,0.2);">
+                ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreBadgesFull}</div>` : ''}
                 <p class="text-sm leading-relaxed whitespace-pre-wrap" style="color: #A9BBCB;">${escapeHtml(entry.description || 'No description.')}</p>
                 <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px]" style="color: #5A6C7D;">
                   <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
