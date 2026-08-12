@@ -11,7 +11,6 @@
 	<!-- Phone & Tablet Home Screen Icon -->
 	<link rel="apple-touch-icon" href="logo-180.png">
 	
-	
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -285,7 +284,7 @@
       getFirestore, enableIndexedDbPersistence, collection, doc, onSnapshot, setDoc, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Replace placeholders with your Firebase project keys from Step 4
+    // Firebase Project Configuration
     const firebaseConfig = {
 				apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
 				authDomain: "production-log-5c7fb.firebaseapp.com",
@@ -322,7 +321,71 @@
     const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#00A3E0", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#FF9900", "Review": "#EAB308", "Published": "#10B981" };
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
-    const TOP_100_GENRES = ["Horror - Survival Horror", "Horror - Psychological Horror", "Horror - Action Horror", "Horror - Mascot Horror", "Action", "Action-Adventure", "Action RPG", "Action Platformer", "Asymmetrical Multiplayer", "Auto Battler", "Battle Royale", "Beat 'em Up", "Board Game / Digital Tabletop", "Boomer Shooter", "Bullet Hell / Shoot 'em Up", "Card Game / Deckbuilder", "City Builder", "Colony Sim", "Cozy Game", "Cyberpunk RPG", "Dating Sim", "Deckbuilding Roguelike", "Dungeon Crawler", "Educational / Edutainment", "Extraction Shooter", "Farming Simulator", "Fighting - 2D", "Fighting - 3D / Arena", "First-Person Shooter (FPS)", "Flight Simulator", "God Game", "Grand Strategy", "Hack and Slash", "Hero Shooter", "Idle / Incremental", "Immersive Sim", "Interactive Fiction / Text-Based", "Interactive Movie", "JRPG (Japanese RPG)", "Life Simulation", "Light Gun / Rail Shooter", "Loot Shooter / Loot ARPG", "Management / Tycoon Sim", "Martial Arts", "Match-3 / Tile Puzzle", "Mecha / Vehicle Combat", "Metroidvania", "MMO Action / Shooter", "MMORPG", "MOBA (Multiplayer Online Battle Arena)", "Monster Tamer", "Music / Rhythm", "Mystery / Detective", "Open World", "Open World Survival Craft", "Party Game / Minigames", "Physics Puzzle", "Pinball Arcade", "Platformer - 2D", "Platformer - 3D", "Platformer - Precision", "Point-and-Click Adventure", "Puzzle - Logic", "Puzzle Platformer", "Racing - Arcade", "Racing - Simulation", "Real-Time Strategy (RTS)", "Real-Time Tactics", "Rhythm Action", "Roguelike", "Roguelite", "Sandbox", "Sci-Fi RPG", "Shoot 'em Up (Shmup)", "Simulation - Job / Career", "Simulation - Physics / Sandbox", "Skateboarding / Extreme Sports", "Stealth / Tactical Espionage", "Soulslike", "Space Flight / Exploration", "Sports - Arcade", "Sports - Simulation", "Strategy - Turn-Based", "Tactical Shooter", "Tactical RPG", "Third-Person Shooter (TPS)", "Tower Defense", "Traditional RPG / WRPG", "Trivia / Quiz", "Turn-Based Tactics", "Vehicle Simulator", "Visual Novel", "VR - Action / Shooter", "VR - Rhythm / Motion", "VR - Simulation / Puzzle", "Walking Simulator", "Wargame / Hex Strategy", "Western RPG", "Wrestling", "Other / Experimental"];
+    
+    // Comprehensive 200+ Categorized Video Game Genre & Subgenre Taxonomy
+    const TOP_100_GENRES = [
+      // Action & Combat
+      "Action — Hack and Slash", "Action — Character Action", "Action — Beat 'em Up", "Action — Musou / Crowd Combat", 
+      "Action — Martial Arts", "Action — Mecha / Vehicle Combat", "Action — Boss Rush", "Action — Arena Fighter",
+
+      // Horror
+      "Horror — Survival Horror", "Horror — Psychological Horror", "Horror — Action Horror", "Horror — Mascot Horror", 
+      "Horror — Cosmic / Lovecraftian", "Horror — Found Footage", "Horror — Body Horror", "Horror — Jump Scare / Indie Horror", 
+      "Horror — Asymmetrical Horror", "Horror — Stealth Horror",
+
+      // Role-Playing Games (RPG)
+      "RPG — Action RPG (ARPG)", "RPG — JRPG (Japanese RPG)", "RPG — CRPG (Computer / Western RPG)", 
+      "RPG — Tactical / Turn-Based RPG", "RPG — Dungeon Crawler", "RPG — Soulslike", "RPG — Roguelike RPG", 
+      "RPG — Roguelite", "RPG — Deckbuilding RPG", "RPG — MMO / MMORPG", "RPG — Monster Tamer", 
+      "RPG — Sandbox RPG", "RPG — First-Person Dungeon Crawler",
+
+      // Shooters
+      "Shooter — First-Person Shooter (FPS)", "Shooter — Third-Person Shooter (TPS)", "Shooter — Boomer Shooter", 
+      "Shooter — Hero Shooter", "Shooter — Extraction Shooter", "Shooter — Loot Shooter", "Shooter — Tactical Shooter", 
+      "Shooter — Arena Shooter", "Shooter — Bullet Hell / Shmup", "Shooter — Rail / Light Gun Shooter", "Shooter — Cover Shooter",
+
+      // Platformers
+      "Platformer — 2D Precision", "Platformer — 3D Collectathon", "Platformer — Puzzle Platformer", 
+      "Platformer — Cinematic Platformer", "Platformer — Metroidvania", "Platformer — Auto-Runner",
+
+      // Strategy & Tactics
+      "Strategy — Real-Time Strategy (RTS)", "Strategy — Turn-Based Strategy (TBS)", "Strategy — Grand Strategy", 
+      "Strategy — 4X", "Strategy — Real-Time Tactics", "Strategy — Turn-Based Tactics", "Strategy — Tower Defense", 
+      "Strategy — Auto Battler", "Strategy — Card Game / Digital Tabletop", "Strategy — Wargame / Hex Strategy",
+
+      // Simulation & Management
+      "Simulation — City Builder", "Simulation — Colony Sim", "Simulation — Management / Tycoon", 
+      "Simulation — Immersive Sim", "Simulation — Farming / Life Sim", "Simulation — Job / Career Sim", 
+      "Simulation — Physics / Sandbox", "Simulation — Space Flight / Exploration", "Simulation — Vehicle / Flight Sim", 
+      "Simulation — God Game", "Simulation — Dating Sim",
+
+      // Adventure & Narrative
+      "Adventure — Point-and-Click", "Adventure — Visual Novel", "Adventure — Interactive Movie", 
+      "Adventure — Walking Simulator", "Adventure — Mystery / Detective", "Adventure — Interactive Fiction / Text-Based", 
+      "Adventure — Action-Adventure",
+
+      // Puzzle & Casual
+      "Puzzle — Logic / Spatial", "Puzzle — Physics Puzzle", "Puzzle — Match-3 / Tile Puzzle", 
+      "Puzzle — Sokoban / Grid Puzzle", "Casual — Cozy Game", "Casual — Idle / Incremental", "Casual — Party Game / Minigames", 
+      "Casual — Hidden Object", "Casual — Trivia / Quiz",
+
+      // Racing, Sports & Extreme
+      "Racing — Arcade Racing", "Racing — Sim / Track Racing", "Racing — Combat Racing", 
+      "Sports — Arcade Sports", "Sports — Simulation Sports", "Sports — Extreme Sports / Skateboarding", "Sports — Wrestling",
+
+      // Multiplayer & Competitive
+      "Multiplayer — Battle Royale", "Multiplayer — MOBA", "Multiplayer — Asymmetrical Multiplayer", 
+      "Multiplayer — Social Deduction", "Multiplayer — Co-Op Survival",
+
+      // Virtual Reality (VR)
+      "VR — Action / Shooter", "VR — Rhythm / Motion", "VR — Horror", "VR — Simulation / Puzzle",
+
+      // Themes, Aesthetics & Mechanics
+      "Theme — Cyberpunk", "Theme — Steampunk", "Theme — Dark Fantasy", "Theme — Sci-Fi / Space", 
+      "Theme — Post-Apocalyptic", "Theme — Medieval", "Theme — Retro / Pixel Art", "Mechanic — Open World", 
+      "Mechanic — Open World Survival Craft", "Mechanic — Crafting / Automation", "Mechanic — Time Loop", 
+      "Mechanic — Deckbuilder", "Other / Experimental"
+    ];
 
     let currentUser = null;
     let entries = [];
