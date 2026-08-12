@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Log</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --blue: #00A3E0;
+      --cobalt: #0055FF;
+      --amber: #FF9900;
+      --amber-hot: #FF6600;
+      --red: #FF0033;
+      --bg-deep: #0A0D11;
+      --bg-panel: #11161B;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      background-image: radial-gradient(ellipse 1100px 700px at 50% -8%, #16202B 0%, var(--bg-deep) 55%), var(--bg-deep);
+      color: #CBD8E3;
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+    }
+
+    .font-display { font-family: 'Rajdhani', sans-serif; }
+
+    .chamfer-lg { clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px); }
+    .chamfer-sm { clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px); }
+    .chamfer-xs { clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px); }
+
+    ::selection { background: var(--amber); color: #0A0D11; }
+
+    .hologram-panel {
+      background: rgba(17, 22, 27, 0.85);
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 0 0 1px rgba(0, 163, 224, 0.4), 0 0 32px rgba(0, 163, 224, 0.06);
+    }
+
+    @keyframes hologram-in {
+      0% { opacity: 0; transform: scaleY(0.04); filter: brightness(2.4); }
+      45% { opacity: 1; transform: scaleY(1.03); filter: brightness(1.5); }
+      100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+    }
+    .animate-hologram { animation: hologram-in 0.32s cubic-bezier(.2,.9,.3,1); transform-origin: top center; }
+
+    .corner-readout {
+      position: absolute;
+      bottom: 6px;
+      right: 14px;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: rgba(0, 163, 224, 0.5);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(10, 13, 17, 0.85);
+      box-shadow: inset 0 0 0 1px rgba(0, 163, 224, 0.25);
+      color: #EAF3FA;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.875rem;
+      padding: 0.55rem 0.7rem;
+      outline: none;
+      transition: box-shadow 0.15s, opacity 0.15s;
+      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    }
+    .input-field:focus {
+      box-shadow: inset 0 0 0 1px var(--amber), 0 0 10px rgba(255, 153, 0, 0.27);
+    }
+    .input-field:disabled { opacity: 0.4; cursor: not-allowed; }
+    .input-field::placeholder { color: #445162; }
+
+    .btn-amber {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      background: var(--amber); color: #0A0D11;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.875rem;
+      padding: 0.6rem 1.05rem; transition: all 0.1s;
+      box-shadow: 0 0 14px rgba(255, 153, 0, 0.33); cursor: pointer;
+    }
+    .btn-amber:hover { background: var(--amber-hot); }
+    .btn-amber:active { transform: scale(0.96); filter: brightness(1.3); }
+
+    .btn-blue {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--blue); color: #0A0D11;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.875rem;
+      padding: 0.55rem 1.05rem; transition: all 0.1s;
+      box-shadow: 0 0 14px rgba(0, 163, 224, 0.27); cursor: pointer;
+    }
+    .btn-blue:hover { background: var(--cobalt); }
+    .btn-blue:active { transform: scale(0.96); filter: brightness(1.3); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; color: #6E8399;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.875rem;
+      padding: 0.55rem 1.05rem; box-shadow: inset 0 0 0 1px rgba(110, 131, 153, 0.35);
+      transition: all 0.1s; cursor: pointer;
+    }
+    .btn-ghost:hover { color: #EAF3FA; box-shadow: inset 0 0 0 1px rgba(110, 131, 153, 0.7); }
+
+    .tab-btn {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.04em; padding: 0.35rem 0.65rem;
+      transition: all 0.12s; white-space: nowrap; cursor: pointer;
+    }
+
+    .icon-btn { padding: 6px; transition: all 0.1s; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { color: #EAF3FA; }
+
+    select option { background: #0A0D11; color: #EAF3FA; }
+  </style>
+</head>
+<body class="relative">
+
+  <!-- Scanline Overlay -->
+  <div class="pointer-events-none fixed inset-0 z-30" style="background-image: repeating-linear-gradient(0deg, rgba(0,163,224,0.025) 0px, rgba(0,163,224,0.025) 1px, transparent 1px, transparent 3px); mix-blend-mode: screen; opacity: 0.5;"></div>
+
+  <!-- Authentication Overlay -->
+  <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(10,13,17,0.92); backdrop-filter: blur(12px);">
+    <div class="hologram-panel chamfer-lg w-full max-w-md p-6 relative">
+      <div class="corner-readout">[ SYS.AUTH // UNIDENTIFIED ]</div>
+      <h2 class="font-display font-700 text-2xl uppercase tracking-wider mb-1" style="color: var(--amber);">Authentication</h2>
+      <p class="text-xs mb-5" style="color: #6E8399;">Sign in to sync your production pipeline across devices.</p>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600" style="color: #6E8399;">Email</label>
+          <input id="auth-email" type="email" class="input-field" placeholder="operator@pipeline.com">
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600" style="color: #6E8399;">Password</label>
+          <input id="auth-password" type="password" class="input-field" placeholder="••••••••">
+        </div>
+        <div id="auth-error" class="hidden text-xs text-red-400 font-mono"></div>
+        <div class="flex gap-2 pt-2">
+          <button id="btn-login" class="btn-blue chamfer-sm flex-1">Sign In</button>
+          <button id="btn-register" class="btn-ghost chamfer-sm flex-1">Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-20 backdrop-blur-md" style="background: rgba(10,13,17,0.85);">
+    <div class="max-w-4xl mx-auto px-5 py-5 flex items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="relative flex items-center justify-center w-3 h-3">
+            <span class="absolute inline-flex w-full h-full rounded-full opacity-60 animate-ping" style="background: var(--amber);"></span>
+            <span class="relative w-1.5 h-1.5 rounded-full" style="background: var(--amber); box-shadow: 0 0 8px var(--amber);"></span>
+          </span>
+          <h1 class="font-display font-700 text-[1.9rem] tracking-[0.04em] uppercase leading-none text-[#EAF3FA]">
+            Production Log
+          </h1>
+        </div>
+        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: rgba(0,163,224,0.65);">
+          // gameplay.pipeline &nbsp;·&nbsp; offline engine ready
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-open-new" class="btn-amber chamfer-sm shrink-0">
+          <span id="icon-plus"></span> New Entry
+        </button>
+        <button id="btn-logout" class="btn-ghost chamfer-xs !p-2 hidden" title="Sign Out">
+          <span id="icon-logout"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="max-w-4xl mx-auto px-5 py-3 flex items-center gap-2 overflow-x-auto">
+      <div id="filter-tabs-container" class="flex gap-1.5"></div>
+      <div class="w-px h-4 shrink-0" style="background: rgba(0,163,224,0.25);"></div>
+      <button id="btn-toggle-sort" class="tab-btn chamfer-xs shrink-0 flex items-center gap-1" style="background: rgba(0,163,224,0.06); color: #6E8399; box-shadow: inset 0 0 0 1px rgba(0,163,224,0.18);" title="Toggle sort order">
+        Logged <span id="sort-icon"></span>
+      </button>
+    </div>
+
+    <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(0,163,224,0.33) 20%, rgba(0,163,224,0.53) 50%, rgba(0,163,224,0.33) 80%, transparent);"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-5 py-6 relative">
+    <!-- Form Panel -->
+    <div id="form-panel" class="hidden hologram-panel chamfer-lg mb-6 p-5 relative animate-hologram">
+      <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
+      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: #6E8399;" aria-label="Close form">
+        <span id="icon-close"></span>
+      </button>
+      <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] mb-4" style="color: var(--amber);">New Entry</h2>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Game</label>
+          <input id="input-game" class="input-field" placeholder="Elden Ring">
+        </div>
+        
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Add Genres</label>
+          <div class="flex gap-2">
+            <input id="input-genre-search" list="genre-datalist" class="input-field flex-1" placeholder="Search or type genre...">
+            <button type="button" id="btn-add-genre" class="btn-ghost chamfer-xs shrink-0 !px-3" style="font-size: 0.75rem;">+ Add</button>
+          </div>
+          <datalist id="genre-datalist"></datalist>
+          <div id="selected-genres-container" class="flex flex-wrap gap-1.5 mt-2 min-h-[26px]"></div>
+        </div>
+
+        <div class="sm:col-span-2">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600" style="color: #6E8399;">Draft Title</label>
+            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--amber);">
+              <input type="checkbox" id="chk-untitled" class="accent-amber-500 cursor-pointer">
+              <span>Mark as Untitled</span>
+            </label>
+          </div>
+          <input id="input-draftTitle" class="input-field" placeholder="Working title for the video">
+        </div>
+
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Video Type</label>
+          <select id="input-videoType" class="input-field"></select>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Stage</label>
+          <select id="input-stage" class="input-field"></select>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Game Ownership Status</label>
+          <select id="input-ownership" class="input-field"></select>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Description</label>
+          <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video about?"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Date Uploaded</label>
+          <input id="input-dateUploaded" type="date" class="input-field">
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-5">
+        <button id="btn-save-entry" class="btn-blue chamfer-sm opacity-30 cursor-not-allowed" disabled>Add Entry</button>
+        <button id="btn-cancel-form" class="btn-ghost chamfer-sm">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Entries List -->
+    <div id="empty-state" class="hidden text-center py-16 text-sm chamfer-lg" style="color: #4A5A68; box-shadow: inset 0 0 0 1px rgba(0,163,224,0.15);">
+      Nothing logged yet. Add your first entry to start the pipeline.
+    </div>
+    <div id="entries-container" class="flex flex-col gap-3"></div>
+  </main>
+
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, enableIndexedDbPersistence, collection, doc, onSnapshot, setDoc, deleteDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Replace placeholders with your Firebase project keys from Step 4
+    const firebaseConfig = {
+				apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
+				authDomain: "production-log-5c7fb.firebaseapp.com",
+				projectId: "production-log-5c7fb",
+				storageBucket: "production-log-5c7fb.firebasestorage.app",
+				messagingSenderId: "377979706481",
+				appId: "1:377979706481:web:67cce5af1a9dc3e3a58fd0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Enable automatic offline persistence
+    enableIndexedDbPersistence(db).catch((err) => {
+      console.log("Offline persistence fallback active.");
+    });
+
+    // Icons
+    const ICONS = {
+      plus: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
+      x: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+      xSmall: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+      chevronDown: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
+      chevronUp: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>`,
+      pencil: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`,
+      trash: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+      ban: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`,
+      rotateCcw: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`,
+      logout: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>`
+    };
+
+    const STAGES = ["Backlog", "Planned", "Recording", "Queue", "Editing", "Review", "Published"];
+    const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#00A3E0", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#FF9900", "Review": "#EAB308", "Published": "#10B981" };
+    const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
+    const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
+    const TOP_100_GENRES = ["Horror - Survival Horror", "Horror - Psychological Horror", "Horror - Action Horror", "Horror - Mascot Horror", "Action", "Action-Adventure", "Action RPG", "Action Platformer", "Asymmetrical Multiplayer", "Auto Battler", "Battle Royale", "Beat 'em Up", "Board Game / Digital Tabletop", "Boomer Shooter", "Bullet Hell / Shoot 'em Up", "Card Game / Deckbuilder", "City Builder", "Colony Sim", "Cozy Game", "Cyberpunk RPG", "Dating Sim", "Deckbuilding Roguelike", "Dungeon Crawler", "Educational / Edutainment", "Extraction Shooter", "Farming Simulator", "Fighting - 2D", "Fighting - 3D / Arena", "First-Person Shooter (FPS)", "Flight Simulator", "God Game", "Grand Strategy", "Hack and Slash", "Hero Shooter", "Idle / Incremental", "Immersive Sim", "Interactive Fiction / Text-Based", "Interactive Movie", "JRPG (Japanese RPG)", "Life Simulation", "Light Gun / Rail Shooter", "Loot Shooter / Loot ARPG", "Management / Tycoon Sim", "Martial Arts", "Match-3 / Tile Puzzle", "Mecha / Vehicle Combat", "Metroidvania", "MMO Action / Shooter", "MMORPG", "MOBA (Multiplayer Online Battle Arena)", "Monster Tamer", "Music / Rhythm", "Mystery / Detective", "Open World", "Open World Survival Craft", "Party Game / Minigames", "Physics Puzzle", "Pinball Arcade", "Platformer - 2D", "Platformer - 3D", "Platformer - Precision", "Point-and-Click Adventure", "Puzzle - Logic", "Puzzle Platformer", "Racing - Arcade", "Racing - Simulation", "Real-Time Strategy (RTS)", "Real-Time Tactics", "Rhythm Action", "Roguelike", "Roguelite", "Sandbox", "Sci-Fi RPG", "Shoot 'em Up (Shmup)", "Simulation - Job / Career", "Simulation - Physics / Sandbox", "Skateboarding / Extreme Sports", "Stealth / Tactical Espionage", "Soulslike", "Space Flight / Exploration", "Sports - Arcade", "Sports - Simulation", "Strategy - Turn-Based", "Tactical Shooter", "Tactical RPG", "Third-Person Shooter (TPS)", "Tower Defense", "Traditional RPG / WRPG", "Trivia / Quiz", "Turn-Based Tactics", "Vehicle Simulator", "Visual Novel", "VR - Action / Shooter", "VR - Rhythm / Motion", "VR - Simulation / Puzzle", "Walking Simulator", "Wargame / Hex Strategy", "Western RPG", "Wrestling", "Other / Experimental"];
+
+    let currentUser = null;
+    let entries = [];
+    let filter = "All";
+    let sortDir = "desc";
+    let expanded = {};
+    let editingId = null;
+    let draftGenres = [];
+    let unsubscribeFirestore = null;
+
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+    function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
+    function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
+
+    // Authentication Listeners
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      const modal = document.getElementById("auth-modal");
+      const logoutBtn = document.getElementById("btn-logout");
+      
+      if (user) {
+        modal.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        attachFirestoreListener();
+      } else {
+        modal.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        if (unsubscribeFirestore) unsubscribeFirestore();
+        entries = [];
+        render();
+      }
+    });
+
+    document.getElementById("btn-login").onclick = async () => {
+      const e = document.getElementById("auth-email").value, p = document.getElementById("auth-password").value;
+      try { await signInWithEmailAndPassword(auth, e, p); } catch(err) { showAuthError(err.message); }
+    };
+
+    document.getElementById("btn-register").onclick = async () => {
+      const e = document.getElementById("auth-email").value, p = document.getElementById("auth-password").value;
+      try { await createUserWithEmailAndPassword(auth, e, p); } catch(err) { showAuthError(err.message); }
+    };
+
+    document.getElementById("btn-logout").onclick = () => signOut(auth);
+
+    function showAuthError(msg) {
+      const errDiv = document.getElementById("auth-error");
+      errDiv.innerText = msg; errDiv.classList.remove("hidden");
+    }
+
+    // Real-Time Cloud + Offline Listener
+    function attachFirestoreListener() {
+      if (!currentUser) return;
+      const colRef = collection(db, "users", currentUser.uid, "entries");
+      unsubscribeFirestore = onSnapshot(colRef, (snapshot) => {
+        entries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        render();
+      });
+    }
+
+    async function syncSaveEntry(entry) {
+      if (!currentUser) return;
+      const docRef = doc(db, "users", currentUser.uid, "entries", entry.id);
+      await setDoc(docRef, entry);
+    }
+
+    async function syncDeleteEntry(id) {
+      if (!currentUser) return;
+      const docRef = doc(db, "users", currentUser.uid, "entries", id);
+      await deleteDoc(docRef);
+    }
+
+    function initFormSelects() {
+      document.getElementById("genre-datalist").innerHTML = TOP_100_GENRES.map(g => `<option value="${escapeHtml(g)}"></option>`).join("");
+      document.getElementById("input-videoType").innerHTML = VIDEO_TYPES.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+      document.getElementById("input-stage").innerHTML = STAGES.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+      document.getElementById("input-ownership").innerHTML = OWNERSHIP_OPTIONS.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+    }
+
+    function renderSelectedGenres() {
+      document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
+        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0,163,224,0.15); color: #00A3E0; box-shadow: inset 0 0 0 1px rgba(0,163,224,0.35);">
+          ${escapeHtml(g)}
+          <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
+        </span>
+      `).join("");
+    }
+
+    window.removeGenreTag = (idx) => { draftGenres.splice(idx, 1); renderSelectedGenres(); };
+
+    function addGenreTag() {
+      const input = document.getElementById("input-genre-search"), val = input.value.trim();
+      if (val && !draftGenres.includes(val)) { draftGenres.push(val); input.value = ""; renderSelectedGenres(); }
+    }
+
+    function handleUntitledToggle() {
+      const isU = document.getElementById("chk-untitled").checked, tInput = document.getElementById("input-draftTitle");
+      if (isU) { tInput.value = "Untitled Video"; tInput.disabled = true; } 
+      else { if (tInput.value === "Untitled Video") tInput.value = ""; tInput.disabled = false; tInput.focus(); }
+      checkFormValidity();
+    }
+
+    function checkFormValidity() {
+      const g = document.getElementById("input-game").value.trim(), isU = document.getElementById("chk-untitled").checked, t = document.getElementById("input-draftTitle").value.trim();
+      const saveBtn = document.getElementById("btn-save-entry");
+      if (g && (isU || t)) { saveBtn.disabled = false; saveBtn.classList.remove("opacity-30", "cursor-not-allowed"); } 
+      else { saveBtn.disabled = true; saveBtn.classList.add("opacity-30", "cursor-not-allowed"); }
+    }
+
+    function openNewForm() {
+      editingId = null; draftGenres = [];
+      document.getElementById("input-game").value = "";
+      document.getElementById("input-genre-search").value = "";
+      document.getElementById("chk-untitled").checked = false;
+      document.getElementById("input-draftTitle").disabled = false;
+      document.getElementById("input-draftTitle").value = "";
+      document.getElementById("input-videoType").value = VIDEO_TYPES[0];
+      document.getElementById("input-stage").value = STAGES[0];
+      document.getElementById("input-ownership").value = OWNERSHIP_OPTIONS[0];
+      document.getElementById("input-description").value = "";
+      document.getElementById("input-dateUploaded").value = "";
+      document.getElementById("form-title").innerText = "New Entry";
+      document.getElementById("btn-save-entry").innerText = "Add Entry";
+      renderSelectedGenres(); checkFormValidity(); showForm();
+    }
+
+    function openEditForm(entry) {
+      editingId = entry.id; draftGenres = Array.isArray(entry.genres) ? [...entry.genres] : [];
+      document.getElementById("input-game").value = entry.game || "";
+      const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video";
+      document.getElementById("chk-untitled").checked = isU;
+      document.getElementById("input-draftTitle").disabled = isU;
+      document.getElementById("input-draftTitle").value = entry.draftTitle || (isU ? "Untitled Video" : "");
+      document.getElementById("input-videoType").value = entry.videoType || VIDEO_TYPES[0];
+      document.getElementById("input-stage").value = entry.stage || STAGES[0];
+      document.getElementById("input-ownership").value = entry.ownership || OWNERSHIP_OPTIONS[0];
+      document.getElementById("input-description").value = entry.description || "";
+      document.getElementById("input-dateUploaded").value = entry.dateUploaded || "";
+      document.getElementById("form-title").innerText = "Edit Entry";
+      document.getElementById("btn-save-entry").innerText = "Save Changes";
+      renderSelectedGenres(); checkFormValidity(); showForm();
+    }
+
+    function showForm() {
+      const form = document.getElementById("form-panel");
+      form.classList.remove("hidden");
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeForm() { editingId = null; draftGenres = []; document.getElementById("form-panel").classList.add("hidden"); }
+
+    async function handleSaveEntry() {
+      const game = document.getElementById("input-game").value.trim(), isU = document.getElementById("chk-untitled").checked;
+      let title = document.getElementById("input-draftTitle").value.trim();
+      if (isU || !title) title = "Untitled Video";
+      if (!game) return;
+
+      const existing = entries.find(e => e.id === editingId) || {};
+      const draft = {
+        id: editingId || uid(),
+        game,
+        genres: [...draftGenres],
+        draftTitle: title,
+        isUntitled: isU,
+        videoType: document.getElementById("input-videoType").value,
+        stage: document.getElementById("input-stage").value,
+        ownership: document.getElementById("input-ownership").value,
+        description: document.getElementById("input-description").value,
+        dateUploaded: document.getElementById("input-dateUploaded").value,
+        dateCreated: existing.dateCreated || todayISO(),
+        cancelled: !!existing.cancelled
+      };
+
+      await syncSaveEntry(draft);
+      closeForm();
+    }
+
+    async function deleteEntry(id) { await syncDeleteEntry(id); }
+    async function toggleCancelled(id) {
+      const entry = entries.find(e => e.id === id);
+      if (entry) await syncSaveEntry({ ...entry, cancelled: !entry.cancelled });
+    }
+    function toggleExpand(id) { expanded[id] = !expanded[id]; render(); }
+
+    function createStageRing(stage, cancelled, size = 34) {
+      const idx = STAGES.indexOf(stage), total = STAGES.length, segDeg = 360 / total, gapDeg = 6;
+      const activeColor = STAGE_COLORS[stage] || "#FF9900", stops = [];
+      for (let i = 0; i < total; i++) {
+        const start = i * segDeg, end = start + (segDeg - gapDeg);
+        let color = cancelled ? "#3A1620" : (i <= idx ? (STAGE_COLORS[STAGES[i]] || "#00A3E0") : "#1D242D");
+        stops.push(`${color} ${start}deg ${end}deg`);
+        stops.push(`transparent ${end}deg ${start + segDeg}deg`);
+      }
+      return `
+        <div class="relative shrink-0 flex items-center justify-center rounded-full" style="width: ${size}px; height: ${size}px; background: conic-gradient(${stops.join(",")}); filter: ${cancelled ? 'none' : `drop-shadow(0 0 6px ${activeColor}88)`};">
+          <div class="rounded-full flex items-center justify-center" style="width: ${size - 6}px; height: ${size - 6}px; background: ${cancelled ? 'rgba(17,22,27,0.85)' : '#11161B'};">
+            <span class="w-1.5 h-1.5 rounded-full ${cancelled ? '' : 'animate-pulse'}" style="background: ${cancelled ? '#FF0033' : activeColor}; opacity: ${cancelled ? 0.6 : 1};"></span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabs() {
+      const counts = STAGES.reduce((acc, s) => { acc[s] = entries.filter(e => e.stage === s && !e.cancelled).length; return acc; }, {});
+      const cancelledCount = entries.filter(e => e.cancelled).length;
+      const tabs = ["All", ...STAGES, "Cancelled"];
+
+      document.getElementById("filter-tabs-container").innerHTML = tabs.map(f => {
+        const active = filter === f, isC = f === "Cancelled", sColor = STAGE_COLORS[f] || (isC ? "#FF0033" : "#FF9900");
+        let badge = (f !== "All" && f !== "Cancelled" && counts[f] > 0) ? `<span class="ml-1 opacity-70">${counts[f]}</span>` : (isC && cancelledCount > 0 ? `<span class="ml-1 opacity-70">${cancelledCount}</span>` : '');
+        const style = active ? `background: ${sColor}; color: #0A0D11; box-shadow: 0 0 12px ${sColor}88; font-weight: 700;` : `background: rgba(0,163,224,0.06); color: #6E8399; box-shadow: inset 0 0 0 1px rgba(0,163,224,0.18);`;
+        return `<button data-filter="${escapeHtml(f)}" class="tab-btn chamfer-xs filter-tab-btn" style="${style}">${escapeHtml(f)}${badge}</button>`;
+      }).join("");
+
+      document.querySelectorAll(".filter-tab-btn").forEach(b => b.onclick = () => { filter = b.dataset.filter; render(); });
+    }
+
+    function renderList() {
+      const visible = entries
+        .filter(e => filter === "All" ? true : filter === "Cancelled" ? e.cancelled : e.stage === filter && !e.cancelled)
+        .sort((a, b) => {
+          const cmp = (a.dateCreated || "").localeCompare(b.dateCreated || "") || a.id.localeCompare(b.id);
+          return sortDir === "desc" ? -cmp : cmp;
+        });
+
+      const listContainer = document.getElementById("entries-container"), emptyState = document.getElementById("empty-state");
+      if (visible.length === 0) {
+        listContainer.innerHTML = "";
+        emptyState.innerText = entries.length === 0 ? "Nothing logged yet. Add your first entry to start." : "No entries match this filter.";
+        emptyState.classList.remove("hidden"); return;
+      }
+
+      emptyState.classList.add("hidden");
+      listContainer.innerHTML = visible.map(entry => {
+        const c = entry.cancelled, isOpen = !!expanded[entry.id], sColor = STAGE_COLORS[entry.stage] || "#FF9900";
+        const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video", isTbd = entry.videoType === "TBD / Unassigned";
+        const ownership = entry.ownership || "Owned";
+        const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
+
+        const genreBadges = (entry.genres || []).map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#7D9BBA'}; background: rgba(0,163,224,0.08); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.2);">${escapeHtml(g)}</span>`).join("");
+        const typeStyle = isTbd ? `color: #6E8399; border: 1px dashed rgba(110,131,153,0.4);` : `box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3); color: #CBD8E3;`;
+        const titleHtml = isU ? `<span class="italic text-sm" style="color: ${c ? '#3A4452' : '#5A6C7D'};">[ UNTITLED PROJECT ]</span>` : escapeHtml(entry.draftTitle);
+
+        let oStyle = `color: #00A3E0; background: rgba(0,163,224,0.1); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3);`;
+        if (ownership === "Jack Sparrow") oStyle = `color: #FF9900; background: rgba(255,153,0,0.1); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.3);`;
+        else if (ownership === "Unowned") oStyle = `color: #6E8399; background: rgba(110,131,153,0.1); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.3);`;
+
+        return `
+          <div class="chamfer-lg relative" style="background: ${c ? 'rgba(17,22,27,0.4)' : 'rgba(17,22,27,0.65)'}; backdrop-filter: blur(6px); box-shadow: ${c ? 'inset 0 0 0 1px rgba(255,0,51,0.18)' : 'inset 0 0 0 1px rgba(0,163,224,0.28)'};">
+            <div class="flex items-start gap-3 px-4 py-3">
+              <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0" style="color: #6E8399;">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
+              ${createStageRing(entry.stage, c)}
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="font-display font-700 text-lg uppercase leading-none ${c ? 'line-through decoration-2' : ''}" style="color: ${c ? '#4A5566' : '#EAF3FA'};">${escapeHtml(entry.game)}</span>
+                  ${genreBadges}
+                </div>
+                <div class="mt-1 flex items-center gap-2">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,153,0,0.15); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.4);">Finalize Details</span>` : ''}</div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[10px] uppercase tracking-wide" style="color: #5A6C7D;">
+                  <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TYPE: TBD' : escapeHtml(entry.videoType)}</span>
+                  ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; box-shadow: inset 0 0 0 1px ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
+                  <span class="ml-auto" style="color: #3A4452;">${fmtDate(entry.dateCreated)}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-0.5 shrink-0">
+                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? '#00A3E0' : '#6E8399'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: #6E8399;">${ICONS.pencil}</button>
+                <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: #6E8399;">${ICONS.trash}</button>
+              </div>
+            </div>
+            ${isOpen ? `
+              <div class="px-4 pb-4 pt-3 ml-11 ${c ? 'opacity-50' : ''}" style="box-shadow: inset 0 1px 0 0 rgba(0,163,224,0.2);">
+                <p class="text-sm leading-relaxed whitespace-pre-wrap" style="color: #A9BBCB;">${escapeHtml(entry.description || 'No description.')}</p>
+                <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px]" style="color: #5A6C7D;">
+                  <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
+                  <div class="flex items-center gap-4"><span>Logged: <span style="color: #A9BBCB;">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span style="color: #A9BBCB;">${fmtDate(entry.dateUploaded)}</span></span></div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join("");
+
+      listContainer.onclick = function(e) {
+        const btn = e.target.closest("button[data-action]"); if (!btn) return;
+        const act = btn.dataset.action, id = btn.dataset.id, item = entries.find(i => i.id === id);
+        if (act === "toggle") toggleExpand(id);
+        if (act === "cancel") toggleCancelled(id);
+        if (act === "edit" && item) openEditForm(item);
+        if (act === "delete") deleteEntry(id);
+      };
+    }
+
+    function render() {
+      document.getElementById("entry-count-readout").innerHTML = `// gameplay.pipeline &nbsp;·&nbsp; ${entries.length} entr${entries.length === 1 ? "y" : "ies"} synced`;
+      document.getElementById("icon-plus").innerHTML = ICONS.plus;
+      document.getElementById("icon-close").innerHTML = ICONS.x;
+      document.getElementById("icon-logout").innerHTML = ICONS.logout;
+      document.getElementById("sort-icon").innerHTML = sortDir === "desc" ? ICONS.chevronDown : ICONS.chevronUp;
+      renderTabs(); renderList();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initFormSelects();
+      document.getElementById("btn-open-new").onclick = openNewForm;
+      document.getElementById("btn-close-form").onclick = closeForm;
+      document.getElementById("btn-cancel-form").onclick = closeForm;
+      document.getElementById("btn-save-entry").onclick = handleSaveEntry;
+      document.getElementById("chk-untitled").onchange = handleUntitledToggle;
+      document.getElementById("btn-add-genre").onclick = addGenreTag;
+      document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
+      document.getElementById("input-game").oninput = checkFormValidity;
+      document.getElementById("input-draftTitle").oninput = checkFormValidity;
+      document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
+    });
+  </script>
+</body>
+</html>
