@@ -274,6 +274,10 @@
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Date Uploaded</label>
           <input id="input-dateUploaded" type="date" class="input-field">
         </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Est. Time to Beat (hrs)</label>
+          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="e.g. 35">
+        </div>
       </div>
 
       <div class="flex gap-2 mt-5">
@@ -594,6 +598,7 @@
       document.getElementById("input-ownership").value = OWNERSHIP_OPTIONS[0];
       document.getElementById("input-description").value = "";
       document.getElementById("input-dateUploaded").value = "";
+      document.getElementById("input-timeToBeat").value = "";
       document.getElementById("form-title").innerText = "New Entry";
       document.getElementById("btn-save-entry").innerText = "Add Entry";
       renderSelectedGenres(); checkFormValidity(); showForm();
@@ -613,6 +618,7 @@
       document.getElementById("input-ownership").value = entry.ownership || OWNERSHIP_OPTIONS[0];
       document.getElementById("input-description").value = entry.description || "";
       document.getElementById("input-dateUploaded").value = entry.dateUploaded || "";
+      document.getElementById("input-timeToBeat").value = (entry.timeToBeat ?? "") === "" ? "" : entry.timeToBeat;
       document.getElementById("form-title").innerText = "Edit Entry";
       document.getElementById("btn-save-entry").innerText = "Save Changes";
       renderSelectedGenres(); checkFormValidity(); showForm();
@@ -646,7 +652,8 @@
         dateUploaded: document.getElementById("input-dateUploaded").value,
         dateCreated: existing.dateCreated || todayISO(),
         cancelled: !!existing.cancelled,
-        image: draftImage || null
+        image: draftImage || null,
+        timeToBeat: document.getElementById("input-timeToBeat").value === "" ? null : Number(document.getElementById("input-timeToBeat").value)
       };
 
       await syncSaveEntry(draft);
@@ -734,9 +741,10 @@
         // window so text stays legible. Skipped on cancelled entries to keep them muted.
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
-          <div class="absolute inset-0" style="background-image: url('${entry.image}'); background-size: cover; background-position: center; opacity: 0.4;"></div>
-          <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(6,8,11,0.93) 0%, rgba(6,8,11,0.88) 45%, rgba(6,8,11,0.8) 100%);"></div>
+          <div class="absolute inset-0" style="background-image: url('${entry.image}'); background-size: cover; background-position: center; opacity: 0.45;"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(8,10,14,0.78) 0%, rgba(8,10,14,0.68) 45%, rgba(8,10,14,0.52) 100%);"></div>
         ` : '';
+        const borderLayer = hasImg ? `<div class="absolute inset-0 pointer-events-none" style="box-shadow: inset 0 0 0 1px rgba(0,163,224,0.4); z-index: 5;"></div>` : '';
         const draftTitleColor = hasImg ? '#D7E4F0' : (c ? '#3A4452' : '#A9BBCB');
         const metaMutedColor = hasImg ? '#9CB0C4' : '#5A6C7D';
         const genreBadgeStyleRow = hasImg
@@ -747,6 +755,7 @@
         return `
           <div class="chamfer-lg relative overflow-hidden" style="background: ${c ? 'rgba(17,22,27,0.4)' : 'rgba(17,22,27,0.65)'}; backdrop-filter: blur(6px); box-shadow: ${c ? 'inset 0 0 0 1px rgba(255,0,51,0.18)' : 'inset 0 0 0 1px rgba(0,163,224,0.28)'};">
             ${bannerLayer}
+            ${borderLayer}
             <div class="relative z-10">
             <div class="flex items-start gap-3 px-4 py-3">
               <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0" style="color: #6E8399;">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
@@ -777,6 +786,10 @@
                   <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
                   <div class="flex items-center gap-4"><span>Logged: <span style="color: ${descColor};">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span style="color: ${descColor};">${fmtDate(entry.dateUploaded)}</span></span></div>
                 </div>
+                ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
+                <div class="mt-2 text-[11px]" style="color: ${metaMutedColor};">
+                  <span>Est. Time to Beat: <span style="color: ${descColor};">${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
+                </div>` : ''}
               </div>
             ` : ''}
             </div>
