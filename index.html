@@ -322,69 +322,80 @@
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
     
-    // Comprehensive 200+ Categorized Video Game Genre & Subgenre Taxonomy
+    // Massively Expanded Taxonomy: Genres, Deep Themes, and Systemic Mechanics
     const TOP_100_GENRES = [
-      // Action & Combat
-      "Action — Hack and Slash", "Action — Character Action", "Action — Beat 'em Up", "Action — Musou / Crowd Combat", 
-      "Action — Martial Arts", "Action — Mecha / Vehicle Combat", "Action — Boss Rush", "Action — Arena Fighter",
+      // Story & Narrative
+      "Story — Choice-Driven / Branching", "Story — Narrative Horror", "Story — Interactive Drama / QTE", 
+      "Story — Mystery / Detective", "Story — Visual Novel", "Story — Interactive Movie / FMV", "Story — Walking Simulator",
 
-      // Horror
-      "Horror — Survival Horror", "Horror — Psychological Horror", "Horror — Action Horror", "Horror — Mascot Horror", 
-      "Horror — Cosmic / Lovecraftian", "Horror — Found Footage", "Horror — Body Horror", "Horror — Jump Scare / Indie Horror", 
-      "Horror — Asymmetrical Horror", "Horror — Stealth Horror",
+      // RPG Subgenres
+      "RPG — Open-World Action RPG", "RPG — ARPG (Isometric / Hack & Slash)", "RPG — Action RPG (Third-Person / Shooter)", 
+      "RPG — Tactical / Turn-Based RPG", "RPG — CRPG (Classic / Computer RPG)", "RPG — JRPG (Japanese RPG)", 
+      "RPG — Dungeon Crawler", "RPG — Soulslike", "RPG — Roguelike / Roguelite RPG", "RPG — Deckbuilding RPG", 
+      "RPG — MMO / MMORPG", "RPG — Monster Tamer",
 
-      // Role-Playing Games (RPG)
-      "RPG — Action RPG (ARPG)", "RPG — JRPG (Japanese RPG)", "RPG — CRPG (Computer / Western RPG)", 
-      "RPG — Tactical / Turn-Based RPG", "RPG — Dungeon Crawler", "RPG — Soulslike", "RPG — Roguelike RPG", 
-      "RPG — Roguelite", "RPG — Deckbuilding RPG", "RPG — MMO / MMORPG", "RPG — Monster Tamer", 
-      "RPG — Sandbox RPG", "RPG — First-Person Dungeon Crawler",
+      // Extraction & Survival
+      "Extraction — First-Person / Melee", "Extraction — Shooter", "Extraction — Top-Down / Isometric", 
+      "Mechanic — Open World Survival Craft",
+
+      // Horror Subgenres
+      "Horror — Survival Horror", "Horror — Psychological Horror", "Horror — Mascot Horror", "Horror — Action Horror", 
+      "Horror — Cosmic / Lovecraftian", "Horror — Found Footage / Analog", "Horror — Stealth / Evasion Horror",
 
       // Shooters
-      "Shooter — First-Person Shooter (FPS)", "Shooter — Third-Person Shooter (TPS)", "Shooter — Boomer Shooter", 
-      "Shooter — Hero Shooter", "Shooter — Extraction Shooter", "Shooter — Loot Shooter", "Shooter — Tactical Shooter", 
-      "Shooter — Arena Shooter", "Shooter — Bullet Hell / Shmup", "Shooter — Rail / Light Gun Shooter", "Shooter — Cover Shooter",
+      "Shooter — First-Person Shooter (FPS)", "Shooter — Third-Person Shooter (TPS)", "Shooter — Cover Shooter", 
+      "Shooter — Boomer Shooter", "Shooter — Hero Shooter", "Shooter — Loot Shooter", "Shooter — Tactical Shooter", 
+      "Shooter — Bullet Hell / Shmup",
 
-      // Platformers
-      "Platformer — 2D Precision", "Platformer — 3D Collectathon", "Platformer — Puzzle Platformer", 
-      "Platformer — Cinematic Platformer", "Platformer — Metroidvania", "Platformer — Auto-Runner",
+      // Action & Combat
+      "Action — Character Action", "Action — Hack and Slash", "Action — Beat 'em Up", "Action — Martial Arts", 
+      "Action — Mecha / Vehicle Combat", "Action — Boss Rush",
+
+      // Platformers & Sidescrollers
+      "Platformer — Metroidvania", "Platformer — 2D Sidescroller", "Platformer — 3D Collectathon", "Platformer — Puzzle Platformer",
 
       // Strategy & Tactics
-      "Strategy — Real-Time Strategy (RTS)", "Strategy — Turn-Based Strategy (TBS)", "Strategy — Grand Strategy", 
-      "Strategy — 4X", "Strategy — Real-Time Tactics", "Strategy — Turn-Based Tactics", "Strategy — Tower Defense", 
-      "Strategy — Auto Battler", "Strategy — Card Game / Digital Tabletop", "Strategy — Wargame / Hex Strategy",
+      "Strategy — Auto Battler / Autobattler", "Strategy — Real-Time Strategy (RTS)", "Strategy — Turn-Based Strategy (TBS)", 
+      "Strategy — Grand Strategy / 4X", "Strategy — Turn-Based Tactics", "Strategy — Tower Defense", "Strategy — Card Game / Digital Tabletop",
 
       // Simulation & Management
-      "Simulation — City Builder", "Simulation — Colony Sim", "Simulation — Management / Tycoon", 
-      "Simulation — Immersive Sim", "Simulation — Farming / Life Sim", "Simulation — Job / Career Sim", 
-      "Simulation — Physics / Sandbox", "Simulation — Space Flight / Exploration", "Simulation — Vehicle / Flight Sim", 
-      "Simulation — God Game", "Simulation — Dating Sim",
+      "Simulation — Emergency / Dispatcher", "Simulation — Job / Career Sim", "Simulation — Management / Tycoon", 
+      "Simulation — City Builder", "Simulation — Colony Sim", "Simulation — Immersive Sim", "Simulation — Farming / Life Sim", 
+      "Simulation — Space Flight / Exploration", "Simulation — Vehicle / Flight Sim", "Simulation — God Game",
 
-      // Adventure & Narrative
-      "Adventure — Point-and-Click", "Adventure — Visual Novel", "Adventure — Interactive Movie", 
-      "Adventure — Walking Simulator", "Adventure — Mystery / Detective", "Adventure — Interactive Fiction / Text-Based", 
-      "Adventure — Action-Adventure",
+      // Multiplayer & Social
+      "Multiplayer — Chaotic Co-Op / 'Friend Slop'", "Multiplayer — Co-Op Survival / PvE", "Multiplayer — Battle Royale", 
+      "Multiplayer — MOBA", "Multiplayer — Asymmetrical", "Multiplayer — Social Deduction", "Multiplayer — Party Game / Minigames",
+
+      // Format & Service Models
+      "Format — Live Service / Seasons", "Format — Gacha / Hero Collector", "Format — Free-to-Play",
 
       // Puzzle & Casual
-      "Puzzle — Logic / Spatial", "Puzzle — Physics Puzzle", "Puzzle — Match-3 / Tile Puzzle", 
-      "Puzzle — Sokoban / Grid Puzzle", "Casual — Cozy Game", "Casual — Idle / Incremental", "Casual — Party Game / Minigames", 
-      "Casual — Hidden Object", "Casual — Trivia / Quiz",
+      "Puzzle — Logic / Spatial", "Puzzle — Physics Puzzle", "Puzzle — Match-3 / Tile Puzzle", "Casual — Cozy Game", "Casual — Idle / Incremental",
 
       // Racing, Sports & Extreme
-      "Racing — Arcade Racing", "Racing — Sim / Track Racing", "Racing — Combat Racing", 
-      "Sports — Arcade Sports", "Sports — Simulation Sports", "Sports — Extreme Sports / Skateboarding", "Sports — Wrestling",
+      "Racing — Arcade Racing", "Racing — Sim Racing", "Sports — Arcade / Simulation", "Sports — Extreme / Skateboarding",
 
-      // Multiplayer & Competitive
-      "Multiplayer — Battle Royale", "Multiplayer — MOBA", "Multiplayer — Asymmetrical Multiplayer", 
-      "Multiplayer — Social Deduction", "Multiplayer — Co-Op Survival",
+      // --- EXPANDED THEMES & SETTINGS ---
+      "Theme — Cyberpunk", "Theme — Sci-Fi / Space", "Theme — Retro-Futurism", "Theme — Hard Sci-Fi / Realistic Space", 
+      "Theme — Cyber-Noir", "Theme — Biopunk / Genetic Horror", "Theme — Nanotech / Post-Human", "Theme — High Fantasy", 
+      "Theme — Dark Fantasy", "Theme — Urban Fantasy", "Theme — Mythological / Folklore", "Theme — Sword & Sorcery", 
+      "Theme — Steampunk / Clockwork", "Theme — Dieselpunk / Retro-Military", "Theme — Gaslamp Fantasy", "Theme — Historical / Period Piece", 
+      "Theme — Alternate History", "Theme — Modern Warfare / Contemporary", "Theme — Cold War / Espionage", "Theme — Wild West / Frontier", 
+      "Theme — Ancient Civilization / Antiquity", "Theme — Pirate / Naval / Age of Sail", "Theme — World War I / II", 
+      "Theme — Surrealism / Dreamscape", "Theme — Retro / Lo-Fi / CRT", "Theme — Minimalist / Abstract", "Theme — Satire / Parody / Comedy", 
+      "Theme — Psychological Thriller", "Theme — Post-Apocalyptic", "Theme — Zombie Apocalypse / Outbreak", "Theme — Dystopian Totalitarianism", 
+      "Theme — Eco-Collapse / Climate Sci-Fi",
 
-      // Virtual Reality (VR)
-      "VR — Action / Shooter", "VR — Rhythm / Motion", "VR — Horror", "VR — Simulation / Puzzle",
-
-      // Themes, Aesthetics & Mechanics
-      "Theme — Cyberpunk", "Theme — Steampunk", "Theme — Dark Fantasy", "Theme — Sci-Fi / Space", 
-      "Theme — Post-Apocalyptic", "Theme — Medieval", "Theme — Retro / Pixel Art", "Mechanic — Open World", 
-      "Mechanic — Open World Survival Craft", "Mechanic — Crafting / Automation", "Mechanic — Time Loop", 
-      "Mechanic — Deckbuilder", "Other / Experimental"
+      // --- EXPANDED GAMEPLAY MECHANICS ---
+      "Mechanic — Open World", "Mechanic — Physics-Based Sandbox", "Mechanic — Grappling Hook / Fluid Movement", 
+      "Mechanic — Platforming / Parkour", "Mechanic — Vehicle-Centric / Driving Physics", "Mechanic — Underwater / Sub-Aquatic", 
+      "Mechanic — Grid Inventory / Tetris Management", "Mechanic — Loot & Rarity Grinding", "Mechanic — Crafting / Automation / Factory", 
+      "Mechanic — Economy / Shopkeeping Management", "Mechanic — Resource Gathering / Farming", "Mechanic — Time Loop / Manipulation", 
+      "Mechanic — Permadeath / Roguelike Runs", "Mechanic — Base Building / Fortification", "Mechanic — Procedural Generation (ProcGen)", 
+      "Mechanic — Idle / Passive Progression", "Mechanic — Turn-Based / Action Pause", "Mechanic — Morality / Choice & Consequence", 
+      "Mechanic — Stealth / Line-of-Sight AI", "Mechanic — Dialogue Tree / Reputation", "Mechanic — Destructible Environments", 
+      "Mechanic — Deckbuilding / Card Manipulation", "Mechanic — Dodge-Timing / Bullet Hell", "Other / Experimental"
     ];
 
     let currentUser = null;
