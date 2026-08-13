@@ -766,7 +766,7 @@
                 </div>
                 <div class="mt-1 flex items-center gap-2" style="color: ${draftTitleColor};">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,153,0,0.15); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.4);">Finalize Details</span>` : ''}</div>
                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[10px] uppercase tracking-wide" style="color: ${metaMutedColor};">
-                  <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TYPE: TBD' : escapeHtml(entry.videoType)}</span>
+                  <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                   ${genrePreview}
                   ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; box-shadow: inset 0 0 0 1px ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
                   <span class="ml-auto" style="color: ${hasImg ? '#7E93A8' : '#3A4452'};">${fmtDate(entry.dateCreated)}</span>
