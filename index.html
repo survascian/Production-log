@@ -439,8 +439,10 @@
     footer {
       background: rgba(7, 11, 16, 0.95);
       border-top: 1px solid var(--me-bg-panel-border);
-      padding: 1rem 2rem;
+      padding: 1rem 1rem;
       display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       justify-content: space-between;
       align-items: center;
       position: relative;
@@ -448,12 +450,19 @@
       z-index: 40;
     }
 
+    @media (min-width: 640px) {
+      footer {
+        padding: 1rem 2rem;
+      }
+    }
+
     .settings-window {
       display: none;
       position: absolute;
       bottom: 70px;
-      right: 2rem;
-      width: 320px;
+      right: 1rem;
+      width: calc(100vw - 2rem);
+      max-width: 320px;
       background: rgba(10, 16, 24, 0.95);
       border: 1px solid var(--accent-color);
       padding: 1.25rem;
@@ -461,6 +470,12 @@
       backdrop-filter: blur(10px);
       z-index: 100;
       clip-path: var(--card-clip);
+    }
+
+    @media (min-width: 640px) {
+      .settings-window {
+        right: 2rem;
+      }
     }
 
     .settings-window.active {
@@ -501,13 +516,13 @@
     }
   </style>
 </head>
-<body class="relative flex flex-col min-h-screen">
+<body class="relative flex flex-col min-h-screen overflow-x-hidden">
 
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="spinner"></div>
-    <h2 class="font-display font-700 text-xl uppercase tracking-widest text-cyan-400 mb-1" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
-    <p class="text-xs font-mono tracking-wider uppercase opacity-75">Verifying session and security credentials...</p>
+    <h2 class="font-display font-700 text-lg sm:text-xl uppercase tracking-widest text-cyan-400 mb-1 text-center px-4" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
+    <p class="text-xs font-mono tracking-wider uppercase opacity-75 text-center px-4">Verifying session and security credentials...</p>
   </div>
 
   <!-- Scanline Overlay -->
@@ -515,12 +530,12 @@
 
   <!-- Authentication Overlay -->
   <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(7, 11, 16, 0.92); backdrop-filter: blur(8px);">
-    <div class="hologram-panel w-full max-w-md p-6 relative">
+    <div class="hologram-panel w-full max-w-md p-4 sm:p-6 relative">
       <div class="cyber-bar"></div>
       <div class="corner-readout">[ SYS.CONSOLE // AUTH ]</div>
       <div class="flex items-center gap-2 mb-1">
         <span class="hud-title-diamond"></span>
-        <h2 id="auth-header-title" class="font-display font-700 text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
+        <h2 id="auth-header-title" class="font-display font-700 text-lg sm:text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
       </div>
       <p class="text-xs mb-5 opacity-70" style="color: var(--me-text-muted);">Security Clearance Required: Sign in to access system logs and pipeline controls.</p>
       
@@ -535,7 +550,7 @@
           <input id="auth-password" type="password" class="input-field" placeholder="••••••••">
         </div>
         <div id="auth-error" class="hidden text-xs text-red-400 font-mono"></div>
-        <div class="flex gap-2 pt-2">
+        <div class="flex flex-col sm:flex-row gap-2 pt-2">
           <button id="btn-login" class="btn-blue chamfer-sm flex-1">Authenticate</button>
           <button id="btn-register" class="btn-ghost chamfer-sm flex-1">Register Terminal</button>
         </div>
@@ -562,24 +577,24 @@
   </div>
 
   <!-- Dynamic Header -->
-  <header class="sticky top-0 z-20 backdrop-blur-md" style="padding: 1.25rem 2rem; border-bottom: 2px solid var(--accent-color); background: var(--bg-panel); box-shadow: var(--card-shadow);">
-    <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-2.5">
-          <span class="hud-title-diamond"></span>
-          <h1 id="app-header-title" class="font-display font-700 text-[1.5rem] tracking-[3px] uppercase leading-none" style="color: var(--text-main); text-shadow: 0 0 8px var(--accent-color);">
+  <header class="sticky top-0 z-20 backdrop-blur-md px-4 py-3 sm:px-8 sm:py-5" style="border-bottom: 2px solid var(--accent-color); background: var(--bg-panel); box-shadow: var(--card-shadow);">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="hud-title-diamond shrink-0"></span>
+          <h1 id="app-header-title" class="font-display font-700 text-lg sm:text-[1.5rem] tracking-[1.5px] sm:tracking-[3px] uppercase leading-tight truncate" style="color: var(--text-main); text-shadow: 0 0 8px var(--accent-color);">
             System Console // ME-1
           </h1>
         </div>
-        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--accent-color);">
+        <p id="entry-count-readout" class="text-[9px] sm:text-[10px] mt-1 tracking-[0.1em] sm:tracking-[0.15em] uppercase" style="color: var(--accent-color);">
           STATUS: ONLINE // INTERFACE VER. 1.04
         </p>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <!-- Theme Switcher Selector -->
-        <div class="relative flex items-center">
-          <select id="theme-selector" class="input-field !w-auto !py-1.5 !px-2 text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
+        <div class="relative flex items-center shrink-0">
+          <select id="theme-selector" class="input-field !w-auto !py-1 !px-2 text-[9px] sm:text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
             <option value="masseffect">Mass Effect 1</option>
             <option value="cyberpunk">Cyberpunk 2077</option>
             <option value="halo">Halo (UNSC HUD)</option>
@@ -589,15 +604,15 @@
         </div>
 
         <!-- API Diagnostic Status Pill -->
-        <div id="diag-status-pill" class="flex items-center gap-2 cursor-pointer px-3 py-1.5 chamfer-xs hologram-panel" title="Click to open API Health HUD / re-test">
-          <span id="diag-led" class="w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber"></span>
-          <span id="diag-label" class="text-[10px] font-mono tracking-wider uppercase">SYS DIAG: TESTING...</span>
+        <div id="diag-status-pill" class="flex items-center gap-1.5 sm:gap-2 cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 chamfer-xs hologram-panel shrink-0" title="Click to open API Health HUD / re-test">
+          <span id="diag-led" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 led-glow-amber"></span>
+          <span id="diag-label" class="text-[9px] sm:text-[10px] font-mono tracking-wider uppercase">SYS DIAG: TESTING...</span>
         </div>
 
-        <button id="btn-open-new" class="btn-amber chamfer-sm shrink-0">
+        <button id="btn-open-new" class="btn-amber chamfer-sm shrink-0 !text-xs !py-1.5 !px-2.5 sm:!text-sm sm:!py-2 sm:!px-4">
           <span id="icon-plus"></span> New Entry
         </button>
-        <button id="btn-logout" class="btn-ghost chamfer-xs !p-2 hidden" title="Sign Out Terminal">
+        <button id="btn-logout" class="btn-ghost chamfer-xs !p-1.5 sm:!p-2 hidden shrink-0" title="Sign Out Terminal">
           <span id="icon-logout"></span>
         </button>
       </div>
@@ -615,8 +630,8 @@
     </div>
 
     <!-- Filter tabs -->
-    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-slate-700/50">
-      <div id="filter-tabs-container" class="flex gap-1.5"></div>
+    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-slate-700/50 pb-1">
+      <div id="filter-tabs-container" class="flex gap-1.5 shrink-0"></div>
       <div class="w-px h-4 shrink-0" style="background: var(--accent-color); opacity: 0.5;"></div>
       <button id="btn-toggle-sort" class="tab-btn chamfer-xs shrink-0 flex items-center gap-1 btn-ghost" title="Toggle sort order">
         Logged <span id="sort-icon"></span>
@@ -625,9 +640,9 @@
   </header>
 
   <!-- Main Content Container -->
-  <main class="max-w-5xl mx-auto w-full px-4 py-6 relative flex-1">
+  <main class="max-w-5xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 relative flex-1">
     <!-- Form Panel -->
-    <div id="form-panel" class="hidden hologram-panel mb-6 p-5 relative">
+    <div id="form-panel" class="hidden hologram-panel mb-6 p-4 sm:p-5 relative">
       <div class="cyber-bar"></div>
       <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
       <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--card-text);" aria-label="Close form">
@@ -653,7 +668,7 @@
         <div>
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Add Genres</label>
           <div class="flex gap-2">
-            <input id="input-genre-search" list="genre-datalist" class="input-field flex-1" placeholder="Search or type genre...">
+            <input id="input-genre-search" list="genre-datalist" class="input-field flex-1 min-w-0" placeholder="Search or type genre...">
             <button type="button" id="btn-add-genre" class="btn-ghost chamfer-xs shrink-0 !px-3" style="font-size: 0.75rem;">+ Add</button>
           </div>
           <datalist id="genre-datalist"></datalist>
@@ -687,7 +702,7 @@
 
         <div class="sm:col-span-2">
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Poster / Banner Image</label>
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-3">
             <div id="image-preview-wrap" class="hidden chamfer-xs shrink-0" style="width: 64px; height: 64px; border: var(--card-border); overflow: hidden;">
               <img id="image-preview" class="w-full h-full object-cover" src="" alt="">
             </div>
@@ -1571,14 +1586,14 @@
         
         const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--me-bg-panel-border); font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
         const genrePreview = genreList.length ? `
-          <span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
+          <span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill truncate max-w-[120px]" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
           ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--card-text); border: var(--card-border); opacity: 0.85;">+${genreList.length - 1}</span>` : ''}` : '';
         
         const typeStyle = isTbd 
           ? `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-text-muted); border: 1px dashed rgba(107,140,158,0.5);` 
           : `background: rgba(7, 14, 23, var(--pill-opacity)); border: var(--card-border); color: var(--card-text);`;
         
-        const titleHtml = isU ? `<span class="italic text-sm opacity-60">[ UNTITLED LOG ]</span>` : escapeHtml(entry.draftTitle);
+        const titleHtml = isU ? `<span class="italic text-xs sm:text-sm opacity-60">[ UNTITLED LOG ]</span>` : escapeHtml(entry.draftTitle);
 
         let oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--accent-color); border: 1px solid var(--accent-color);`;
         if (ownership === "Jack Sparrow") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--amber); border: 1px solid var(--amber);`;
@@ -1596,20 +1611,20 @@
             ${bannerLayer}
             <div class="entry-content relative z-10">
               <div class="cyber-bar"></div>
-              <div class="flex items-start gap-3 px-5 py-4">
+              <div class="flex items-start gap-2 sm:gap-3 px-3 py-3 sm:px-5 sm:py-4">
                 <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0 z-10" style="color: var(--card-text);">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
                 ${createStageRing(entry.stage, c)}
                 <div class="flex-1 min-w-0 z-10">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="hud-title-diamond"></span>
-                    <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
+                  <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span class="hud-title-diamond shrink-0"></span>
+                    <span class="entry-title font-display font-700 text-base sm:text-lg uppercase leading-tight truncate ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
                   </div>
-                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,102,0,0.25); color: var(--amber); border: 1px solid var(--amber);">Finalize Details</span>` : ''}</div>
-                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-90">
-                    <span class="chamfer-xs px-1.5 py-0.5 hud-pill" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
+                  <div class="mt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill shrink-0" style="background: rgba(255,102,0,0.25); color: var(--amber); border: 1px solid var(--amber);">Finalize Details</span>` : ''}</div>
+                  <div class="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 mt-2.5 text-[9px] sm:text-[10px] uppercase tracking-wide opacity-90">
+                    <span class="chamfer-xs px-1.5 py-0.5 hud-pill shrink-0" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                     ${genrePreview}
-                    ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill" style="color: ${sColor}; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid ${sColor}; box-shadow: inset 0 0 8px ${sColor}33;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill" style="color: #FF0033; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid #FF0033;">Cancelled</span>'}
-                    <span class="ml-auto opacity-70 font-mono text-xs px-1.5 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid rgba(255,255,255,0.1);">${fmtDate(entry.dateCreated)}</span>
+                    ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill shrink-0" style="color: ${sColor}; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid ${sColor}; box-shadow: inset 0 0 8px ${sColor}33;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill shrink-0" style="color: #FF0033; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid #FF0033;">Cancelled</span>'}
+                    <span class="sm:ml-auto opacity-70 font-mono text-[10px] sm:text-xs px-1.5 py-0.5 chamfer-xs hud-pill shrink-0" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid rgba(255,255,255,0.1);">${fmtDate(entry.dateCreated)}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-0.5 shrink-0 z-10">
@@ -1619,15 +1634,15 @@
                 </div>
               </div>
               ${isOpen ? `
-                <div class="px-5 pb-4 pt-3 ml-11 border-t border-orange-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
+                <div class="px-3 sm:px-5 pb-4 pt-3 ml-0 sm:ml-11 border-t border-orange-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
                   ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
-                  <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No log details provided.')}</p>
-                  <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
+                  <p class="entry-body text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No log details provided.')}</p>
+                  <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[10px] sm:text-[11px] opacity-80">
                     <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase hud-pill" style="${oStyle}">${escapeHtml(ownership)}</span></div>
-                    <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
                   </div>
                   ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
-                  <div class="mt-2 text-[11px] opacity-80">
+                  <div class="mt-2 text-[10px] sm:text-[11px] opacity-80">
                     <span>Est. Time to Beat: <span>${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
                   </div>` : ''}
                 </div>` : ''}
