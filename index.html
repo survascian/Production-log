@@ -725,7 +725,7 @@
       }, 350);
     }
 
-    function selectSteamGame(game) {
+    async function selectSteamGame(game) {
       document.getElementById("input-game").value = game.name;
       document.getElementById("steam-search-results").classList.add("hidden");
       if (game.coverUrl) setImagePreview(game.coverUrl);
@@ -734,6 +734,29 @@
         mapped.forEach(g => { if (!draftGenres.includes(g)) draftGenres.push(g); });
         renderSelectedGenres();
       }
+
+      // Auto-fill Est. Time to Beat using SteamSpy Playtime API
+      const timeToBeatInput = document.getElementById("input-timeToBeat");
+      if (game.id) {
+        timeToBeatInput.placeholder = "Fetching playtime from SteamSpy...";
+        try {
+          const spyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://steamspy.com/api.php?request=appdetails&appid=${game.id}`)}`;
+          const res = await fetch(spyUrl);
+          if (res.ok) {
+            const spyData = await res.json();
+            const minutes = spyData.average_forever || spyData.median_forever || 0;
+            if (minutes > 0) {
+              const hours = Math.round((minutes / 60) * 10) / 10;
+              timeToBeatInput.value = hours;
+            }
+          }
+        } catch (err) {
+          console.warn("Could not retrieve SteamSpy playtime:", err);
+        } finally {
+          timeToBeatInput.placeholder = "Auto-filled via Steam/HLTB";
+        }
+      }
+
       checkFormValidity();
     }
 
