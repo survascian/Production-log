@@ -709,61 +709,39 @@
 
     <!-- MODULE 2: MEAL PLAN & DIRECTIVES SECTION -->
     <section id="module-meal-plan" class="hidden space-y-6">
-      <div class="hologram-panel p-5 relative">
+      <div class="hologram-panel p-4 sm:p-5 relative">
         <div class="cyber-bar"></div>
-        <div class="corner-readout">[ SUBSYSTEM // NUTRITION LOG ]</div>
-        <div class="flex items-center gap-2 mb-4">
-          <span class="hud-title-diamond"></span>
-          <h2 class="font-display font-700 uppercase text-lg tracking-wider text-white">Meal Directives & Ration Control</h2>
+        <div class="corner-readout">[ SUBSYSTEM // NUTRITION PLANNER ]</div>
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="hud-title-diamond"></span>
+            <h2 class="font-display font-700 uppercase text-lg sm:text-xl tracking-wider text-white">Meal Directives & Ration Planner</h2>
+          </div>
         </div>
-        <p class="text-xs mb-4 opacity-80" style="color: var(--me-text-muted);">Track daily macros, meal schedules, and tactical nutritional field logs.</p>
+        <p class="text-xs mb-5 opacity-80" style="color: var(--me-text-muted);">Configure daily intake logs, meal structure, macro focus, and tactical nutrient distribution.</p>
 
-        <div class="grid md:grid-cols-3 gap-4">
-          <div class="hologram-panel p-4 bg-black/40">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">// Daily Calories</h3>
-            <div class="text-2xl font-mono font-bold text-white">2,450 / 2,800 kcal</div>
-            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
-              <div class="bg-amber-500 h-full" style="width: 87%;"></div>
+        <!-- Dynamic Nutrients Summary Dashboard -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6" id="meal-summary-cards">
+          <!-- Rendered dynamically via JS -->
+        </div>
+
+        <!-- Add Custom Section Bar -->
+        <div class="hologram-panel p-3 sm:p-4 mb-6 bg-black/40 border border-slate-700/80">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            <div class="flex-1">
+              <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600 opacity-70">Add New Meal Section</label>
+              <input id="input-new-section-name" class="input-field" placeholder="e.g. Snacks, Pre-Workout, Night Ration...">
             </div>
-          </div>
-          <div class="hologram-panel p-4 bg-black/40">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2">// Protein Target</h3>
-            <div class="text-2xl font-mono font-bold text-white">165g / 180g</div>
-            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
-              <div class="bg-cyan-400 h-full" style="width: 91%;"></div>
-            </div>
-          </div>
-          <div class="hologram-panel p-4 bg-black/40">
-            <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-2">// Hydration Level</h3>
-            <div class="text-2xl font-mono font-bold text-white">3.2L / 4.0L</div>
-            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
-              <div class="bg-green-400 h-full" style="width: 80%;"></div>
-            </div>
+            <button id="btn-add-meal-section" class="btn-amber chamfer-sm shrink-0 mt-auto !py-2.5">
+              + Add Section
+            </button>
           </div>
         </div>
 
-        <div class="mt-6 border-t border-slate-700/60 pt-4">
-          <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-white">// Today's Scheduled Rations</h3>
-          <div class="space-y-3 font-mono text-xs">
-            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
-              <div>
-                <span class="text-amber-500 font-bold">[08:00 AM]</span> Breakfast: Protein Oats & Berry Medley
-              </div>
-              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">CONSUMED</span>
-            </div>
-            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
-              <div>
-                <span class="text-amber-500 font-bold">[13:00 PM]</span> Lunch: Grilled Chicken, Quinoa & Broccoli
-              </div>
-              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">CONSUMED</span>
-            </div>
-            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
-              <div>
-                <span class="text-amber-500 font-bold">[19:00 PM]</span> Dinner: Baked Salmon, Sweet Potato & Asparagus
-              </div>
-              <span class="text-[10px] px-2 py-0.5 bg-amber-950 text-amber-400 border border-amber-500/50">PREPARED</span>
-            </div>
-          </div>
+        <!-- Meal Sections Container -->
+        <div id="meal-sections-container" class="space-y-6">
+          <!-- Rendered dynamically via JS -->
         </div>
       </div>
     </section>
@@ -915,6 +893,18 @@
     let steamDebounceTimer = null;
     let isAuthenticating = false;
 
+    /* ==========================================================================
+       MEAL PLANNER STATE & DEFAULTS
+       ========================================================================== */
+    const DEFAULT_MEAL_SECTIONS = [
+      { id: 'sec-breakfast', name: 'Breakfast', isPreMade: true, items: [] },
+      { id: 'sec-lunch', name: 'Lunch', isPreMade: true, items: [] },
+      { id: 'sec-dinner', name: 'Dinner', isPreMade: true, items: [] }
+    ];
+
+    let mealSections = JSON.parse(JSON.stringify(DEFAULT_MEAL_SECTIONS));
+    let unsubscribeMealFirestore = null;
+
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
     function todayISO() { return new Date().toISOString().slice(0, 10); }
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
@@ -984,6 +974,7 @@
         secMeal.classList.remove("hidden");
         secProd.classList.add("hidden");
         filterBar.classList.add("hidden");
+        renderMealPlan();
       };
     }
 
@@ -1189,6 +1180,7 @@
           resetAuthUI();
           logoutBtn.classList.remove("hidden");
           attachFirestoreListener();
+          attachMealFirestoreListener();
         }
       } else {
         isAuthenticating = false;
@@ -1196,8 +1188,11 @@
         modal.classList.remove("hidden");
         logoutBtn.classList.add("hidden");
         if (unsubscribeFirestore) unsubscribeFirestore();
+        if (unsubscribeMealFirestore) unsubscribeMealFirestore();
         entries = [];
+        mealSections = JSON.parse(JSON.stringify(DEFAULT_MEAL_SECTIONS));
         render();
+        renderMealPlan();
       }
       runApiDiagnostics();
       resolveInitialAuthCheck();
@@ -1236,6 +1231,7 @@
         resetAuthUI();
         document.getElementById("btn-logout").classList.remove("hidden");
         attachFirestoreListener();
+        attachMealFirestoreListener();
       } catch(err) {
         isAuthenticating = false;
         resetAuthUI();
@@ -1266,6 +1262,7 @@
         resetAuthUI();
         document.getElementById("btn-logout").classList.remove("hidden");
         attachFirestoreListener();
+        attachMealFirestoreListener();
       } catch(err) {
         isAuthenticating = false;
         resetAuthUI();
@@ -1300,6 +1297,261 @@
       const docRef = doc(db, "users", currentUser.uid, "entries", id);
       await deleteDoc(docRef);
     }
+
+    /* ==========================================================================
+       MEAL PLANNER FIRESTORE & LOGIC
+       ========================================================================== */
+    function attachMealFirestoreListener() {
+      if (!currentUser) return;
+      const docRef = doc(db, "users", currentUser.uid, "mealPlan", "data");
+      unsubscribeMealFirestore = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists() && docSnap.data().sections) {
+          mealSections = docSnap.data().sections;
+        } else {
+          mealSections = JSON.parse(JSON.stringify(DEFAULT_MEAL_SECTIONS));
+          syncSaveMealPlan();
+        }
+        renderMealPlan();
+      });
+    }
+
+    async function syncSaveMealPlan() {
+      if (!currentUser) return;
+      const docRef = doc(db, "users", currentUser.uid, "mealPlan", "data");
+      await setDoc(docRef, { sections: mealSections, updatedAt: todayISO() });
+    }
+
+    function getFocusBadge(focus) {
+      switch(focus) {
+        case 'Carbohydrates':
+          return `<span class="text-[10px] px-2 py-0.5 chamfer-xs font-semibold border border-amber-500/80 text-amber-400 bg-amber-950/40">Carbs</span>`;
+        case 'Fats':
+          return `<span class="text-[10px] px-2 py-0.5 chamfer-xs font-semibold border border-red-500/80 text-red-400 bg-red-950/40">Fats</span>`;
+        case 'Protein':
+          return `<span class="text-[10px] px-2 py-0.5 chamfer-xs font-semibold border border-cyan-500/80 text-cyan-400 bg-cyan-950/40">Protein</span>`;
+        case 'Others (vitamins/fibre)':
+        default:
+          return `<span class="text-[10px] px-2 py-0.5 chamfer-xs font-semibold border border-emerald-500/80 text-emerald-400 bg-emerald-950/40">Vitamins / Fibre</span>`;
+      }
+    }
+
+    function renderMealSummary() {
+      let totalCal = 0;
+      let totalWeight = 0;
+      let carbsCount = 0, carbsCal = 0;
+      let proteinCount = 0, proteinCal = 0;
+      let fatsCount = 0, fatsCal = 0;
+      let othersCount = 0, othersCal = 0;
+
+      mealSections.forEach(sec => {
+        (sec.items || []).forEach(item => {
+          const cal = Number(item.calories) || 0;
+          const w = Number(item.weight) || 0;
+          totalCal += cal;
+          totalWeight += w;
+
+          if (item.focus === 'Carbohydrates') { carbsCount++; carbsCal += cal; }
+          else if (item.focus === 'Protein') { proteinCount++; proteinCal += cal; }
+          else if (item.focus === 'Fats') { fatsCount++; fatsCal += cal; }
+          else { othersCount++; othersCal += cal; }
+        });
+      });
+
+      const summaryContainer = document.getElementById("meal-summary-cards");
+      if (!summaryContainer) return;
+
+      summaryContainer.innerHTML = `
+        <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">// Total Energy Intake</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${totalCal.toLocaleString()} <span class="text-xs text-amber-400 font-normal">kcal</span></div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">Mass: ${totalWeight.toLocaleString()} g</div>
+        </div>
+        <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-1">// Protein Focus</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${proteinCal.toLocaleString()} <span class="text-xs text-cyan-400 font-normal">kcal</span></div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">${proteinCount} item${proteinCount === 1 ? '' : 's'} logged</div>
+        </div>
+        <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-1">// Carbs Focus</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${carbsCal.toLocaleString()} <span class="text-xs text-amber-400 font-normal">kcal</span></div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">${carbsCount} item${carbsCount === 1 ? '' : 's'} logged</div>
+        </div>
+        <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">// Fats & Others Focus</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${(fatsCal + othersCal).toLocaleString()} <span class="text-xs text-emerald-400 font-normal">kcal</span></div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">Fats: ${fatsCal} kcal | Other: ${othersCal} kcal</div>
+        </div>
+      `;
+    }
+
+    function renderMealPlan() {
+      renderMealSummary();
+      const container = document.getElementById("meal-sections-container");
+      if (!container) return;
+
+      if (!mealSections || mealSections.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-sm opacity-60 font-mono">No meal sections created. Add a section above.</div>`;
+        return;
+      }
+
+      container.innerHTML = mealSections.map((sec, index) => {
+        const secItems = sec.items || [];
+        const secCal = secItems.reduce((acc, i) => acc + (Number(i.calories) || 0), 0);
+        const secWeight = secItems.reduce((acc, i) => acc + (Number(i.weight) || 0), 0);
+
+        return `
+          <div class="hologram-panel p-4 bg-black/40 relative">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-700/80">
+              <div class="flex items-center gap-2">
+                <span class="hud-title-diamond"></span>
+                <h3 class="font-display font-700 uppercase tracking-wider text-white text-base sm:text-lg">
+                  ${escapeHtml(sec.name)}
+                </h3>
+                <span class="text-xs font-mono px-2 py-0.5 chamfer-xs bg-orange-950/40 text-amber-400 border border-amber-500/50">
+                  ${secCal.toLocaleString()} kcal | ${secWeight.toLocaleString()} g
+                </span>
+                ${sec.isPreMade ? `<span class="text-[9px] uppercase tracking-widest font-mono opacity-60">[ PRE-MADE ]</span>` : ''}
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="window.moveMealSection(${index}, -1)" ${index === 0 ? 'disabled class="opacity-30 cursor-not-allowed icon-btn"' : 'class="icon-btn text-cyan-400 hover:text-white"'} title="Move Section Up">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <button onclick="window.moveMealSection(${index}, 1)" ${index === mealSections.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed icon-btn"' : 'class="icon-btn text-cyan-400 hover:text-white"'} title="Move Section Down">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                ${!sec.isPreMade ? `
+                  <button onclick="window.deleteMealSection('${sec.id}')" class="icon-btn text-red-400 hover:text-red-300 ml-1" title="Delete Section">
+                    ${ICONS.trash}
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Add Food Item Form -->
+            <div class="bg-black/40 p-3 chamfer-xs border border-slate-800 mb-4">
+              <div class="text-[10px] uppercase font-mono tracking-wider text-amber-500 mb-2 font-bold">+ Add Food Entry</div>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <div class="sm:col-span-4">
+                  <input id="food-name-${sec.id}" class="input-field !text-xs !py-1.5" placeholder="Food item (e.g. Oatmeal / Chicken)">
+                </div>
+                <div class="sm:col-span-2">
+                  <input id="food-weight-${sec.id}" type="number" min="0" step="1" class="input-field !text-xs !py-1.5" placeholder="Weight (g)">
+                </div>
+                <div class="sm:col-span-2">
+                  <input id="food-calories-${sec.id}" type="number" min="0" step="1" class="input-field !text-xs !py-1.5" placeholder="Calories (kcal)">
+                </div>
+                <div class="sm:col-span-3">
+                  <select id="food-focus-${sec.id}" class="input-field !text-xs !py-1.5">
+                    <option value="Carbohydrates">Carbohydrates</option>
+                    <option value="Fats">Fats</option>
+                    <option value="Protein">Protein</option>
+                    <option value="Others (vitamins/fibre)">Others (vitamins/fibre)</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-1 flex items-center">
+                  <button onclick="window.handleAddFood('${sec.id}')" class="btn-amber chamfer-xs w-full !py-1.5 !px-2 !text-xs font-bold shrink-0">
+                    + Add
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Food List Table -->
+            ${secItems.length === 0 ? `
+              <div class="text-xs text-slate-500 italic py-3 text-center border border-dashed border-slate-800 font-mono">
+                No food items logged in ${escapeHtml(sec.name)}.
+              </div>
+            ` : `
+              <div class="overflow-x-auto">
+                <table class="w-full text-left font-mono text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-slate-700/80 text-[10px] uppercase text-amber-500/80 tracking-wider">
+                      <th class="py-2 px-2">Food Item</th>
+                      <th class="py-2 px-2 text-right">Weight</th>
+                      <th class="py-2 px-2 text-right">Calories</th>
+                      <th class="py-2 px-2">Focus Tag</th>
+                      <th class="py-2 px-2 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/60">
+                    ${secItems.map(item => `
+                      <tr class="hover:bg-slate-800/30 transition-colors">
+                        <td class="py-2.5 px-2 font-semibold text-white">${escapeHtml(item.name)}</td>
+                        <td class="py-2.5 px-2 text-right text-slate-300">${item.weight || 0} g</td>
+                        <td class="py-2.5 px-2 text-right text-amber-400 font-bold">${item.calories || 0} kcal</td>
+                        <td class="py-2.5 px-2">${getFocusBadge(item.focus)}</td>
+                        <td class="py-2.5 px-2 text-center">
+                          <button onclick="window.handleDeleteFood('${sec.id}', '${item.id}')" class="icon-btn text-slate-400 hover:text-red-400" title="Delete Entry">
+                            ${ICONS.trash}
+                          </button>
+                        </td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            `}
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.moveMealSection = (index, dir) => {
+      const newIdx = index + dir;
+      if (newIdx < 0 || newIdx >= mealSections.length) return;
+      const temp = mealSections[index];
+      mealSections[index] = mealSections[newIdx];
+      mealSections[newIdx] = temp;
+      syncSaveMealPlan();
+      renderMealPlan();
+    };
+
+    window.deleteMealSection = (secId) => {
+      mealSections = mealSections.filter(s => s.id !== secId);
+      syncSaveMealPlan();
+      renderMealPlan();
+    };
+
+    window.handleAddFood = (secId) => {
+      const nameEl = document.getElementById(`food-name-${secId}`);
+      const weightEl = document.getElementById(`food-weight-${secId}`);
+      const calEl = document.getElementById(`food-calories-${secId}`);
+      const focusEl = document.getElementById(`food-focus-${secId}`);
+
+      if (!nameEl || !nameEl.value.trim()) {
+        alert("Please enter a food item name.");
+        return;
+      }
+
+      const sec = mealSections.find(s => s.id === secId);
+      if (!sec) return;
+
+      if (!sec.items) sec.items = [];
+
+      sec.items.push({
+        id: uid(),
+        name: nameEl.value.trim(),
+        weight: Number(weightEl.value) || 0,
+        calories: Number(calEl.value) || 0,
+        focus: focusEl ? focusEl.value : "Carbohydrates"
+      });
+
+      nameEl.value = "";
+      if (weightEl) weightEl.value = "";
+      if (calEl) calEl.value = "";
+
+      syncSaveMealPlan();
+      renderMealPlan();
+    };
+
+    window.handleDeleteFood = (secId, itemId) => {
+      const sec = mealSections.find(s => s.id === secId);
+      if (!sec || !sec.items) return;
+      sec.items = sec.items.filter(i => i.id !== itemId);
+      syncSaveMealPlan();
+      renderMealPlan();
+    };
 
     async function searchSteamStore(query) {
       if (!query || query.length < 2) return [];
@@ -1756,6 +2008,39 @@
       document.getElementById("input-draftTitle").oninput = checkFormValidity;
       document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
       
+      const btnAddSection = document.getElementById("btn-add-meal-section");
+      const newSecInput = document.getElementById("input-new-section-name");
+
+      if (btnAddSection) {
+        btnAddSection.onclick = () => {
+          const val = newSecInput ? newSecInput.value.trim() : "";
+          if (!val) {
+            alert("Please enter a section name (e.g. Snacks).");
+            return;
+          }
+          mealSections.push({
+            id: uid(),
+            name: val,
+            isPreMade: false,
+            items: []
+          });
+          newSecInput.value = "";
+          syncSaveMealPlan();
+          renderMealPlan();
+        };
+      }
+
+      if (newSecInput) {
+        newSecInput.onkeydown = (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            btnAddSection.click();
+          }
+        };
+      }
+
+      renderMealPlan();
+
       const diagPill = document.getElementById("diag-status-pill");
       const diagPanel = document.getElementById("diag-panel");
       const btnRunDiag = document.getElementById("btn-run-diag");
