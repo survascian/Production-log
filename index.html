@@ -123,29 +123,29 @@
 
     /* ---------- THE DIVISION 2 (ISAC HUD) ---------- */
     :root[data-theme="division"] {
-      --bg-color: #0b0d0e;
+      --bg-color: #0c0e10;
       --bg-deep: #050607;
-      --bg-panel: rgba(22, 26, 30, 0.9);
-      --bg-radial: #1b2126;
-      --card-bg: rgba(22, 26, 30, 0.92);
-      --card-text: #e2e8f0;
-      --text-main: #ff5500;
-      --accent-color: #ff5500;
-      --blue: #38bdf8;
-      --cobalt: #0284c7;
-      --amber: #ff5500;
-      --amber-hot: #ff2200;
-      --red: #ef4444;
+      --bg-panel: rgba(20, 24, 28, 0.94);
+      --bg-radial: #1c1510;
+      --card-bg: rgba(18, 21, 25, 0.95);
+      --card-text: #f1f5f9;
+      --text-main: #ff6600;
+      --accent-color: #ff6600;
+      --blue: #ff8800; /* Replaced blue with ISAC Light Amber */
+      --cobalt: #cc5500; /* Replaced cobalt with Deep ISAC Amber */
+      --amber: #ff6600;
+      --amber-hot: #ff2a00;
+      --red: #ff2a00;
       --green: #22c55e;
       --font-family: 'Share Tech Mono', monospace;
 
       --card-radius: 0px;
-      --card-border: 1px solid rgba(255, 85, 0, 0.5);
-      --card-shadow: 0 0 8px rgba(255, 85, 0, 0.2);
-      --card-clip: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
-      --btn-clip: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+      --card-border: 1px solid rgba(255, 102, 0, 0.55);
+      --card-shadow: 0 0 12px rgba(255, 102, 0, 0.28);
+      --card-clip: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+      --btn-clip: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
       --header-transform: uppercase;
-      --layout-gap: 16px;
+      --layout-gap: 18px;
     }
 
     /* ---------- DISCORD (APP UI) ---------- */
@@ -204,9 +204,9 @@
       display: flex;
       flex-direction: column;
       background-image: 
-        radial-gradient(circle at 50% 20%, rgba(0, 216, 255, 0.08) 0%, transparent 60%),
-        linear-gradient(rgba(0, 216, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 216, 255, 0.03) 1px, transparent 1px);
+        radial-gradient(circle at 50% 20%, rgba(255, 102, 0, 0.08) 0%, transparent 60%),
+        linear-gradient(rgba(255, 102, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 102, 0, 0.03) 1px, transparent 1px);
       background-size: 100% 100%, 30px 30px, 30px 30px;
     }
 
@@ -235,12 +235,12 @@
     .spinner {
       width: 48px;
       height: 48px;
-      border: 4px solid rgba(0, 216, 255, 0.15);
-      border-top-color: var(--accent-color, #00d8ff);
+      border: 4px solid rgba(255, 102, 0, 0.15);
+      border-top-color: var(--accent-color, #ff6600);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 20px;
-      box-shadow: 0 0 15px var(--me-cyan-glow, rgba(0, 216, 255, 0.4));
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
     }
 
     @keyframes spin {
@@ -288,8 +288,8 @@
     .cyber-bar {
       display: none;
       width: 100%;
-      height: 6px;
-      background: linear-gradient(90deg, var(--amber) 0%, var(--accent-color) 70%, var(--blue) 100%);
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent-color) 0%, var(--blue) 60%, var(--amber-hot) 100%);
       margin-bottom: 12px;
     }
 
@@ -304,8 +304,8 @@
       right: 14px;
       font-size: 9px;
       letter-spacing: 0.08em;
-      color: var(--blue);
-      opacity: 0.7;
+      color: var(--accent-color);
+      opacity: 0.75;
     }
 
     .hud-pill {
@@ -367,7 +367,7 @@
       padding: 0.6rem 1.05rem; cursor: pointer;
       border-radius: var(--card-radius);
       clip-path: var(--btn-clip);
-      box-shadow: 0 0 8px rgba(255, 157, 0, 0.4);
+      box-shadow: 0 0 8px rgba(255, 102, 0, 0.4);
       border: 1px solid var(--amber);
     }
     .btn-amber:hover { filter: brightness(1.2); box-shadow: 0 0 12px var(--amber); }
@@ -375,7 +375,7 @@
 
     .btn-blue {
       display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(0, 216, 255, 0.15); color: var(--accent-color);
+      background: rgba(255, 102, 0, 0.15); color: var(--accent-color);
       font-family: var(--font-family); font-weight: 700;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; cursor: pointer;
@@ -387,7 +387,7 @@
 
     .btn-ghost {
       display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(0, 216, 255, 0.05); color: var(--accent-color);
+      background: rgba(255, 102, 0, 0.05); color: var(--accent-color);
       font-family: var(--font-family); font-weight: 600;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; border: var(--card-border);
@@ -398,7 +398,7 @@
     .btn-ghost:hover { background: var(--accent-color); color: #000000; box-shadow: 0 0 10px var(--accent-color); }
 
     .hud-btn {
-      background: rgba(0, 216, 255, 0.1);
+      background: rgba(255, 102, 0, 0.1);
       border: 1px solid var(--accent-color);
       color: var(--accent-color);
       padding: 0.5rem 1.25rem;
@@ -457,7 +457,7 @@
       background: rgba(10, 16, 24, 0.95);
       border: 1px solid var(--accent-color);
       padding: 1.25rem;
-      box-shadow: 0 0 20px rgba(0, 216, 255, 0.25);
+      box-shadow: 0 0 20px rgba(255, 102, 0, 0.25);
       backdrop-filter: blur(10px);
       z-index: 100;
       clip-path: var(--card-clip);
@@ -543,14 +543,14 @@
 
       <!-- Sci-Fi Login Loader View -->
       <div id="auth-loader" class="hidden text-center py-6 space-y-4">
-        <div class="flex items-center justify-center gap-2 text-xs font-mono tracking-widest text-cyan-400 uppercase">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <div class="flex items-center justify-center gap-2 text-xs font-mono tracking-widest uppercase" style="color: var(--accent-color);">
+          <span class="w-2 h-2 rounded-full animate-ping" style="background: var(--accent-color);"></span>
           <span id="auth-status-text">INITIALIZING QUANTUM ENCRYPTION...</span>
         </div>
         
         <!-- Progress Bar Frame -->
-        <div class="w-full h-2 bg-slate-900 border border-cyan-500/40 relative overflow-hidden chamfer-xs">
-          <div id="auth-progress-bar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 0%; box-shadow: 0 0 10px var(--accent-color);"></div>
+        <div class="w-full h-2 bg-slate-900 border border-amber-500/40 relative overflow-hidden chamfer-xs">
+          <div id="auth-progress-bar" class="h-full transition-all duration-300" style="width: 0%; background: var(--accent-color); box-shadow: 0 0 10px var(--accent-color);"></div>
         </div>
         
         <div class="text-[10px] opacity-60 font-mono uppercase tracking-wider">
@@ -580,10 +580,10 @@
         <!-- Theme Switcher Selector -->
         <div class="relative flex items-center">
           <select id="theme-selector" class="input-field !w-auto !py-1.5 !px-2 text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
-            <option value="masseffect" selected>Mass Effect 1</option>
+            <option value="masseffect">Mass Effect 1</option>
             <option value="cyberpunk">Cyberpunk 2077</option>
             <option value="halo">Halo (UNSC HUD)</option>
-            <option value="division">Division 2 (ISAC)</option>
+            <option value="division" selected>Division 2 (ISAC)</option>
             <option value="discord">Discord App</option>
           </select>
         </div>
@@ -811,7 +811,7 @@
     };
 
     const STAGES = ["Backlog", "Planned", "Recording", "Queue", "Editing", "Review", "Published"];
-    const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#00d8ff", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#ff9d00", "Review": "#EAB308", "Published": "#10B981" };
+    const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#ff6600", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#ff9d00", "Review": "#EAB308", "Published": "#10B981" };
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
     
@@ -897,8 +897,8 @@
         headerTitle.innerText = "UNSC // TACTICAL ARCHIVE";
         if (authHeaderTitle) authHeaderTitle.innerText = "UNSC // CLEARANCE REQUIREMENT";
       } else if (themeName === 'division') {
-        headerTitle.innerText = "ISAC // LOGISTICAL LOG";
-        if (authHeaderTitle) authHeaderTitle.innerText = "ISAC // SYSTEM ACCESS";
+        headerTitle.innerText = "ISAC // TACTICAL NETWORK LOG";
+        if (authHeaderTitle) authHeaderTitle.innerText = "ISAC // AGENT CLEARANCE";
       } else if (themeName === 'masseffect') {
         headerTitle.innerText = "SYSTEM CONSOLE // ME-1";
         if (authHeaderTitle) authHeaderTitle.innerText = "System Console // ME-1";
@@ -909,7 +909,7 @@
     }
 
     function initThemeEngine() {
-      const savedTheme = localStorage.getItem("user-theme") || "masseffect";
+      const savedTheme = localStorage.getItem("user-theme") || "division";
       setTheme(savedTheme);
 
       const themeSelect = document.getElementById("theme-selector");
@@ -1040,7 +1040,7 @@
         if (res.success) {
           logsHtml += `
             <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
-              <span class="text-cyan-400 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> ${escapeHtml(res.name)}</span>
+              <span class="font-semibold flex items-center gap-1.5" style="color: var(--accent-color);"><span class="w-1.5 h-1.5 rounded-full" style="background: var(--accent-color);"></span> ${escapeHtml(res.name)}</span>
               <span class="text-[10px] opacity-70">${escapeHtml(res.detail)} <span>(${res.duration}ms)</span></span>
             </div>`;
         } else {
@@ -1284,10 +1284,10 @@
         if (results.length === 0) { resultsContainer.classList.add("hidden"); return; }
 
         resultsContainer.innerHTML = results.map(game => `
-          <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-cyan-950/60 cursor-pointer chamfer-xs transition-colors">
+          <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-orange-950/60 cursor-pointer chamfer-xs transition-colors">
             <img src="${game.coverUrl}" class="w-16 h-8 object-cover chamfer-xs shrink-0" alt="">
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-bold truncate text-[#d2f2ff]">${escapeHtml(game.name)}</div>
+              <div class="text-xs font-bold truncate text-[#f1f5f9]">${escapeHtml(game.name)}</div>
               <div class="text-[9px] uppercase tracking-wider opacity-60">Steam ID: ${game.id}</div>
             </div>
           </div>`).join("") + `
@@ -1515,10 +1515,10 @@
 
     function createStageRing(stage, cancelled, size = 34) {
       const idx = STAGES.indexOf(stage), total = STAGES.length, segDeg = 360 / total, gapDeg = 6;
-      const activeColor = STAGE_COLORS[stage] || "#ff9d00", stops = [];
+      const activeColor = STAGE_COLORS[stage] || "#ff6600", stops = [];
       for (let i = 0; i < total; i++) {
         const start = i * segDeg, end = start + (segDeg - gapDeg);
-        let color = cancelled ? "#3A1620" : (i <= idx ? (STAGE_COLORS[STAGES[i]] || "#00d8ff") : "#1D242D");
+        let color = cancelled ? "#3A1620" : (i <= idx ? (STAGE_COLORS[STAGES[i]] || "#ff6600") : "#1D242D");
         stops.push(`${color} ${start}deg ${end}deg`);
         stops.push(`transparent ${end}deg ${start + segDeg}deg`);
       }
@@ -1536,9 +1536,9 @@
       const tabs = ["All", ...STAGES, "Cancelled"];
 
       document.getElementById("filter-tabs-container").innerHTML = tabs.map(f => {
-        const active = filter === f, isC = f === "Cancelled", sColor = STAGE_COLORS[f] || (isC ? "#FF0033" : "#ff9d00");
+        const active = filter === f, isC = f === "Cancelled", sColor = STAGE_COLORS[f] || (isC ? "#FF0033" : "#ff6600");
         let badge = (f !== "All" && f !== "Cancelled" && counts[f] > 0) ? `<span class="ml-1 opacity-70">${counts[f]}</span>` : (isC && cancelledCount > 0 ? `<span class="ml-1 opacity-70">${cancelledCount}</span>` : '');
-        const style = active ? `background: ${sColor}; color: #000000; font-weight: 700; box-shadow: 0 0 10px ${sColor};` : `background: rgba(0,216,255,0.06); color: var(--card-text); border: var(--card-border);`;
+        const style = active ? `background: ${sColor}; color: #000000; font-weight: 700; box-shadow: 0 0 10px ${sColor};` : `background: rgba(255,102,0,0.06); color: var(--card-text); border: var(--card-border);`;
         return `<button data-filter="${escapeHtml(f)}" class="tab-btn chamfer-xs filter-tab-btn" style="${style}">${escapeHtml(f)}${badge}</button>`;
       }).join("");
 
@@ -1562,7 +1562,7 @@
 
       emptyState.classList.add("hidden");
       listContainer.innerHTML = visible.map(entry => {
-        const c = entry.cancelled, isOpen = !!expanded[entry.id], sColor = STAGE_COLORS[entry.stage] || "#ff9d00";
+        const c = entry.cancelled, isOpen = !!expanded[entry.id], sColor = STAGE_COLORS[entry.stage] || "#ff6600";
         const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video", isTbd = entry.videoType === "TBD / Unassigned";
         const ownership = entry.ownership || "Owned";
         const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
@@ -1604,7 +1604,7 @@
                     <span class="hud-title-diamond"></span>
                     <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
                   </div>
-                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,157,0,0.25); color: var(--amber); border: 1px solid var(--amber);">Finalize Details</span>` : ''}</div>
+                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,102,0,0.25); color: var(--amber); border: 1px solid var(--amber);">Finalize Details</span>` : ''}</div>
                   <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-90">
                     <span class="chamfer-xs px-1.5 py-0.5 hud-pill" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                     ${genrePreview}
@@ -1619,7 +1619,7 @@
                 </div>
               </div>
               ${isOpen ? `
-                <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
+                <div class="px-5 pb-4 pt-3 ml-11 border-t border-orange-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
                   ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
                   <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No log details provided.')}</p>
                   <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
