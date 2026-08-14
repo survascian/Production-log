@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="masseffect">
+<html lang="en" data-theme="division">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Console // ME-1 Production Log</title>
+  <title>System Console // Command Center</title>
 
-  <!-- Browser Tab Icon -->
+  <!-- Browser & Device Icons -->
   <link rel="icon" type="image/png" href="logo-64.png">
-
-  <!-- Phone & Tablet Home Screen Icon -->
   <link rel="apple-touch-icon" href="logo-180.png">
 	
   <!-- Fonts -->
@@ -38,14 +36,17 @@
       --banner-brightness: 0.95;
       --banner-overlay-darkness: 0.25;
       --pill-opacity: 0.85;
+
+      --tag-bg: rgba(7, 14, 23, var(--pill-opacity));
+      --tag-border: var(--me-bg-panel-border);
+      --tag-text: var(--text-main);
     }
 
-    /* ---------- MASS EFFECT 1 (SYSTEM CONSOLE / HUD) ---------- */
+    /* MASS EFFECT 1 */
     :root, :root[data-theme="masseffect"] {
       --bg-color: var(--me-bg-deep);
       --bg-deep: #03070d;
       --bg-panel: var(--me-bg-panel);
-      --bg-radial: #0a192f;
       --card-bg: var(--me-bg-panel);
       --card-text: var(--me-text);
       --text-main: var(--me-text);
@@ -67,12 +68,11 @@
       --layout-gap: 24px;
     }
 
-    /* ---------- CYBERPUNK 2077 (NIGHT CITY HUD) ---------- */
+    /* CYBERPUNK 2077 */
     :root[data-theme="cyberpunk"] {
       --bg-color: #0d0e12;
       --bg-deep: #050507;
       --bg-panel: rgba(18, 18, 22, 0.92);
-      --bg-radial: #1a1a24;
       --card-bg: #000000;
       --card-text: #fcee0a;
       --text-main: #fcee0a;
@@ -94,12 +94,11 @@
       --layout-gap: 20px;
     }
 
-    /* ---------- HALO (UNSC HUD) ---------- */
+    /* HALO UNSC */
     :root[data-theme="halo"] {
       --bg-color: #07100c;
       --bg-deep: #030806;
       --bg-panel: rgba(15, 34, 25, 0.85);
-      --bg-radial: #0d281e;
       --card-bg: rgba(15, 34, 25, 0.85);
       --card-text: #d1fae5;
       --text-main: #d1fae5;
@@ -121,18 +120,17 @@
       --layout-gap: 20px;
     }
 
-    /* ---------- THE DIVISION 2 (ISAC HUD) ---------- */
+    /* DIVISION 2 ISAC */
     :root[data-theme="division"] {
       --bg-color: #0c0e10;
       --bg-deep: #050607;
       --bg-panel: rgba(20, 24, 28, 0.94);
-      --bg-radial: #1c1510;
       --card-bg: rgba(18, 21, 25, 0.95);
       --card-text: #f1f5f9;
       --text-main: #ff6600;
       --accent-color: #ff6600;
-      --blue: #ff8800; /* Replaced blue with ISAC Light Amber */
-      --cobalt: #cc5500; /* Replaced cobalt with Deep ISAC Amber */
+      --blue: #ff8800;
+      --cobalt: #cc5500;
       --amber: #ff6600;
       --amber-hot: #ff2a00;
       --red: #ff2a00;
@@ -148,12 +146,11 @@
       --layout-gap: 18px;
     }
 
-    /* ---------- DISCORD (APP UI) ---------- */
+    /* DISCORD APP UI */
     :root[data-theme="discord"] {
       --bg-color: #2b2d31;
       --bg-deep: #1e1f22;
       --bg-panel: #313338;
-      --bg-radial: #2b2d31;
       --card-bg: #313338;
       --card-text: #dbdee1;
       --text-main: #dbdee1;
@@ -173,23 +170,11 @@
       --btn-clip: none;
       --header-transform: none;
       --layout-gap: 12px;
-
-      --tag-bg: rgba(30, 31, 34, var(--pill-opacity));
-      --tag-border: #4e5058;
-      --tag-text: #f2f3f5;
-    }
-
-    /* Base theme defaults for tags with dynamic contrast */
-    :root {
-      --tag-bg: rgba(7, 14, 23, var(--pill-opacity));
-      --tag-border: var(--me-bg-panel-border);
-      --tag-text: var(--text-main);
     }
 
     /* ==========================================================================
        2. BASE LAYOUT & COMPONENT STYLES
        ========================================================================== */
-
     * {
       box-sizing: border-box;
       transition: background-color 0.25s ease-in-out, border 0.25s ease-in-out, box-shadow 0.25s ease-in-out, clip-path 0.25s ease-in-out;
@@ -249,17 +234,9 @@
 
     .font-display { font-family: var(--font-family); }
 
-    .chamfer-lg {
-      border-radius: var(--card-radius);
-      clip-path: var(--card-clip);
-    }
-    .chamfer-sm {
-      border-radius: var(--card-radius);
-      clip-path: var(--btn-clip);
-    }
-    .chamfer-xs {
-      border-radius: var(--card-radius);
-    }
+    .chamfer-lg { border-radius: var(--card-radius); clip-path: var(--card-clip); }
+    .chamfer-sm { border-radius: var(--card-radius); clip-path: var(--btn-clip); }
+    .chamfer-xs { border-radius: var(--card-radius); }
 
     ::selection { background: var(--accent-color); color: #000000; }
 
@@ -314,9 +291,6 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
 
-    /* ==========================================================================
-       3. ENTRY CONTAINER & BACKGROUND BANNER CARDS
-       ========================================================================== */
     .entry-card-bg-layer {
       position: absolute;
       inset: 0;
@@ -433,9 +407,6 @@
     .led-glow-red { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
     .led-glow-amber { background-color: var(--amber); box-shadow: 0 0 8px var(--amber); }
 
-    /* ==========================================================================
-       4. FOOTER & SETTINGS MODAL
-       ========================================================================== */
     footer {
       background: rgba(7, 11, 16, 0.95);
       border-top: 1px solid var(--me-bg-panel-border);
@@ -450,11 +421,7 @@
       z-index: 40;
     }
 
-    @media (min-width: 640px) {
-      footer {
-        padding: 1rem 2rem;
-      }
-    }
+    @media (min-width: 640px) { footer { padding: 1rem 2rem; } }
 
     .settings-window {
       display: none;
@@ -472,15 +439,8 @@
       clip-path: var(--card-clip);
     }
 
-    @media (min-width: 640px) {
-      .settings-window {
-        right: 2rem;
-      }
-    }
-
-    .settings-window.active {
-      display: block;
-    }
+    @media (min-width: 640px) { .settings-window { right: 2rem; } }
+    .settings-window.active { display: block; }
 
     .settings-header {
       display: flex;
@@ -496,10 +456,7 @@
       font-family: var(--font-family);
     }
 
-    .control-group {
-      margin-bottom: 1rem;
-    }
-
+    .control-group { margin-bottom: 1rem; }
     .control-group label {
       display: flex;
       justify-content: space-between;
@@ -521,7 +478,7 @@
   <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="spinner"></div>
-    <h2 class="font-display font-700 text-lg sm:text-xl uppercase tracking-widest text-cyan-400 mb-1 text-center px-4" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
+    <h2 class="font-display font-700 text-lg sm:text-xl uppercase tracking-widest text-cyan-400 mb-1 text-center px-4" style="text-shadow: 0 0 8px var(--accent-color);">System Console // Command Center</h2>
     <p class="text-xs font-mono tracking-wider uppercase opacity-75 text-center px-4">Verifying session and security credentials...</p>
   </div>
 
@@ -535,9 +492,9 @@
       <div class="corner-readout">[ SYS.CONSOLE // AUTH ]</div>
       <div class="flex items-center gap-2 mb-1">
         <span class="hud-title-diamond"></span>
-        <h2 id="auth-header-title" class="font-display font-700 text-lg sm:text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
+        <h2 id="auth-header-title" class="font-display font-700 text-lg sm:text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--accent-color);">System Console // Command Center</h2>
       </div>
-      <p class="text-xs mb-5 opacity-70" style="color: var(--me-text-muted);">Security Clearance Required: Sign in to access system logs and pipeline controls.</p>
+      <p class="text-xs mb-5 opacity-70" style="color: var(--me-text-muted);">Security Clearance Required: Sign in to access system logs and command controls.</p>
       
       <!-- Input Controls View -->
       <div id="auth-form-controls" class="space-y-4">
@@ -572,7 +529,6 @@
           Establish Link // Citadel Relay Node 04
         </div>
       </div>
-
     </div>
   </div>
 
@@ -583,7 +539,7 @@
         <div class="flex items-center gap-2">
           <span class="hud-title-diamond shrink-0"></span>
           <h1 id="app-header-title" class="font-display font-700 text-lg sm:text-[1.5rem] tracking-[1.5px] sm:tracking-[3px] uppercase leading-tight truncate" style="color: var(--text-main); text-shadow: 0 0 8px var(--accent-color);">
-            System Console // ME-1
+            System Console // Command Center
           </h1>
         </div>
         <p id="entry-count-readout" class="text-[9px] sm:text-[10px] mt-1 tracking-[0.1em] sm:tracking-[0.15em] uppercase" style="color: var(--accent-color);">
@@ -592,13 +548,19 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <!-- Module Navigation Tabs -->
+        <div class="flex gap-1 border border-slate-700 p-0.5 chamfer-xs bg-black/30">
+          <button id="nav-btn-prod" class="tab-btn chamfer-xs btn-amber">Production Log</button>
+          <button id="nav-btn-meal" class="tab-btn chamfer-xs btn-ghost">Meal Directives</button>
+        </div>
+
         <!-- Theme Switcher Selector -->
         <div class="relative flex items-center shrink-0">
           <select id="theme-selector" class="input-field !w-auto !py-1 !px-2 text-[9px] sm:text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
+            <option value="division" selected>Division 2 (ISAC)</option>
             <option value="masseffect">Mass Effect 1</option>
             <option value="cyberpunk">Cyberpunk 2077</option>
             <option value="halo">Halo (UNSC HUD)</option>
-            <option value="division" selected>Division 2 (ISAC)</option>
             <option value="discord">Discord App</option>
           </select>
         </div>
@@ -629,8 +591,8 @@
       </div>
     </div>
 
-    <!-- Filter tabs -->
-    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-slate-700/50 pb-1">
+    <!-- Production Stage Filter Tabs (Visible when Production Log module active) -->
+    <div id="production-filter-bar" class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-slate-700/50 pb-1">
       <div id="filter-tabs-container" class="flex gap-1.5 shrink-0"></div>
       <div class="w-px h-4 shrink-0" style="background: var(--accent-color); opacity: 0.5;"></div>
       <button id="btn-toggle-sort" class="tab-btn chamfer-xs shrink-0 flex items-center gap-1 btn-ghost" title="Toggle sort order">
@@ -641,105 +603,170 @@
 
   <!-- Main Content Container -->
   <main class="max-w-5xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 relative flex-1">
-    <!-- Form Panel -->
-    <div id="form-panel" class="hidden hologram-panel mb-6 p-4 sm:p-5 relative">
-      <div class="cyber-bar"></div>
-      <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
-      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--card-text);" aria-label="Close form">
-        <span id="icon-close"></span>
-      </button>
-      <div class="flex items-center gap-2 mb-4">
-        <span class="hud-title-diamond"></span>
-        <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] text-white">New Entry</h2>
-      </div>
 
-      <div class="grid sm:grid-cols-2 gap-4">
-        <div class="relative">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Game / Module</label>
-            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--accent-color);">Steam Lookup Active</span>
-          </div>
-          <input id="input-game" class="input-field" placeholder="Type title to search Steam or log manually..." autocomplete="off">
-          
-          <!-- Steam Autocomplete Dropdown -->
-          <div id="steam-search-results" class="hidden absolute left-0 right-0 top-full mt-1 z-40 hologram-panel p-1 max-h-60 overflow-y-auto space-y-1"></div>
-        </div>
-        
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Add Genres</label>
-          <div class="flex gap-2">
-            <input id="input-genre-search" list="genre-datalist" class="input-field flex-1 min-w-0" placeholder="Search or type genre...">
-            <button type="button" id="btn-add-genre" class="btn-ghost chamfer-xs shrink-0 !px-3" style="font-size: 0.75rem;">+ Add</button>
-          </div>
-          <datalist id="genre-datalist"></datalist>
-          <div id="selected-genres-container" class="flex flex-wrap gap-1.5 mt-2 min-h-[26px]"></div>
+    <!-- MODULE 1: PRODUCTION LOG SECTION -->
+    <section id="module-production-log" class="space-y-6">
+      <!-- Form Panel -->
+      <div id="form-panel" class="hidden hologram-panel mb-6 p-4 sm:p-5 relative">
+        <div class="cyber-bar"></div>
+        <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
+        <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--card-text);" aria-label="Close form">
+          <span id="icon-close"></span>
+        </button>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="hud-title-diamond"></span>
+          <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] text-white">New Entry</h2>
         </div>
 
-        <div class="sm:col-span-2">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Draft Title</label>
-            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--amber);">
-              <input type="checkbox" id="chk-untitled" class="cursor-pointer">
-              <span>Mark as Untitled</span>
-            </label>
-          </div>
-          <input id="input-draftTitle" class="input-field" placeholder="Working title for the video">
-        </div>
-
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Video Type</label>
-          <select id="input-videoType" class="input-field"></select>
-        </div>
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Stage</label>
-          <select id="input-stage" class="input-field"></select>
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Game Ownership Status</label>
-          <select id="input-ownership" class="input-field"></select>
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Poster / Banner Image</label>
-          <div class="flex flex-wrap items-center gap-3">
-            <div id="image-preview-wrap" class="hidden chamfer-xs shrink-0" style="width: 64px; height: 64px; border: var(--card-border); overflow: hidden;">
-              <img id="image-preview" class="w-full h-full object-cover" src="" alt="">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="relative">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Game / Module</label>
+              <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--accent-color);">Steam Lookup Active</span>
             </div>
-            <input type="file" id="input-image-file" accept="image/*" class="hidden">
-            <button type="button" id="btn-choose-image" class="btn-ghost chamfer-xs shrink-0 !px-3 flex items-center gap-1.5" style="font-size: 0.75rem;">
-              <span id="icon-image"></span> Import Image
-            </button>
-            <button type="button" id="btn-remove-image" class="hidden text-[11px] uppercase tracking-wide" style="color: var(--red);">Remove</button>
-            <span id="image-status" class="text-[10px] opacity-60"></span>
+            <input id="input-game" class="input-field" placeholder="Type title to search Steam or log manually..." autocomplete="off">
+            
+            <!-- Steam Autocomplete Dropdown -->
+            <div id="steam-search-results" class="hidden absolute left-0 right-0 top-full mt-1 z-40 hologram-panel p-1 max-h-60 overflow-y-auto space-y-1"></div>
+          </div>
+          
+          <div>
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Add Genres</label>
+            <div class="flex gap-2">
+              <input id="input-genre-search" list="genre-datalist" class="input-field flex-1 min-w-0" placeholder="Search or type genre...">
+              <button type="button" id="btn-add-genre" class="btn-ghost chamfer-xs shrink-0 !px-3" style="font-size: 0.75rem;">+ Add</button>
+            </div>
+            <datalist id="genre-datalist"></datalist>
+            <div id="selected-genres-container" class="flex flex-wrap gap-1.5 mt-2 min-h-[26px]"></div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Draft Title</label>
+              <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--amber);">
+                <input type="checkbox" id="chk-untitled" class="cursor-pointer">
+                <span>Mark as Untitled</span>
+              </label>
+            </div>
+            <input id="input-draftTitle" class="input-field" placeholder="Working title for the video">
+          </div>
+
+          <div>
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Video Type</label>
+            <select id="input-videoType" class="input-field"></select>
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Stage</label>
+            <select id="input-stage" class="input-field"></select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Game Ownership Status</label>
+            <select id="input-ownership" class="input-field"></select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Poster / Banner Image</label>
+            <div class="flex flex-wrap items-center gap-3">
+              <div id="image-preview-wrap" class="hidden chamfer-xs shrink-0" style="width: 64px; height: 64px; border: var(--card-border); overflow: hidden;">
+                <img id="image-preview" class="w-full h-full object-cover" src="" alt="">
+              </div>
+              <input type="file" id="input-image-file" accept="image/*" class="hidden">
+              <button type="button" id="btn-choose-image" class="btn-ghost chamfer-xs shrink-0 !px-3 flex items-center gap-1.5" style="font-size: 0.75rem;">
+                <span id="icon-image"></span> Import Image
+              </button>
+              <button type="button" id="btn-remove-image" class="hidden text-[11px] uppercase tracking-wide" style="color: var(--red);">Remove</button>
+              <span id="image-status" class="text-[10px] opacity-60"></span>
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description / Log Entry</label>
+            <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video or entry about?"></textarea>
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Date Uploaded</label>
+            <input id="input-dateUploaded" type="date" class="input-field">
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Est. Time to Beat (hrs)</label>
+            <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="Auto-filled via Steam/HLTB">
           </div>
         </div>
 
-        <div class="sm:col-span-2">
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description / Log Entry</label>
-          <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video or entry about?"></textarea>
-        </div>
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Date Uploaded</label>
-          <input id="input-dateUploaded" type="date" class="input-field">
-        </div>
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Est. Time to Beat (hrs)</label>
-          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="Auto-filled via Steam/HLTB">
+        <div class="flex gap-2 mt-5">
+          <button id="btn-save-entry" class="btn-blue chamfer-sm opacity-30 cursor-not-allowed" disabled>Add Entry</button>
+          <button id="btn-cancel-form" class="btn-ghost chamfer-sm">Cancel</button>
         </div>
       </div>
 
-      <div class="flex gap-2 mt-5">
-        <button id="btn-save-entry" class="btn-blue chamfer-sm opacity-30 cursor-not-allowed" disabled>Add Entry</button>
-        <button id="btn-cancel-form" class="btn-ghost chamfer-sm">Cancel</button>
+      <!-- Production Entries Container -->
+      <div id="empty-state" class="hidden text-center py-16 text-sm hologram-panel">
+        Archives Empty. Add your first entry to calibrate the system console.
       </div>
-    </div>
+      <div id="entries-container" class="flex flex-col gap-4"></div>
+    </section>
 
-    <!-- Entries List -->
-    <div id="empty-state" class="hidden text-center py-16 text-sm hologram-panel">
-      Archives Empty. Add your first entry to calibrate the system console.
-    </div>
-    <div id="entries-container" class="flex flex-col gap-4"></div>
+    <!-- MODULE 2: MEAL PLAN & DIRECTIVES SECTION -->
+    <section id="module-meal-plan" class="hidden space-y-6">
+      <div class="hologram-panel p-5 relative">
+        <div class="cyber-bar"></div>
+        <div class="corner-readout">[ SUBSYSTEM // NUTRITION LOG ]</div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="hud-title-diamond"></span>
+          <h2 class="font-display font-700 uppercase text-lg tracking-wider text-white">Meal Directives & Ration Control</h2>
+        </div>
+        <p class="text-xs mb-4 opacity-80" style="color: var(--me-text-muted);">Track daily macros, meal schedules, and tactical nutritional field logs.</p>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="hologram-panel p-4 bg-black/40">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-amber-500 mb-2">// Daily Calories</h3>
+            <div class="text-2xl font-mono font-bold text-white">2,450 / 2,800 kcal</div>
+            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
+              <div class="bg-amber-500 h-full" style="width: 87%;"></div>
+            </div>
+          </div>
+          <div class="hologram-panel p-4 bg-black/40">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-2">// Protein Target</h3>
+            <div class="text-2xl font-mono font-bold text-white">165g / 180g</div>
+            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
+              <div class="bg-cyan-400 h-full" style="width: 91%;"></div>
+            </div>
+          </div>
+          <div class="hologram-panel p-4 bg-black/40">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-2">// Hydration Level</h3>
+            <div class="text-2xl font-mono font-bold text-white">3.2L / 4.0L</div>
+            <div class="w-full bg-slate-800 h-1.5 mt-2 rounded overflow-hidden">
+              <div class="bg-green-400 h-full" style="width: 80%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 border-t border-slate-700/60 pt-4">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-3 text-white">// Today's Scheduled Rations</h3>
+          <div class="space-y-3 font-mono text-xs">
+            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
+              <div>
+                <span class="text-amber-500 font-bold">[08:00 AM]</span> Breakfast: Protein Oats & Berry Medley
+              </div>
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">CONSUMED</span>
+            </div>
+            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
+              <div>
+                <span class="text-amber-500 font-bold">[13:00 PM]</span> Lunch: Grilled Chicken, Quinoa & Broccoli
+              </div>
+              <span class="text-[10px] px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/50">CONSUMED</span>
+            </div>
+            <div class="p-3 bg-black/30 border border-slate-700 flex items-center justify-between chamfer-xs">
+              <div>
+                <span class="text-amber-500 font-bold">[19:00 PM]</span> Dinner: Baked Salmon, Sweet Potato & Asparagus
+              </div>
+              <span class="text-[10px] px-2 py-0.5 bg-amber-950 text-amber-400 border border-amber-500/50">PREPARED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Footer -->
@@ -782,7 +809,7 @@
     </div>
   </footer>
 
-  <!-- Firebase & Application Script -->
+  <!-- Firebase & Application Script Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -906,19 +933,19 @@
       const authHeaderTitle = document.getElementById('auth-header-title');
 
       if (themeName === 'cyberpunk') {
-        headerTitle.innerText = "NIGHT CITY // LOG";
+        headerTitle.innerText = "NIGHT CITY // COMMAND CENTER";
         if (authHeaderTitle) authHeaderTitle.innerText = "SYS.AUTHENTICATION";
       } else if (themeName === 'halo') {
-        headerTitle.innerText = "UNSC // TACTICAL ARCHIVE";
+        headerTitle.innerText = "UNSC // COMMAND CENTER";
         if (authHeaderTitle) authHeaderTitle.innerText = "UNSC // CLEARANCE REQUIREMENT";
       } else if (themeName === 'division') {
-        headerTitle.innerText = "ISAC // TACTICAL NETWORK LOG";
+        headerTitle.innerText = "ISAC // COMMAND CENTER LOG";
         if (authHeaderTitle) authHeaderTitle.innerText = "ISAC // AGENT CLEARANCE";
       } else if (themeName === 'masseffect') {
         headerTitle.innerText = "SYSTEM CONSOLE // ME-1";
         if (authHeaderTitle) authHeaderTitle.innerText = "System Console // ME-1";
       } else if (themeName === 'discord') {
-        headerTitle.innerText = "# production-log";
+        headerTitle.innerText = "# command-center";
         if (authHeaderTitle) authHeaderTitle.innerText = "Welcome back!";
       }
     }
@@ -934,6 +961,30 @@
           setTheme(e.target.value);
         });
       }
+    }
+
+    function initModuleNavigation() {
+      const btnProd = document.getElementById("nav-btn-prod");
+      const btnMeal = document.getElementById("nav-btn-meal");
+      const secProd = document.getElementById("module-production-log");
+      const secMeal = document.getElementById("module-meal-plan");
+      const filterBar = document.getElementById("production-filter-bar");
+
+      btnProd.onclick = () => {
+        btnProd.className = "tab-btn chamfer-xs btn-amber";
+        btnMeal.className = "tab-btn chamfer-xs btn-ghost";
+        secProd.classList.remove("hidden");
+        secMeal.classList.add("hidden");
+        filterBar.classList.remove("hidden");
+      };
+
+      btnMeal.onclick = () => {
+        btnMeal.className = "tab-btn chamfer-xs btn-amber";
+        btnProd.className = "tab-btn chamfer-xs btn-ghost";
+        secMeal.classList.remove("hidden");
+        secProd.classList.add("hidden");
+        filterBar.classList.add("hidden");
+      };
     }
 
     function initOpticsCalibration() {
@@ -1672,6 +1723,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       initThemeEngine();
+      initModuleNavigation();
       initOpticsCalibration();
       initFormSelects();
       initPageWithSplashDelay();
