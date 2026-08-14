@@ -209,14 +209,14 @@
     }
 
     /* ==========================================================================
-       3. ENTRY CONTAINER & BANNER CARDS
+       3. ENTRY CONTAINER & BACKGROUND BANNER CARDS
        ========================================================================== */
-    .banner-window {
-      position: relative;
-      height: 220px;
+    .entry-card-bg-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
       overflow: hidden;
-      border-bottom: 1px solid var(--me-bg-panel-border);
-      background-color: #000;
+      pointer-events: none;
     }
 
     .banner-image {
@@ -230,13 +230,9 @@
 
     .banner-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(7, 11, 16, 0.1) 0%, rgba(7, 11, 16, 0.8) 100%);
+      inset: 0;
+      background: rgba(7, 11, 16, 0.75);
       opacity: var(--banner-overlay-darkness);
-      pointer-events: none;
       transition: opacity 0.2s ease;
     }
 
@@ -1262,7 +1258,7 @@
         stops.push(`transparent ${end}deg ${start + segDeg}deg`);
       }
       return `
-        <div class="relative shrink-0 flex items-center justify-center rounded-full" style="width: ${size}px; height: ${size}px; background: conic-gradient(${stops.join(",")}); filter: ${cancelled ? 'none' : `drop-shadow(0 0 6px ${activeColor}88)`};">
+        <div class="relative shrink-0 flex items-center justify-center rounded-full z-10" style="width: ${size}px; height: ${size}px; background: conic-gradient(${stops.join(",")}); filter: ${cancelled ? 'none' : `drop-shadow(0 0 6px ${activeColor}88)`};">
           <div class="rounded-full flex items-center justify-center" style="width: ${size - 6}px; height: ${size - 6}px; background: ${cancelled ? 'rgba(17,22,27,0.85)' : 'var(--bg-panel)'};">
             <span class="w-1.5 h-1.5 rounded-full ${cancelled ? '' : 'animate-pulse'}" style="background: ${cancelled ? '#FF0033' : activeColor}; opacity: ${cancelled ? 0.6 : 1};"></span>
           </div>
@@ -1320,8 +1316,8 @@
 
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
-          <div class="banner-window">
-            <img class="banner-image" src="${escapeHtml(entry.image)}" alt="Banner Image">
+          <div class="entry-card-bg-layer">
+            <img class="banner-image" src="${escapeHtml(entry.image)}" alt="Background Image">
             <div class="banner-overlay"></div>
           </div>` : '';
 
@@ -1329,42 +1325,42 @@
           <article class="hologram-panel entry-card relative overflow-hidden">
             ${bannerLayer}
             <div class="entry-content relative z-10">
-            <div class="cyber-bar"></div>
-            <div class="flex items-start gap-3 px-5 py-4">
-              <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0" style="color: var(--card-text);">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
-              ${createStageRing(entry.stage, c)}
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="hud-title-diamond"></span>
-                  <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
+              <div class="cyber-bar"></div>
+              <div class="flex items-start gap-3 px-5 py-4">
+                <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0 z-10" style="color: var(--card-text);">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
+                ${createStageRing(entry.stage, c)}
+                <div class="flex-1 min-w-0 z-10">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="hud-title-diamond"></span>
+                    <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
+                  </div>
+                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,157,0,0.15); color: var(--me-amber);">Finalize Details</span>` : ''}</div>
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-80">
+                    <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
+                    ${genrePreview}
+                    ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; border: 1px solid ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
+                    <span class="ml-auto opacity-60 font-mono">${fmtDate(entry.dateCreated)}</span>
+                  </div>
                 </div>
-                <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,157,0,0.15); color: var(--me-amber);">Finalize Details</span>` : ''}</div>
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-80">
-                  <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
-                  ${genrePreview}
-                  ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; border: 1px solid ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
-                  <span class="ml-auto opacity-60 font-mono">${fmtDate(entry.dateCreated)}</span>
+                <div class="flex items-center gap-0.5 shrink-0 z-10">
+                  <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--me-cyan)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                  <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.pencil}</button>
+                  <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.trash}</button>
                 </div>
               </div>
-              <div class="flex items-center gap-0.5 shrink-0">
-                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--me-cyan)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
-                <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.pencil}</button>
-                <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.trash}</button>
-              </div>
-            </div>
-            ${isOpen ? `
-              <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 ${c ? 'opacity-50' : ''}">
-                ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
-                <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No Citadel log details provided.')}</p>
-                <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
-                  <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
-                  <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
-                </div>
-                ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
-                <div class="mt-2 text-[11px] opacity-80">
-                  <span>Est. Time to Beat: <span>${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
+              ${isOpen ? `
+                <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
+                  ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
+                  <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No Citadel log details provided.')}</p>
+                  <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
+                    <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
+                    <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
+                  </div>
+                  ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
+                  <div class="mt-2 text-[11px] opacity-80">
+                    <span>Est. Time to Beat: <span>${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
+                  </div>` : ''}
                 </div>` : ''}
-              </div>` : ''}
             </div>
           </article>`;
       }).join("");
