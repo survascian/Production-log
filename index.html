@@ -719,7 +719,7 @@
             <h2 class="font-display font-700 uppercase text-lg sm:text-xl tracking-wider text-white">Meal Directives & Ration Planner</h2>
           </div>
         </div>
-        <p class="text-xs mb-5 opacity-80" style="color: var(--me-text-muted);">Configure daily intake logs, meal structure, macro focus, and tactical nutrient distribution.</p>
+        <p class="text-xs mb-5 opacity-80" style="color: var(--me-text-muted);">Configure daily intake logs, meal structure, macro focus, switchable main meals, and tactical nutrient distribution.</p>
 
         <!-- Dynamic Nutrients Summary Dashboard -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6" id="meal-summary-cards">
@@ -894,12 +894,113 @@
     let isAuthenticating = false;
 
     /* ==========================================================================
-       MEAL PLANNER STATE & DEFAULTS
+       MEAL PLANNER STATE & PRESETS (WITH FULL SWITCHABLE OPTIONS)
        ========================================================================== */
+    const MAIN_MEAL_OPTIONS = [
+      {
+        id: "opt-1",
+        name: "Option 1: Gyudon (Japanese Beef Bowl)",
+        calories: 800,
+        protein: 40,
+        carbs: 85,
+        fat: 30,
+        focus: "Protein",
+        details: "1.5–2 cups white rice, 130g thinly sliced beef simmered with 1/2 onion, 2 tbsp soy sauce, mirin/broth, 1 tsp sugar. Top with 1 raw egg yolk or soft-poached/fried egg."
+      },
+      {
+        id: "opt-2",
+        name: "Option 2: Sliced Beef & Garlic Butter Rice / Noodles",
+        calories: 820,
+        protein: 42,
+        carbs: 80,
+        fat: 34,
+        focus: "Protein",
+        details: "1.5–2 cups cooked rice OR 120g dry pasta/noodles, 130g sliced beef seared in 1 tbsp butter & minced garlic. Drizzle soy sauce & spring onions."
+      },
+      {
+        id: "opt-3",
+        name: "Option 3: Mexican Beef or Chicken Rice Bowl",
+        calories: 830,
+        protein: 44,
+        carbs: 75,
+        fat: 32,
+        focus: "Protein",
+        details: "1.5–2 cups cooked rice, 130g ground beef/chicken with taco seasoning, 1/2 cup black/kidney beans, 1/4 cup shredded cheese, 2 tbsp sour cream / Greek yogurt."
+      },
+      {
+        id: "opt-4",
+        name: "Option 4: 4–5 Eggs Over Rice (Asian or Cheesy Style)",
+        calories: 780,
+        protein: 38,
+        carbs: 70,
+        fat: 36,
+        focus: "Protein",
+        details: "1.5–2 cups cooked rice, 4–5 fried eggs in 1 tbsp oil/butter with runny yolks. Drizzle with 1 tsp sesame oil + soy sauce OR fold 1/4 cup cheese into scrambled eggs."
+      },
+      {
+        id: "opt-5",
+        name: "Option 5: Creamy Ground Beef or Chicken Pasta",
+        calories: 850,
+        protein: 45,
+        carbs: 88,
+        fat: 32,
+        focus: "Protein",
+        details: "1.5–2 cups cooked pasta, 130g ground beef or chicken. Tomato marinara w/ 1.5 tbsp olive oil OR cream sauce (full-fat milk/cream + 2 tbsp Parmesan)."
+      },
+      {
+        id: "opt-6",
+        name: "Option 6: Shredded Chicken & Cheese Burritos / Wraps",
+        calories: 810,
+        protein: 43,
+        carbs: 72,
+        fat: 35,
+        focus: "Protein",
+        details: "2 large flour tortilla wraps, 150g shredded chicken breast/thigh, 1/2 mashed avocado, 1/4 cup grated cheese, 1 tbsp mayonnaise or garlic sauce."
+      }
+    ];
+
     const DEFAULT_MEAL_SECTIONS = [
-      { id: 'sec-breakfast', name: 'Breakfast', isPreMade: true, items: [] },
-      { id: 'sec-lunch', name: 'Lunch', isPreMade: true, items: [] },
-      { id: 'sec-dinner', name: 'Dinner', isPreMade: true, items: [] }
+      {
+        id: 'sec-breakfast',
+        name: 'Breakfast (~750 kcal)',
+        isPreMade: true,
+        items: [
+          { id: 'b1', name: 'Rolled Oats (1 cup in 1.5 cups whole milk)', weight: 250, calories: 380, protein: 16, carbs: 54, fat: 11, focus: 'Carbohydrates', details: 'Oats cooked in whole milk' },
+          { id: 'b2', name: 'Peanut Butter (2.5 tbsp) + Banana (1 medium) + Honey/Maple (1 tbsp)', weight: 160, calories: 230, protein: 8, carbs: 36, fat: 11, focus: 'Fats', details: 'Mix-ins for oats base' },
+          { id: 'b3', name: 'Hard-Boiled or Fried Eggs (2 whole)', weight: 100, calories: 140, protein: 12, carbs: 0, fat: 10, focus: 'Protein', details: 'Protein boost on the side' }
+        ]
+      },
+      {
+        id: 'sec-snack1',
+        name: 'Snack 1: Mid-Morning (~450 kcal)',
+        isPreMade: true,
+        items: [
+          { id: 's1-1', name: 'Mixed Nuts (1/2 cup almonds/cashews/walnuts)', weight: 70, calories: 320, protein: 10, carbs: 12, fat: 26, focus: 'Fats', details: 'Healthy fats & crunch' },
+          { id: 's1-2', name: 'Dried Fruit (1/4 cup raisins/cranberries) + 1 Whole Apple/Orange', weight: 180, calories: 130, protein: 2, carbs: 33, fat: 0, focus: 'Carbohydrates', details: 'Quick energy & micronutrients' }
+        ]
+      },
+      {
+        id: 'sec-lunch',
+        name: 'Lunch (Main Meal Selection)',
+        isPreMade: true,
+        selectedOptionId: 'opt-1',
+        items: []
+      },
+      {
+        id: 'sec-snack2',
+        name: 'Snack 2: Afternoon / Pre-Workout Shake (~400–450 kcal)',
+        isPreMade: true,
+        items: [
+          { id: 's2-1', name: 'Whole Food Smoothie Base (1c Milk, 1/2c Greek Yogurt, 2 tbsp PB, 1c Berries/Banana)', weight: 350, calories: 430, protein: 22, carbs: 45, fat: 18, focus: 'Protein', details: 'Blend whole ingredients. (Optional: 2 tbsp oats for extra carbs)' }
+        ]
+      },
+      {
+        id: 'sec-dinner',
+        name: 'Dinner (Main Meal Selection)',
+        isPreMade: true,
+        selectedOptionId: 'opt-3',
+        items: []
+      }
     ];
 
     let mealSections = JSON.parse(JSON.stringify(DEFAULT_MEAL_SECTIONS));
@@ -1299,7 +1400,7 @@
     }
 
     /* ==========================================================================
-       MEAL PLANNER FIRESTORE & LOGIC
+       MEAL PLANNER FIRESTORE & SWITCHABLE OPTION LOGIC
        ========================================================================== */
     function attachMealFirestoreListener() {
       if (!currentUser) return;
@@ -1335,25 +1436,38 @@
       }
     }
 
+    function getActiveItemsForSection(sec) {
+      if (sec.selectedOptionId) {
+        const option = MAIN_MEAL_OPTIONS.find(o => o.id === sec.selectedOptionId) || MAIN_MEAL_OPTIONS[0];
+        return [{
+          id: option.id,
+          name: option.name,
+          weight: 0,
+          calories: option.calories,
+          protein: option.protein,
+          carbs: option.carbs,
+          fat: option.fat,
+          focus: option.focus,
+          details: option.details,
+          isSwitchable: true
+        }];
+      }
+      return sec.items || [];
+    }
+
     function renderMealSummary() {
       let totalCal = 0;
-      let totalWeight = 0;
-      let carbsCount = 0, carbsCal = 0;
-      let proteinCount = 0, proteinCal = 0;
-      let fatsCount = 0, fatsCal = 0;
-      let othersCount = 0, othersCal = 0;
+      let totalProtein = 0;
+      let totalCarbs = 0;
+      let totalFat = 0;
 
       mealSections.forEach(sec => {
-        (sec.items || []).forEach(item => {
-          const cal = Number(item.calories) || 0;
-          const w = Number(item.weight) || 0;
-          totalCal += cal;
-          totalWeight += w;
-
-          if (item.focus === 'Carbohydrates') { carbsCount++; carbsCal += cal; }
-          else if (item.focus === 'Protein') { proteinCount++; proteinCal += cal; }
-          else if (item.focus === 'Fats') { fatsCount++; fatsCal += cal; }
-          else { othersCount++; othersCal += cal; }
+        const activeItems = getActiveItemsForSection(sec);
+        activeItems.forEach(item => {
+          totalCal += Number(item.calories) || 0;
+          totalProtein += Number(item.protein) || 0;
+          totalCarbs += Number(item.carbs) || 0;
+          totalFat += Number(item.fat) || 0;
         });
       });
 
@@ -1362,24 +1476,24 @@
 
       summaryContainer.innerHTML = `
         <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">// Total Energy Intake</h3>
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1">// Total Caloric Target</h3>
           <div class="text-xl sm:text-2xl font-mono font-bold text-white">${totalCal.toLocaleString()} <span class="text-xs text-amber-400 font-normal">kcal</span></div>
-          <div class="text-[10px] font-mono opacity-70 mt-1">Mass: ${totalWeight.toLocaleString()} g</div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">Target ~2450-2500 kcal</div>
         </div>
         <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-1">// Protein Focus</h3>
-          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${proteinCal.toLocaleString()} <span class="text-xs text-cyan-400 font-normal">kcal</span></div>
-          <div class="text-[10px] font-mono opacity-70 mt-1">${proteinCount} item${proteinCount === 1 ? '' : 's'} logged</div>
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-1">// Protein Target</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${totalProtein}g</div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">Target ~110g-120g</div>
         </div>
         <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-1">// Carbs Focus</h3>
-          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${carbsCal.toLocaleString()} <span class="text-xs text-amber-400 font-normal">kcal</span></div>
-          <div class="text-[10px] font-mono opacity-70 mt-1">${carbsCount} item${carbsCount === 1 ? '' : 's'} logged</div>
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-amber-400 mb-1">// Carbs Target</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${totalCarbs}g</div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">High-Energy Balance</div>
         </div>
         <div class="hologram-panel p-3.5 bg-black/40 border border-slate-700">
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">// Fats & Others Focus</h3>
-          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${(fatsCal + othersCal).toLocaleString()} <span class="text-xs text-emerald-400 font-normal">kcal</span></div>
-          <div class="text-[10px] font-mono opacity-70 mt-1">Fats: ${fatsCal} kcal | Other: ${othersCal} kcal</div>
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">// Fats Target</h3>
+          <div class="text-xl sm:text-2xl font-mono font-bold text-white">${totalFat}g</div>
+          <div class="text-[10px] font-mono opacity-70 mt-1">Healthy Lipid Profile</div>
         </div>
       `;
     }
@@ -1395,7 +1509,7 @@
       }
 
       container.innerHTML = mealSections.map((sec, index) => {
-        const secItems = sec.items || [];
+        const secItems = getActiveItemsForSection(sec);
         const secCal = secItems.reduce((acc, i) => acc + (Number(i.calories) || 0), 0);
         const secWeight = secItems.reduce((acc, i) => acc + (Number(i.weight) || 0), 0);
 
@@ -1408,9 +1522,9 @@
                   ${escapeHtml(sec.name)}
                 </h3>
                 <span class="text-xs font-mono px-2 py-0.5 chamfer-xs bg-orange-950/40 text-amber-400 border border-amber-500/50">
-                  ${secCal.toLocaleString()} kcal | ${secWeight.toLocaleString()} g
+                  ${secCal.toLocaleString()} kcal ${secWeight > 0 ? `| ${secWeight.toLocaleString()} g` : ''}
                 </span>
-                ${sec.isPreMade ? `<span class="text-[9px] uppercase tracking-widest font-mono opacity-60">[ PRE-MADE ]</span>` : ''}
+                ${sec.isPreMade ? `<span class="text-[9px] uppercase tracking-widest font-mono opacity-60">[ PRESET ]</span>` : ''}
               </div>
 
               <div class="flex items-center gap-1.5">
@@ -1428,12 +1542,29 @@
               </div>
             </div>
 
-            <!-- Add Food Item Form -->
+            <!-- Switchable Option Selector (For Lunch / Dinner Main Meals) -->
+            ${sec.selectedOptionId !== undefined ? `
+              <div class="bg-amber-950/20 p-3 chamfer-xs border border-amber-500/40 mb-4">
+                <label class="block text-[10px] uppercase font-mono tracking-wider text-amber-400 mb-1 font-bold">
+                  🔄 Active Main Meal Directive (Switchable Target Option):
+                </label>
+                <select class="input-field !text-xs !py-1.5 font-mono cursor-pointer" onchange="window.handleSwitchOption('${sec.id}', this.value)">
+                  ${MAIN_MEAL_OPTIONS.map(opt => `
+                    <option value="${opt.id}" ${opt.id === sec.selectedOptionId ? 'selected' : ''}>
+                      ${escapeHtml(opt.name)} (~${opt.calories} kcal | ${opt.protein}g Protein)
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+            ` : ''}
+
+            <!-- Add Food Item Form (For custom additions) -->
+            ${sec.selectedOptionId === undefined ? `
             <div class="bg-black/40 p-3 chamfer-xs border border-slate-800 mb-4">
               <div class="text-[10px] uppercase font-mono tracking-wider text-amber-500 mb-2 font-bold">+ Add Food Entry</div>
               <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
                 <div class="sm:col-span-4">
-                  <input id="food-name-${sec.id}" class="input-field !text-xs !py-1.5" placeholder="Food item (e.g. Oatmeal / Chicken)">
+                  <input id="food-name-${sec.id}" class="input-field !text-xs !py-1.5" placeholder="Food item (e.g. Oats / Eggs)">
                 </div>
                 <div class="sm:col-span-2">
                   <input id="food-weight-${sec.id}" type="number" min="0" step="1" class="input-field !text-xs !py-1.5" placeholder="Weight (g)">
@@ -1456,6 +1587,7 @@
                 </div>
               </div>
             </div>
+            ` : ''}
 
             <!-- Food List Table -->
             ${secItems.length === 0 ? `
@@ -1467,8 +1599,8 @@
                 <table class="w-full text-left font-mono text-xs border-collapse">
                   <thead>
                     <tr class="border-b border-slate-700/80 text-[10px] uppercase text-amber-500/80 tracking-wider">
-                      <th class="py-2 px-2">Food Item</th>
-                      <th class="py-2 px-2 text-right">Weight</th>
+                      <th class="py-2 px-2">Food / Meal Option</th>
+                      <th class="py-2 px-2 text-right">Macros</th>
                       <th class="py-2 px-2 text-right">Calories</th>
                       <th class="py-2 px-2">Focus Tag</th>
                       <th class="py-2 px-2 text-center">Action</th>
@@ -1477,14 +1609,24 @@
                   <tbody class="divide-y divide-slate-800/60">
                     ${secItems.map(item => `
                       <tr class="hover:bg-slate-800/30 transition-colors">
-                        <td class="py-2.5 px-2 font-semibold text-white">${escapeHtml(item.name)}</td>
-                        <td class="py-2.5 px-2 text-right text-slate-300">${item.weight || 0} g</td>
+                        <td class="py-2.5 px-2">
+                          <div class="font-semibold text-white">${escapeHtml(item.name)}</div>
+                          ${item.details ? `<div class="text-[10px] text-slate-400 font-normal mt-0.5">${escapeHtml(item.details)}</div>` : ''}
+                        </td>
+                        <td class="py-2.5 px-2 text-right text-slate-300 text-[11px]">
+                          ${item.protein ? `<span class="text-cyan-400">${item.protein}g P</span> | ` : ''}
+                          ${item.carbs ? `<span class="text-amber-400">${item.carbs}g C</span> | ` : ''}
+                          ${item.fat ? `<span class="text-red-400">${item.fat}g F</span>` : ''}
+                          ${!item.protein && !item.carbs && !item.fat ? `${item.weight || 0} g` : ''}
+                        </td>
                         <td class="py-2.5 px-2 text-right text-amber-400 font-bold">${item.calories || 0} kcal</td>
                         <td class="py-2.5 px-2">${getFocusBadge(item.focus)}</td>
                         <td class="py-2.5 px-2 text-center">
-                          <button onclick="window.handleDeleteFood('${sec.id}', '${item.id}')" class="icon-btn text-slate-400 hover:text-red-400" title="Delete Entry">
-                            ${ICONS.trash}
-                          </button>
+                          ${!item.isSwitchable ? `
+                            <button onclick="window.handleDeleteFood('${sec.id}', '${item.id}')" class="icon-btn text-slate-400 hover:text-red-400" title="Delete Entry">
+                              ${ICONS.trash}
+                            </button>
+                          ` : `<span class="text-[10px] opacity-50">Locked Option</span>`}
                         </td>
                       </tr>
                     `).join("")}
@@ -1496,6 +1638,14 @@
         `;
       }).join("");
     }
+
+    window.handleSwitchOption = (secId, optionId) => {
+      const sec = mealSections.find(s => s.id === secId);
+      if (!sec) return;
+      sec.selectedOptionId = optionId;
+      syncSaveMealPlan();
+      renderMealPlan();
+    };
 
     window.moveMealSection = (index, dir) => {
       const newIdx = index + dir;
@@ -1927,129 +2077,90 @@
                     <span class="chamfer-xs px-1.5 py-0.5 hud-pill shrink-0" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                     ${genrePreview}
                     ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill shrink-0" style="color: ${sColor}; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid ${sColor}; box-shadow: inset 0 0 8px ${sColor}33;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill shrink-0" style="color: #FF0033; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid #FF0033;">Cancelled</span>'}
-                    <span class="sm:ml-auto opacity-70 font-mono text-[10px] sm:text-xs px-1.5 py-0.5 chamfer-xs hud-pill shrink-0" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid rgba(255,255,255,0.1);">${fmtDate(entry.dateCreated)}</span>
+                    <span class="sm:ml-auto opacity-70 font-mono text-[10px] sm:text-xs px-1.5 py-0.5 chamfer-xs hud-pill shrink-0">Logged: ${fmtDate(entry.dateCreated)}</span>
                   </div>
                 </div>
-                <div class="flex items-center gap-0.5 shrink-0 z-10">
-                  <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--accent-color)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
-                  <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.pencil}</button>
-                  <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.trash}</button>
+                <div class="flex items-center gap-1 shrink-0 z-10">
+                  <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--accent-color);" title="Edit Entry">${ICONS.pencil}</button>
+                  <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--accent-color)' : 'var(--amber)'};" title="${c ? 'Restore' : 'Cancel'}">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                  <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--red);" title="Delete Entry">${ICONS.trash}</button>
                 </div>
               </div>
               ${isOpen ? `
-                <div class="px-3 sm:px-5 pb-4 pt-3 ml-0 sm:ml-11 border-t border-orange-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
-                  ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
-                  <p class="entry-body text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No log details provided.')}</p>
-                  <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[10px] sm:text-[11px] opacity-80">
-                    <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase hud-pill" style="${oStyle}">${escapeHtml(ownership)}</span></div>
-                    <div class="flex flex-wrap items-center gap-2 sm:gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
+                <div class="px-3 sm:px-5 pb-4 pt-2 border-t border-slate-800/80 text-xs sm:text-sm space-y-3 z-10 relative">
+                  <div class="flex flex-wrap gap-2 text-[10px] uppercase font-mono">
+                    <span class="px-2 py-0.5 chamfer-xs hud-pill" style="${oStyle}">Status: ${ownership}</span>
+                    <span class="px-2 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: var(--card-border); color: var(--card-text);">Uploaded: ${fmtDate(entry.dateUploaded)}</span>
+                    <span class="px-2 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: var(--card-border); color: var(--accent-color);">Time to Beat: ${entry.timeToBeat ? entry.timeToBeat + ' hrs' : '—'}</span>
                   </div>
-                  ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
-                  <div class="mt-2 text-[10px] sm:text-[11px] opacity-80">
-                    <span>Est. Time to Beat: <span>${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
-                  </div>` : ''}
+                  ${genreList.length ? `
+                    <div class="flex flex-wrap gap-1">
+                      ${genreList.map(g => `<span class="text-[10px] px-2 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join('')}
+                    </div>` : ''}
+                  <p class="whitespace-pre-wrap leading-relaxed opacity-90">${entry.description ? escapeHtml(entry.description) : '<span class="italic opacity-50">No description recorded.</span>'}</p>
                 </div>` : ''}
             </div>
           </article>`;
       }).join("");
 
-      listContainer.onclick = function(e) {
-        const btn = e.target.closest("button[data-action]"); if (!btn) return;
-        const act = btn.dataset.action, id = btn.dataset.id, item = entries.find(i => i.id === id);
-        if (act === "toggle") toggleExpand(id);
-        if (act === "cancel") toggleCancelled(id);
-        if (act === "edit" && item) openEditForm(item);
-        if (act === "delete") deleteEntry(id);
-      };
+      listContainer.querySelectorAll("button[data-action]").forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const act = btn.dataset.action, id = btn.dataset.id;
+          if (act === "toggle") toggleExpand(id);
+          else if (act === "edit") { const entry = entries.find(x => x.id === id); if (entry) openEditForm(entry); }
+          else if (act === "cancel") toggleCancelled(id);
+          else if (act === "delete") deleteEntry(id);
+        };
+      });
     }
 
     function render() {
-      document.getElementById("entry-count-readout").innerHTML = `STATUS: ONLINE // ${entries.length} LOG${entries.length === 1 ? "" : "S"} SYNCED`;
-      document.getElementById("icon-plus").innerHTML = ICONS.plus;
-      document.getElementById("icon-close").innerHTML = ICONS.x;
-      document.getElementById("icon-logout").innerHTML = ICONS.logout;
-      document.getElementById("icon-image").innerHTML = ICONS.image;
-      document.getElementById("sort-icon").innerHTML = sortDir === "desc" ? ICONS.chevronDown : ICONS.chevronUp;
+      const activeCount = entries.filter(e => !e.cancelled).length;
+      document.getElementById("entry-count-readout").innerText = `STATUS: ONLINE // ${activeCount} ENTRIES LOGGED`;
       renderTabs(); renderList();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initThemeEngine();
-      initModuleNavigation();
-      initOpticsCalibration();
-      initFormSelects();
-      initPageWithSplashDelay();
+    document.getElementById("btn-open-new").onclick = openNewForm;
+    document.getElementById("btn-close-form").onclick = closeForm;
+    document.getElementById("btn-cancel-form").onclick = closeForm;
+    document.getElementById("btn-save-entry").onclick = handleSaveEntry;
+    document.getElementById("input-game").oninput = handleSteamInput;
+    document.getElementById("chk-untitled").onchange = handleUntitledToggle;
+    document.getElementById("input-draftTitle").oninput = checkFormValidity;
+    document.getElementById("btn-add-genre").onclick = addGenreTag;
+    document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
+    
+    document.getElementById("btn-toggle-sort").onclick = () => {
+      sortDir = sortDir === "desc" ? "asc" : "desc";
+      document.getElementById("sort-icon").innerText = sortDir === "desc" ? "▼" : "▲";
+      render();
+    };
 
-      document.getElementById("btn-open-new").onclick = openNewForm;
-      document.getElementById("btn-close-form").onclick = closeForm;
-      document.getElementById("btn-cancel-form").onclick = closeForm;
-      document.getElementById("btn-save-entry").onclick = handleSaveEntry;
-      document.getElementById("chk-untitled").onchange = handleUntitledToggle;
-      document.getElementById("btn-add-genre").onclick = addGenreTag;
-      document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
-      
-      const gameInput = document.getElementById("input-game");
-      gameInput.oninput = handleSteamInput;
-      
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest("#input-game") && !e.target.closest("#steam-search-results")) {
-          document.getElementById("steam-search-results").classList.add("hidden");
-        }
-      });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          closeForm();
-          document.getElementById("steam-search-results").classList.add("hidden");
-          document.getElementById("settings-window").classList.remove("active");
-        }
-      });
-
-      document.getElementById("input-draftTitle").oninput = checkFormValidity;
-      document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
-      
-      const btnAddSection = document.getElementById("btn-add-meal-section");
-      const newSecInput = document.getElementById("input-new-section-name");
-
-      if (btnAddSection) {
-        btnAddSection.onclick = () => {
-          const val = newSecInput ? newSecInput.value.trim() : "";
-          if (!val) {
-            alert("Please enter a section name (e.g. Snacks).");
-            return;
-          }
-          mealSections.push({
-            id: uid(),
-            name: val,
-            isPreMade: false,
-            items: []
-          });
-          newSecInput.value = "";
-          syncSaveMealPlan();
-          renderMealPlan();
-        };
-      }
-
-      if (newSecInput) {
-        newSecInput.onkeydown = (e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            btnAddSection.click();
-          }
-        };
-      }
-
+    document.getElementById("btn-add-meal-section").onclick = () => {
+      const nameInput = document.getElementById("input-new-section-name");
+      const name = nameInput.value.trim();
+      if (!name) return;
+      mealSections.push({ id: "sec-" + uid(), name, isPreMade: false, items: [] });
+      nameInput.value = "";
+      syncSaveMealPlan();
       renderMealPlan();
+    };
 
-      const diagPill = document.getElementById("diag-status-pill");
+    document.getElementById("diag-status-pill").onclick = () => {
       const diagPanel = document.getElementById("diag-panel");
-      const btnRunDiag = document.getElementById("btn-run-diag");
+      diagPanel.classList.toggle("hidden");
+    };
 
-      diagPill.onclick = () => { diagPanel.classList.toggle("hidden"); };
-      btnRunDiag.onclick = runApiDiagnostics;
-
+    document.getElementById("btn-run-diag").onclick = () => {
       runApiDiagnostics();
-    });
+    };
+
+    initThemeEngine();
+    initModuleNavigation();
+    initOpticsCalibration();
+    initFormSelects();
+    initPageWithSplashDelay();
   </script>
 </body>
 </html>
