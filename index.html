@@ -158,6 +158,44 @@
       background-size: 100% 100%, 30px 30px, 30px 30px;
     }
 
+    /* ---------- SPLASH / MANDATORY DELAY SCREEN ---------- */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-deep, #03070d);
+      color: var(--text-main, #d2f2ff);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease, visibility 0.4s;
+    }
+
+    #splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(0, 216, 255, 0.15);
+      border-top-color: var(--accent-color, #00d8ff);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px var(--me-cyan-glow, rgba(0, 216, 255, 0.4));
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .font-display { font-family: var(--font-family); }
 
     .chamfer-lg {
@@ -418,6 +456,13 @@
   </style>
 </head>
 <body class="relative flex flex-col min-h-screen">
+
+  <!-- Mandatory Splash / Delay Screen -->
+  <div id="splash-screen">
+    <div class="spinner"></div>
+    <h2 class="font-display font-700 text-xl uppercase tracking-widest text-cyan-400 mb-1" style="text-shadow: 0 0 8px var(--me-cyan);">System Console // ME-1</h2>
+    <p class="text-xs font-mono tracking-wider uppercase opacity-75">Verifying session and security credentials...</p>
+  </div>
 
   <!-- Scanline Overlay -->
   <div class="pointer-events-none fixed inset-0 z-30" style="background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; opacity: 0.4;"></div>
@@ -684,6 +729,9 @@
       getFirestore, enableIndexedDbPersistence, collection, doc, onSnapshot, setDoc, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // Mandatory Delay Settings
+    const MANDATORY_DELAY_MS = 2500;
+
     // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
@@ -784,6 +832,11 @@
     function todayISO() { return new Date().toISOString().slice(0, 10); }
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
     function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
+
+    // --- MANDATORY DELAY PROMISE WRAPPER ---
+    function startDelayTimer(durationMs) {
+      return new Promise(resolve => setTimeout(resolve, durationMs));
+    }
 
     // --- THEME SWITCHING ENGINE ---
     function setTheme(themeName) {
@@ -1014,7 +1067,12 @@
       progressBar.style.width = "0%";
     }
 
-    // Authentication Listeners
+    // Authentication Listener Promise to coordinate startup delay
+    let resolveInitialAuthCheck;
+    const initialAuthPromise = new Promise(resolve => {
+      resolveInitialAuthCheck = resolve;
+    });
+
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
       const modal = document.getElementById("auth-modal");
@@ -1037,7 +1095,23 @@
         render();
       }
       runApiDiagnostics();
+      resolveInitialAuthCheck();
     });
+
+    /**
+     * Synchronizes mandatory startup delay with initial authentication lookup
+     */
+    async function initPageWithSplashDelay() {
+      const delayPromise = startDelayTimer(MANDATORY_DELAY_MS);
+      
+      // Wait for both the mandatory splash delay AND initial auth check
+      await Promise.all([delayPromise, initialAuthPromise]);
+
+      const splashScreen = document.getElementById('splash-screen');
+      if (splashScreen) {
+        splashScreen.classList.add('hidden');
+      }
+    }
 
     document.getElementById("btn-login").onclick = async () => {
       const e = document.getElementById("auth-email").value;
@@ -1555,6 +1629,8 @@
       initThemeEngine();
       initOpticsCalibration();
       initFormSelects();
+      initPageWithSplashDelay();
+
       document.getElementById("btn-open-new").onclick = openNewForm;
       document.getElementById("btn-close-form").onclick = closeForm;
       document.getElementById("btn-cancel-form").onclick = closeForm;
