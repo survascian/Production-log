@@ -20,7 +20,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    :root {
+    /* Theme 1: Default Cyber HUD */
+    :root, [data-theme="cyber"] {
       --blue: #00A3E0;
       --cobalt: #0055FF;
       --amber: #FF9900;
@@ -29,14 +30,45 @@
       --green: #10B981;
       --bg-deep: #0A0D11;
       --bg-panel: #11161B;
+      --bg-radial: #16202B;
+      --text-main: #CBD8E3;
+    }
+
+    /* Theme 2: Matrix Protocol */
+    [data-theme="matrix"] {
+      --blue: #00FF66;
+      --cobalt: #00CC44;
+      --amber: #39FF14;
+      --amber-hot: #00FF66;
+      --red: #FF0055;
+      --green: #00FF66;
+      --bg-deep: #040A05;
+      --bg-panel: #0A120B;
+      --bg-radial: #0F2111;
+      --text-main: #C2ECC7;
+    }
+
+    /* Theme 3: Synth Runner */
+    [data-theme="synth"] {
+      --blue: #00F0FF;
+      --cobalt: #8A2BE2;
+      --amber: #FF007F;
+      --amber-hot: #FF0055;
+      --red: #FF2A55;
+      --green: #00FFB3;
+      --bg-deep: #0F0918;
+      --bg-panel: #180F26;
+      --bg-radial: #2D1445;
+      --text-main: #E2D5F8;
     }
 
     body {
       background-color: var(--bg-deep);
-      background-image: radial-gradient(ellipse 1100px 700px at 50% -8%, #16202B 0%, var(--bg-deep) 55%), var(--bg-deep);
-      color: #CBD8E3;
+      background-image: radial-gradient(ellipse 1100px 700px at 50% -8%, var(--bg-radial) 0%, var(--bg-deep) 55%), var(--bg-deep);
+      color: var(--text-main);
       font-family: 'Share Tech Mono', monospace;
       min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .font-display { font-family: 'Rajdhani', sans-serif; }
@@ -48,9 +80,10 @@
     ::selection { background: var(--amber); color: #0A0D11; }
 
     .hologram-panel {
-      background: rgba(17, 22, 27, 0.85);
+      background: var(--bg-panel);
       backdrop-filter: blur(10px);
-      box-shadow: inset 0 0 0 1px rgba(0, 163, 224, 0.4), 0 0 32px rgba(0, 163, 224, 0.06);
+      box-shadow: inset 0 0 0 1px var(--blue), 0 0 32px rgba(0, 163, 224, 0.06);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     @keyframes hologram-in {
@@ -66,14 +99,15 @@
       right: 14px;
       font-size: 9px;
       letter-spacing: 0.08em;
-      color: rgba(0, 163, 224, 0.5);
+      color: var(--blue);
+      opacity: 0.7;
       font-family: 'Share Tech Mono', monospace;
     }
 
     .input-field {
       width: 100%;
-      background: rgba(10, 13, 17, 0.85);
-      box-shadow: inset 0 0 0 1px rgba(0, 163, 224, 0.25);
+      background: var(--bg-deep);
+      box-shadow: inset 0 0 0 1px var(--blue);
       color: #EAF3FA;
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.875rem;
@@ -83,7 +117,7 @@
       clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
     }
     .input-field:focus {
-      box-shadow: inset 0 0 0 1px var(--amber), 0 0 10px rgba(255, 153, 0, 0.27);
+      box-shadow: inset 0 0 0 1px var(--amber), 0 0 10px var(--amber);
     }
     .input-field:disabled { opacity: 0.4; cursor: not-allowed; }
     .input-field::placeholder { color: #445162; }
@@ -94,7 +128,7 @@
       font-family: 'Rajdhani', sans-serif; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.6rem 1.05rem; transition: all 0.1s;
-      box-shadow: 0 0 14px rgba(255, 153, 0, 0.33); cursor: pointer;
+      box-shadow: 0 0 14px var(--amber); cursor: pointer;
     }
     .btn-amber:hover { background: var(--amber-hot); }
     .btn-amber:active { transform: scale(0.96); filter: brightness(1.3); }
@@ -105,7 +139,7 @@
       font-family: 'Rajdhani', sans-serif; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; transition: all 0.1s;
-      box-shadow: 0 0 14px rgba(0, 163, 224, 0.27); cursor: pointer;
+      box-shadow: 0 0 14px var(--blue); cursor: pointer;
     }
     .btn-blue:hover { background: var(--cobalt); }
     .btn-blue:active { transform: scale(0.96); filter: brightness(1.3); }
@@ -189,13 +223,22 @@
             Production Log
           </h1>
         </div>
-        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: rgba(0,163,224,0.65);">
+        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--blue);">
           // gameplay.pipeline &nbsp;·&nbsp; offline engine ready
         </p>
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- API Diagnostic Status Pill (Glowing Light) -->
+        <!-- Theme Switcher Selector -->
+        <div class="relative flex items-center">
+          <select id="theme-selector" class="input-field !w-auto !py-1.5 !px-2 text-[10px] uppercase font-mono border border-slate-700 bg-slate-900 cursor-pointer chamfer-xs" title="Select Interface Theme">
+            <option value="cyber">Theme: Cyber HUD</option>
+            <option value="matrix">Theme: Matrix</option>
+            <option value="synth">Theme: Synth Runner</option>
+          </select>
+        </div>
+
+        <!-- API Diagnostic Status Pill -->
         <div id="diag-status-pill" class="flex items-center gap-2 cursor-pointer px-3 py-1.5 chamfer-xs" style="background: rgba(17,22,27,0.9); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3);" title="Click to open API Health HUD / re-test">
           <span id="diag-led" class="w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber"></span>
           <span id="diag-label" class="text-[10px] font-mono tracking-wider uppercase text-slate-300">SYS DIAG: TESTING...</span>
@@ -444,7 +487,23 @@
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
     function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
 
-    // --- ENHANCED API DIAGNOSTIC SUBSYSTEM ---
+    // --- THEME SWITCHING ENGINE ---
+    function initThemeEngine() {
+      const savedTheme = localStorage.getItem("pipeline_theme") || "cyber";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      
+      const themeSelect = document.getElementById("theme-selector");
+      if (themeSelect) {
+        themeSelect.value = savedTheme;
+        themeSelect.addEventListener("change", (e) => {
+          const newTheme = e.target.value;
+          document.documentElement.setAttribute("data-theme", newTheme);
+          localStorage.setItem("pipeline_theme", newTheme);
+        });
+      }
+    }
+
+    // --- API DIAGNOSTICS ---
     async function executeDiagnosticCheck(name, fetchUrl, validator) {
       const startTime = performance.now();
       try {
@@ -453,45 +512,24 @@
 
         if (!response.ok) {
           let errorBody = "";
-          try {
-            errorBody = await response.text();
-          } catch {
-            errorBody = "<Unreadable response body>";
-          }
+          try { errorBody = await response.text(); } catch { errorBody = "<Unreadable response body>"; }
           return {
-            success: false,
-            name,
-            duration,
-            url: fetchUrl,
+            success: false, name, duration, url: fetchUrl,
             error: `HTTP ${response.status} ${response.statusText}`,
-            cause: errorBody.trim() ? errorBody.slice(0, 250) : "Server returned non-200 status code without a body."
+            cause: errorBody.trim() ? errorBody.slice(0, 250) : "Server returned non-200 status code."
           };
         }
 
         const data = await response.json();
         const detail = validator(data);
-        return {
-          success: true,
-          name,
-          duration,
-          detail
-        };
+        return { success: true, name, duration, detail };
       } catch (err) {
         const duration = Math.round(performance.now() - startTime);
         let cause = err.message;
-        
         if (err.name === 'TypeError' && err.message.includes('fetch')) {
-          cause = "Browser fetch failure (likely CORS block by target server or network disconnect)";
+          cause = "Browser fetch failure (likely CORS block by target server)";
         }
-
-        return {
-          success: false,
-          name,
-          duration,
-          url: fetchUrl,
-          error: `${err.name || 'FetchError'}: ${err.message}`,
-          cause
-        };
+        return { success: false, name, duration, url: fetchUrl, error: `${err.name || 'FetchError'}: ${err.message}`, cause };
       }
     }
 
@@ -500,60 +538,24 @@
       const label = document.getElementById("diag-label");
       const resultsContainer = document.getElementById("diag-results");
       
-      // Set to Testing state (Amber)
       led.className = "w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber animate-pulse";
       label.innerText = "SYS DIAG: TESTING...";
       label.style.color = "var(--amber)";
       resultsContainer.innerHTML = `<div class="text-[#6E8399] italic">Executing deep API diagnostic battery...</div>`;
 
       const results = [];
-
-      // 1. Firebase Check
       const fbStart = performance.now();
       if (currentUser) {
-        results.push({
-          success: true,
-          name: "Firebase Store Engine",
-          duration: Math.round(performance.now() - fbStart),
-          detail: `Connected (UID: ${currentUser.uid.slice(0,6)}...)`
-        });
+        results.push({ success: true, name: "Firebase Store Engine", duration: Math.round(performance.now() - fbStart), detail: `Connected (${currentUser.uid.slice(0,6)}...)` });
       } else {
-        results.push({
-          success: true,
-          name: "Firebase Store Engine",
-          duration: Math.round(performance.now() - fbStart),
-          detail: "Standby (Awaiting Login)"
-        });
+        results.push({ success: true, name: "Firebase Store Engine", duration: Math.round(performance.now() - fbStart), detail: "Standby (Awaiting Login)" });
       }
 
-      // 2. Steam Store Search
       const steamProxyUrl = `https://corsproxy.io/?${encodeURIComponent("https://store.steampowered.com/api/storesearch/?term=portal&l=english&cc=US")}`;
-      results.push(await executeDiagnosticCheck(
-        "Steam Store Search API (CorsProxy)",
-        steamProxyUrl,
-        (data) => {
-          if (!data || !data.items) throw new Error("Invalid schema");
-          return `OK (${data.items.length} items parsed)`;
-        }
-      ));
+      results.push(await executeDiagnosticCheck("Steam Store Search API", steamProxyUrl, (data) => data && data.items ? `OK (${data.items.length} items parsed)` : "Invalid schema"));
 
-      // 3. SteamSpy Playtime
-      results.push(await executeDiagnosticCheck(
-        "SteamSpy Playtime API",
-        "https://steamspy.com/api.php?request=appdetails&appid=70",
-        (data) => {
-          if (!data || !data.name) throw new Error("Invalid payload structure");
-          return `OK (${data.name} query clean)`;
-        }
-      ));
-
-      // 4. HowLongToBeat Proxy Service
-      const hltbProxyUrl = `https://corsproxy.io/?${encodeURIComponent("https://hltb-proxy.fly.dev/v1/query?title=portal")}`;
-      results.push(await executeDiagnosticCheck(
-        "HowLongToBeat Proxy Service",
-        hltbProxyUrl,
-        (data) => `OK (${Array.isArray(data) ? data.length : 0} results returned)`
-      ));
+      const spyProxyUrl = `https://corsproxy.io/?${encodeURIComponent("https://steamspy.com/api.php?request=appdetails&appid=70")}`;
+      results.push(await executeDiagnosticCheck("SteamSpy Playtime API", spyProxyUrl, (data) => data && data.name ? `OK (${data.name} queried)` : "Invalid payload"));
 
       let failed = 0;
       let logsHtml = "";
@@ -562,28 +564,22 @@
         if (res.success) {
           logsHtml += `
             <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
-              <span class="text-emerald-400 font-semibold flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(res.name)}
-              </span>
+              <span class="text-emerald-400 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(res.name)}</span>
               <span class="text-[10px] text-slate-400">${escapeHtml(res.detail)} <span class="text-slate-500">(${res.duration}ms)</span></span>
-            </div>
-          `;
+            </div>`;
         } else {
           failed++;
           logsHtml += `
             <div class="py-1.5 border-b border-slate-800/60">
               <div class="flex items-center justify-between text-xs">
-                <span class="text-red-400 font-semibold flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${escapeHtml(res.name)}
-                </span>
+                <span class="text-red-400 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${escapeHtml(res.name)}</span>
                 <span class="text-[10px] text-red-400 font-semibold">${escapeHtml(res.error)} <span class="text-slate-500">(${res.duration}ms)</span></span>
               </div>
               <div class="text-[9px] text-slate-400 mt-1 pl-3 font-mono break-all">
                 <span class="text-amber-500/80">URL:</span> ${escapeHtml(res.url)}<br/>
                 <span class="text-red-400/80">Reason:</span> ${escapeHtml(res.cause)}
               </div>
-            </div>
-          `;
+            </div>`;
         }
       }
 
@@ -659,55 +655,41 @@
       await deleteDoc(docRef);
     }
 
-    // --- STEAM STORE & GENRE MAPPING ---
+    // STEAM STORE SEARCH
     async function searchSteamStore(query) {
       if (!query || query.length < 2) return [];
       try {
         const steamUrl = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(query)}&l=english&cc=US`;
         const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(steamUrl)}`;
-        
         const response = await fetch(proxyUrl);
         const data = await response.json();
-        
         if (!data || !data.items) return [];
-        
         return data.items.map(item => ({
-          id: item.id,
-          name: item.name,
+          id: item.id, name: item.name,
           coverUrl: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
           rawGenres: item.genres ? item.genres.map(g => g.name || g) : []
         }));
-      } catch (err) {
-        console.warn("Steam API lookup failed:", err);
-        return [];
-      }
+      } catch (err) { return []; }
     }
 
     function matchSteamGenresToTaxonomy(rawGenres) {
       const matched = [];
       const map = {
-        "action": "Action — Character Action",
-        "rpg": "RPG — Open-World Action RPG",
-        "strategy": "Strategy — Real-Time Strategy (RTS)",
-        "adventure": "Story — Walking Simulator",
-        "simulation": "Simulation — Job / Career Sim",
-        "indie": "Other / Experimental",
-        "casual": "Casual — Cozy Game",
-        "racing": "Racing — Arcade Racing",
-        "sports": "Sports — Arcade / Simulation",
-        "massively multiplayer": "RPG — MMO / MMORPG"
+        "action": "Action — Character Action", "rpg": "RPG — Open-World Action RPG",
+        "strategy": "Strategy — Real-Time Strategy (RTS)", "adventure": "Story — Walking Simulator",
+        "simulation": "Simulation — Job / Career Sim", "indie": "Other / Experimental",
+        "casual": "Casual — Cozy Game", "racing": "Racing — Arcade Racing",
+        "sports": "Sports — Arcade / Simulation", "massively multiplayer": "RPG — MMO / MMORPG"
       };
 
       rawGenres.forEach(g => {
         const clean = String(g).toLowerCase().trim();
-        if (map[clean]) {
-          matched.push(map[clean]);
-        } else {
+        if (map[clean]) matched.push(map[clean]);
+        else {
           const matchInTaxonomy = TOP_100_GENRES.find(t => t.toLowerCase().includes(clean));
           if (matchInTaxonomy) matched.push(matchInTaxonomy);
         }
       });
-
       return matched;
     }
 
@@ -715,19 +697,12 @@
       checkFormValidity();
       const val = e.target.value.trim();
       const resultsContainer = document.getElementById("steam-search-results");
-      
       clearTimeout(steamDebounceTimer);
-      if (!val || val.length < 2) {
-        resultsContainer.classList.add("hidden");
-        return;
-      }
+      if (!val || val.length < 2) { resultsContainer.classList.add("hidden"); return; }
 
       steamDebounceTimer = setTimeout(async () => {
         const results = await searchSteamStore(val);
-        if (results.length === 0) {
-          resultsContainer.classList.add("hidden");
-          return;
-        }
+        if (results.length === 0) { resultsContainer.classList.add("hidden"); return; }
 
         resultsContainer.innerHTML = results.map(game => `
           <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-[#1A232D] cursor-pointer chamfer-xs transition-colors">
@@ -736,91 +711,29 @@
               <div class="text-xs font-bold truncate text-[#EAF3FA]">${escapeHtml(game.name)}</div>
               <div class="text-[9px] text-[#6E8399] uppercase tracking-wider">Steam ID: ${game.id}</div>
             </div>
-          </div>
-        `).join("") + `
+          </div>`).join("") + `
           <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase text-[#00A3E0] hover:bg-[#1A232D] cursor-pointer border-t border-slate-800">
             Keep Manual Entry (Skip Steam Match)
-          </div>
-        `;
+          </div>`;
 
         resultsContainer.classList.remove("hidden");
-
         resultsContainer.querySelectorAll(".steam-result-item").forEach((el, index) => {
           el.onclick = () => selectSteamGame(results[index]);
         });
-
         const manualBtn = document.getElementById("btn-steam-manual-skip");
-        if (manualBtn) {
-          manualBtn.onclick = () => resultsContainer.classList.add("hidden");
-        }
+        if (manualBtn) manualBtn.onclick = () => resultsContainer.classList.add("hidden");
       }, 350);
-    }
-
-    // --- TIME TO BEAT (SteamSpy Primary + CORS HLTB Proxy Fallback) ---
-    async function fetchPlaytimeOrHLTB(appId, gameTitle) {
-      const timeInput = document.getElementById("input-timeToBeat");
-      const statusEl = document.getElementById("steam-status");
-      
-      if (statusEl) statusEl.innerText = "Querying Time to Beat...";
-
-      if (appId) {
-        try {
-          const spyRes = await fetch(`https://steamspy.com/api.php?request=appdetails&appid=${appId}`);
-          if (spyRes.ok) {
-            const spyData = await spyRes.json();
-            const averageMins = spyData.average_forever || spyData.median_forever;
-            if (averageMins && averageMins > 0) {
-              const hours = (averageMins / 60).toFixed(1);
-              timeInput.value = hours;
-              if (statusEl) statusEl.innerText = `SteamSpy: ~${hours} hrs auto-filled`;
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn("SteamSpy query bypassed, trying fallback HLTB parser...", e);
-        }
-      }
-
-      try {
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://hltb-proxy.fly.dev/v1/query?title=${encodeURIComponent(gameTitle)}`)}`;
-        const res = await fetch(proxyUrl);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.length > 0) {
-            const match = data[0];
-            const mainStory = match.gameplayMain || match.mainStory || (match.times ? match.times.main : null);
-            if (mainStory && mainStory > 0) {
-              timeInput.value = mainStory;
-              if (statusEl) statusEl.innerText = `HLTB: ~${mainStory} hrs auto-filled`;
-              return;
-            }
-          }
-        }
-      } catch (err) {
-        console.warn("HLTB fallback error:", err);
-      }
-
-      if (statusEl) statusEl.innerText = "Steam Lookup Active";
     }
 
     function selectSteamGame(game) {
       document.getElementById("input-game").value = game.name;
       document.getElementById("steam-search-results").classList.add("hidden");
-      
-      if (game.coverUrl) {
-        setImagePreview(game.coverUrl);
-      }
-
+      if (game.coverUrl) setImagePreview(game.coverUrl);
       if (game.rawGenres && game.rawGenres.length > 0) {
         const mapped = matchSteamGenresToTaxonomy(game.rawGenres);
-        mapped.forEach(g => {
-          if (!draftGenres.includes(g)) draftGenres.push(g);
-        });
+        mapped.forEach(g => { if (!draftGenres.includes(g)) draftGenres.push(g); });
         renderSelectedGenres();
       }
-
-      fetchPlaytimeOrHLTB(game.id, game.name);
-
       checkFormValidity();
     }
 
@@ -833,11 +746,10 @@
 
     function renderSelectedGenres() {
       document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
-        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0,163,224,0.15); color: #00A3E0; box-shadow: inset 0 0 0 1px rgba(0,163,224,0.35);">
+        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0,163,224,0.15); color: var(--blue); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.35);">
           ${escapeHtml(g)}
           <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
-        </span>
-      `).join("");
+        </span>`).join("");
     }
 
     window.removeGenreTag = (idx) => { draftGenres.splice(idx, 1); renderSelectedGenres(); };
@@ -890,16 +802,13 @@
     document.getElementById("btn-choose-image").onclick = () => document.getElementById("input-image-file").click();
     document.getElementById("btn-remove-image").onclick = () => { setImagePreview(null); document.getElementById("input-image-file").value = ""; };
     document.getElementById("input-image-file").onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      const file = e.target.files[0]; if (!file) return;
       const status = document.getElementById("image-status");
       status.innerText = "Processing…";
       try {
         const dataUrl = await compressImageFile(file);
         setImagePreview(dataUrl);
-      } catch (err) {
-        status.innerText = "Couldn't process that image.";
-      }
+      } catch (err) { status.innerText = "Error processing image."; }
     };
 
     function handleUntitledToggle() {
@@ -1014,8 +923,7 @@
           <div class="rounded-full flex items-center justify-center" style="width: ${size - 6}px; height: ${size - 6}px; background: ${cancelled ? 'rgba(17,22,27,0.85)' : '#11161B'};">
             <span class="w-1.5 h-1.5 rounded-full ${cancelled ? '' : 'animate-pulse'}" style="background: ${cancelled ? '#FF0033' : activeColor}; opacity: ${cancelled ? 0.6 : 1};"></span>
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function renderTabs() {
@@ -1059,31 +967,26 @@
         const genreBadgeStyle = `color: ${c ? '#3A4452' : '#7D9BBA'}; background: rgba(0,163,224,0.08); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.2);`;
         const genrePreview = genreList.length ? `
           <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
-          ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#5A6C7D'}; background: rgba(110,131,153,0.08); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.2);">+${genreList.length - 1}</span>`
-          : ''}
-        ` : '';
+          ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#5A6C7D'}; background: rgba(110,131,153,0.08); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.2);">+${genreList.length - 1}</span>` : ''}` : '';
         const typeStyle = isTbd ? `color: #6E8399; border: 1px dashed rgba(110,131,153,0.4);` : `box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3); color: #CBD8E3;`;
         const titleHtml = isU ? `<span class="italic text-sm" style="color: ${c ? '#3A4452' : '#5A6C7D'};">[ UNTITLED PROJECT ]</span>` : escapeHtml(entry.draftTitle);
 
-        let oStyle = `color: #00A3E0; background: rgba(0,163,224,0.1); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3);`;
-        if (ownership === "Jack Sparrow") oStyle = `color: #FF9900; background: rgba(255,153,0,0.1); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.3);`;
+        let oStyle = `color: var(--blue); background: rgba(0,163,224,0.1); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3);`;
+        if (ownership === "Jack Sparrow") oStyle = `color: var(--amber); background: rgba(255,153,0,0.1); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.3);`;
         else if (ownership === "Unowned") oStyle = `color: #6E8399; background: rgba(110,131,153,0.1); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.3);`;
 
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
           <div class="absolute inset-0" style="background-image: url('${entry.image}'); background-size: cover; background-position: center; opacity: 0.45;"></div>
-          <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(8,10,14,0.78) 0%, rgba(8,10,14,0.68) 45%, rgba(8,10,14,0.52) 100%);"></div>
-        ` : '';
-        const borderLayer = hasImg ? `<div class="absolute inset-0 pointer-events-none" style="box-shadow: inset 0 0 0 1px rgba(0,163,224,0.4); z-index: 5;"></div>` : '';
+          <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(8,10,14,0.78) 0%, rgba(8,10,14,0.68) 45%, rgba(8,10,14,0.52) 100%);"></div>` : '';
+        const borderLayer = hasImg ? `<div class="absolute inset-0 pointer-events-none" style="box-shadow: inset 0 0 0 1px var(--blue); z-index: 5;"></div>` : '';
         const draftTitleColor = hasImg ? '#D7E4F0' : (c ? '#3A4452' : '#A9BBCB');
         const metaMutedColor = hasImg ? '#9CB0C4' : '#5A6C7D';
-        const genreBadgeStyleRow = hasImg
-          ? `color: #B9D3EA; background: rgba(0,163,224,0.14); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.32);`
-          : genreBadgeStyle;
+        const genreBadgeStyleRow = hasImg ? `color: #B9D3EA; background: rgba(0,163,224,0.14); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.32);` : genreBadgeStyle;
         const descColor = hasImg ? '#E4EDF5' : '#A9BBCB';
 
         return `
-          <div class="chamfer-lg relative overflow-hidden" style="background: ${c ? 'rgba(17,22,27,0.4)' : 'rgba(17,22,27,0.65)'}; backdrop-filter: blur(6px); box-shadow: ${c ? 'inset 0 0 0 1px rgba(255,0,51,0.18)' : 'inset 0 0 0 1px rgba(0,163,224,0.28)'};">
+          <div class="chamfer-lg relative overflow-hidden" style="background: ${c ? 'rgba(17,22,27,0.4)' : 'var(--bg-panel)'}; backdrop-filter: blur(6px); box-shadow: ${c ? 'inset 0 0 0 1px rgba(255,0,51,0.18)' : 'inset 0 0 0 1px var(--blue)'};">
             ${bannerLayer}
             ${borderLayer}
             <div class="relative z-10">
@@ -1103,7 +1006,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-0.5 shrink-0">
-                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? '#00A3E0' : '#6E8399'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--blue)' : '#6E8399'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
                 <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: #6E8399;">${ICONS.pencil}</button>
                 <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: #6E8399;">${ICONS.trash}</button>
               </div>
@@ -1120,11 +1023,9 @@
                 <div class="mt-2 text-[11px]" style="color: ${metaMutedColor};">
                   <span>Est. Time to Beat: <span style="color: ${descColor};">${entry.timeToBeat} hr${Number(entry.timeToBeat) === 1 ? '' : 's'}</span></span>
                 </div>` : ''}
-              </div>
-            ` : ''}
+              </div>` : ''}
             </div>
-          </div>
-        `;
+          </div>`;
       }).join("");
 
       listContainer.onclick = function(e) {
@@ -1147,6 +1048,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      initThemeEngine();
       initFormSelects();
       document.getElementById("btn-open-new").onclick = openNewForm;
       document.getElementById("btn-close-form").onclick = closeForm;
@@ -1168,18 +1070,13 @@
       document.getElementById("input-draftTitle").oninput = checkFormValidity;
       document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
       
-      // Diagnostic Event Bindings
       const diagPill = document.getElementById("diag-status-pill");
       const diagPanel = document.getElementById("diag-panel");
       const btnRunDiag = document.getElementById("btn-run-diag");
 
-      diagPill.onclick = () => {
-        diagPanel.classList.toggle("hidden");
-      };
-
+      diagPill.onclick = () => { diagPanel.classList.toggle("hidden"); };
       btnRunDiag.onclick = runApiDiagnostics;
 
-      // Initial Diagnostic Execution on Load
       runApiDiagnostics();
     });
   </script>
