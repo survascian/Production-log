@@ -26,6 +26,7 @@
       --amber: #FF9900;
       --amber-hot: #FF6600;
       --red: #FF0033;
+      --green: #10B981;
       --bg-deep: #0A0D11;
       --bg-panel: #11161B;
     }
@@ -129,6 +130,20 @@
     .icon-btn:hover { color: #EAF3FA; }
 
     select option { background: #0A0D11; color: #EAF3FA; }
+
+    /* Diagnostic Glow Light Styles */
+    .led-glow-green {
+      background-color: var(--green);
+      box-shadow: 0 0 8px var(--green), 0 0 16px var(--green);
+    }
+    .led-glow-red {
+      background-color: var(--red);
+      box-shadow: 0 0 8px var(--red), 0 0 16px var(--red);
+    }
+    .led-glow-amber {
+      background-color: var(--amber);
+      box-shadow: 0 0 8px var(--amber), 0 0 16px var(--amber);
+    }
   </style>
 </head>
 <body class="relative">
@@ -178,13 +193,33 @@
           // gameplay.pipeline &nbsp;·&nbsp; offline engine ready
         </p>
       </div>
-      <div class="flex items-center gap-2">
+
+      <div class="flex items-center gap-3">
+        <!-- API Diagnostic Status Pill (Glowing Light) -->
+        <div id="diag-status-pill" class="flex items-center gap-2 cursor-pointer px-3 py-1.5 chamfer-xs" style="background: rgba(17,22,27,0.9); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.3);" title="Click to open API Health HUD / re-test">
+          <span id="diag-led" class="w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber"></span>
+          <span id="diag-label" class="text-[10px] font-mono tracking-wider uppercase text-slate-300">SYS DIAG: TESTING...</span>
+        </div>
+
         <button id="btn-open-new" class="btn-amber chamfer-sm shrink-0">
           <span id="icon-plus"></span> New Entry
         </button>
         <button id="btn-logout" class="btn-ghost chamfer-xs !p-2 hidden" title="Sign Out">
           <span id="icon-logout"></span>
         </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Diagnostic Test HUD Panel -->
+    <div id="diag-panel" class="hidden max-w-4xl mx-auto px-5 mb-3">
+      <div class="hologram-panel chamfer-sm p-3 text-xs relative">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+          <span class="font-display font-bold uppercase text-amber-500 tracking-wider">// API Diagnostics Subsystem</span>
+          <button id="btn-run-diag" class="text-[10px] uppercase text-sky-400 hover:text-white font-mono bg-slate-800 px-2 py-0.5 chamfer-xs">Re-run Tests</button>
+        </div>
+        <div id="diag-results" class="space-y-1 font-mono">
+          <!-- Diagnostics log populated here -->
+        </div>
       </div>
     </div>
 
@@ -347,7 +382,6 @@
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
     
-    // Taxonomy: Genres, Deep Themes, and Systemic Mechanics
     const TOP_100_GENRES = [
       "Story — Choice-Driven / Branching", "Story — Narrative Horror", "Story — Interactive Drama / QTE", 
       "Story — Mystery / Detective", "Story — Visual Novel", "Story — Interactive Movie / FMV", "Story — Walking Simulator",
@@ -410,6 +444,102 @@
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
     function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
 
+    // --- API DIAGNOSTIC SUBSYSTEM ---
+    async function runApiDiagnostics() {
+      const led = document.getElementById("diag-led");
+      const label = document.getElementById("diag-label");
+      const resultsContainer = document.getElementById("diag-results");
+      
+      // Set to Testing state (Amber)
+      led.className = "w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber animate-pulse";
+      label.innerText = "SYS DIAG: TESTING...";
+      label.style.color = "var(--amber)";
+      resultsContainer.innerHTML = `<div class="text-[#6E8399] italic">Executing system API check battery...</div>`;
+
+      const tests = [
+        {
+          name: "Firebase Store Engine",
+          run: async () => {
+            if (!currentUser) return "Standby (Awaiting Login)";
+            return `Connected (UID: ${currentUser.uid.slice(0,6)}...)`;
+          }
+        },
+        {
+          name: "Steam Store Search API (CorsProxy)",
+          run: async () => {
+            const url = `https://corsproxy.io/?${encodeURIComponent("https://store.steampowered.com/api/storesearch/?term=portal&l=english&cc=US")}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data || !data.items) throw new Error("Invalid response JSON");
+            return `OK (${data.items.length} items parsed)`;
+          }
+        },
+        {
+          name: "SteamSpy Playtime API",
+          run: async () => {
+            const res = await fetch("https://steamspy.com/api.php?request=appdetails&appid=70");
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (!data || !data.name) throw new Error("Invalid payload");
+            return `OK (${data.name} query clean)`;
+          }
+        },
+        {
+          name: "HowLongToBeat Proxy Service",
+          run: async () => {
+            const url = `https://corsproxy.io/?${encodeURIComponent("https://hltb-proxy.fly.dev/v1/query?title=portal")}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            return `OK (${Array.isArray(data) ? data.length : 0} results returned)`;
+          }
+        }
+      ];
+
+      let failed = 0;
+      let logsHtml = "";
+
+      for (const t of tests) {
+        const start = performance.now();
+        try {
+          const detail = await t.run();
+          const ms = Math.round(performance.now() - start);
+          logsHtml += `
+            <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
+              <span class="text-emerald-400 font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(t.name)}
+              </span>
+              <span class="text-[10px] text-slate-400">${escapeHtml(detail)} <span class="text-slate-500">(${ms}ms)</span></span>
+            </div>
+          `;
+        } catch (err) {
+          failed++;
+          const ms = Math.round(performance.now() - start);
+          logsHtml += `
+            <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
+              <span class="text-red-400 font-semibold flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${escapeHtml(t.name)}
+              </span>
+              <span class="text-[10px] text-red-400 font-semibold">${escapeHtml(err.message)} <span class="text-slate-500">(${ms}ms)</span></span>
+            </div>
+          `;
+        }
+      }
+
+      resultsContainer.innerHTML = logsHtml;
+
+      if (failed === 0) {
+        led.className = "w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-green";
+        label.innerText = "SYS DIAG: ALL ONLINE";
+        label.style.color = "var(--green)";
+      } else {
+        led.className = "w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-red";
+        label.innerText = `SYS DIAG: ${failed} FAILURES`;
+        label.style.color = "var(--red)";
+      }
+    }
+
     // Authentication Listeners
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
@@ -427,6 +557,7 @@
         entries = [];
         render();
       }
+      runApiDiagnostics();
     });
 
     document.getElementById("btn-login").onclick = async () => {
@@ -509,11 +640,9 @@
 
       rawGenres.forEach(g => {
         const clean = String(g).toLowerCase().trim();
-        // Check direct map
         if (map[clean]) {
           matched.push(map[clean]);
         } else {
-          // Attempt partial string match in TOP_100_GENRES
           const matchInTaxonomy = TOP_100_GENRES.find(t => t.toLowerCase().includes(clean));
           if (matchInTaxonomy) matched.push(matchInTaxonomy);
         }
@@ -574,7 +703,6 @@
       
       if (statusEl) statusEl.innerText = "Querying Time to Beat...";
 
-      // Attempt 1: Query SteamSpy via direct App ID (Returns average community playtime in minutes)
       if (appId) {
         try {
           const spyRes = await fetch(`https://steamspy.com/api.php?request=appdetails&appid=${appId}`);
@@ -593,7 +721,6 @@
         }
       }
 
-      // Attempt 2: CORS Proxy HowLongToBeat Search
       try {
         const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://hltb-proxy.fly.dev/v1/query?title=${encodeURIComponent(gameTitle)}`)}`;
         const res = await fetch(proxyUrl);
@@ -624,7 +751,6 @@
         setImagePreview(game.coverUrl);
       }
 
-      // Auto-populate mapped genres
       if (game.rawGenres && game.rawGenres.length > 0) {
         const mapped = matchSteamGenresToTaxonomy(game.rawGenres);
         mapped.forEach(g => {
@@ -633,7 +759,6 @@
         renderSelectedGenres();
       }
 
-      // Auto-fetch Time to Beat
       fetchPlaytimeOrHLTB(game.id, game.name);
 
       checkFormValidity();
@@ -982,6 +1107,20 @@
 
       document.getElementById("input-draftTitle").oninput = checkFormValidity;
       document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
+      
+      // Diagnostic Event Bindings
+      const diagPill = document.getElementById("diag-status-pill");
+      const diagPanel = document.getElementById("diag-panel");
+      const btnRunDiag = document.getElementById("btn-run-diag");
+
+      diagPill.onclick = () => {
+        diagPanel.classList.toggle("hidden");
+      };
+
+      btnRunDiag.onclick = runApiDiagnostics;
+
+      // Initial Diagnostic Execution on Load
+      runApiDiagnostics();
     });
   </script>
 </body>
