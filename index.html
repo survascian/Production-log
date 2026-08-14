@@ -21,7 +21,7 @@
 
   <style>
     /* ==========================================================================
-       1. MASS EFFECT 1 UI DESIGN SYSTEM & THEME DEFINITIONS
+       1. UI DESIGN SYSTEM & THEME DEFINITIONS
        ========================================================================== */
     :root {
       /* ME1 Color Palette Baseline */
@@ -34,10 +34,10 @@
       --me-text: #d2f2ff;
       --me-text-muted: #6b8c9e;
 
-      /* User Adjustments & Dynamic Optics Variables */
-      --banner-brightness: 0.95;       /* Default brightness multiplier */
-      --banner-overlay-darkness: 0.25;  /* Default darkness overlay opacity */
-      --pill-opacity: 0.85;            /* Dynamic opacity for tags/pills background */
+      /* Dynamic Optics Variables */
+      --banner-brightness: 0.95;
+      --banner-overlay-darkness: 0.25;
+      --pill-opacity: 0.85;
     }
 
     /* ---------- MASS EFFECT 1 (SYSTEM CONSOLE / HUD) ---------- */
@@ -58,7 +58,6 @@
       --green: #00ffcc;
       --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 
-      /* Geometry & Shapes */
       --card-radius: 0px;
       --card-border: 1px solid var(--me-bg-panel-border);
       --card-shadow: 0 0 12px var(--me-cyan-glow);
@@ -70,14 +69,14 @@
 
     /* ---------- CYBERPUNK 2077 (NIGHT CITY HUD) ---------- */
     :root[data-theme="cyberpunk"] {
-      --bg-color: #121214;
-      --bg-deep: #08080a;
-      --bg-panel: #000000;
-      --bg-radial: #fcee0a;
+      --bg-color: #0d0e12;
+      --bg-deep: #050507;
+      --bg-panel: rgba(18, 18, 22, 0.92);
+      --bg-radial: #1a1a24;
       --card-bg: #000000;
       --card-text: #fcee0a;
       --text-main: #fcee0a;
-      --accent-color: #ff0055;
+      --accent-color: #fcee0a;
       --blue: #00f0ff;
       --cobalt: #00a8ff;
       --amber: #fcee0a;
@@ -88,11 +87,65 @@
       
       --card-radius: 0px;
       --card-border: 2px solid #fcee0a;
-      --card-shadow: 6px 6px 0px #ff0055;
-      --card-clip: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
-      --btn-clip: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+      --card-shadow: -4px 4px 0px #ff0055;
+      --card-clip: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+      --btn-clip: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
       --header-transform: uppercase;
       --layout-gap: 20px;
+    }
+
+    /* ---------- HALO (UNSC HUD) ---------- */
+    :root[data-theme="halo"] {
+      --bg-color: #07100c;
+      --bg-deep: #030806;
+      --bg-panel: rgba(15, 34, 25, 0.85);
+      --bg-radial: #0d281e;
+      --card-bg: rgba(15, 34, 25, 0.85);
+      --card-text: #d1fae5;
+      --text-main: #d1fae5;
+      --accent-color: #10b981;
+      --blue: #38bdf8;
+      --cobalt: #0284c7;
+      --amber: #eab308;
+      --amber-hot: #f97316;
+      --red: #ef4444;
+      --green: #10b981;
+      --font-family: 'Rajdhani', sans-serif;
+
+      --card-radius: 0px;
+      --card-border: 1px solid rgba(16, 185, 129, 0.4);
+      --card-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+      --card-clip: polygon(15px 0, calc(100% - 15px) 0, 100% 15px, 100% calc(100% - 15px), calc(100% - 15px) 100%, 15px 100%, 0 calc(100% - 15px), 0 15px);
+      --btn-clip: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+      --header-transform: uppercase;
+      --layout-gap: 20px;
+    }
+
+    /* ---------- THE DIVISION 2 (ISAC HUD) ---------- */
+    :root[data-theme="division"] {
+      --bg-color: #0b0d0e;
+      --bg-deep: #050607;
+      --bg-panel: rgba(22, 26, 30, 0.9);
+      --bg-radial: #1b2126;
+      --card-bg: rgba(22, 26, 30, 0.92);
+      --card-text: #e2e8f0;
+      --text-main: #ff5500;
+      --accent-color: #ff5500;
+      --blue: #38bdf8;
+      --cobalt: #0284c7;
+      --amber: #ff5500;
+      --amber-hot: #ff2200;
+      --red: #ef4444;
+      --green: #22c55e;
+      --font-family: 'Share Tech Mono', monospace;
+
+      --card-radius: 0px;
+      --card-border: 1px solid rgba(255, 85, 0, 0.5);
+      --card-shadow: 0 0 8px rgba(255, 85, 0, 0.2);
+      --card-clip: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+      --btn-clip: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+      --header-transform: uppercase;
+      --layout-gap: 16px;
     }
 
     /* ---------- DISCORD (APP UI) ---------- */
@@ -121,7 +174,6 @@
       --header-transform: none;
       --layout-gap: 12px;
 
-      /* Dynamic Badge background for Discord mode */
       --tag-bg: rgba(30, 31, 34, var(--pill-opacity));
       --tag-border: #4e5058;
       --tag-text: #f2f3f5;
@@ -158,7 +210,6 @@
       background-size: 100% 100%, 30px 30px, 30px 30px;
     }
 
-    /* ---------- SPLASH / MANDATORY DELAY SCREEN ---------- */
     #splash-screen {
       position: fixed;
       top: 0;
@@ -223,20 +274,17 @@
     }
 
     .hologram-panel:hover {
-      border-color: var(--me-cyan);
-      box-shadow: 0 0 15px var(--me-cyan-glow);
+      border-color: var(--accent-color);
     }
 
-    /* ME1 Diamond HUD Header Indicator */
     .hud-title-diamond {
       display: inline-block;
       width: 12px;
       height: 12px;
-      background: var(--me-amber);
+      background: var(--amber);
       clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
 
-    /* Dynamic Theme Accent Line Decorations */
     .cyber-bar {
       display: none;
       width: 100%;
@@ -245,7 +293,8 @@
       margin-bottom: 12px;
     }
 
-    [data-theme="cyberpunk"] .cyber-bar {
+    [data-theme="cyberpunk"] .cyber-bar,
+    [data-theme="division"] .cyber-bar {
       display: block;
     }
 
@@ -259,7 +308,6 @@
       opacity: 0.7;
     }
 
-    /* Dynamic Tag/Pill Styling Base Class */
     .hud-pill {
       background: rgba(7, 14, 23, var(--pill-opacity));
       backdrop-filter: blur(6px);
@@ -281,7 +329,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      /* Dynamic brightness applied via JavaScript/CSS variable */
       filter: brightness(var(--banner-brightness));
       transition: filter 0.2s ease;
     }
@@ -307,7 +354,7 @@
     }
     .input-field:focus {
       box-shadow: 0 0 10px var(--accent-color);
-      border-color: var(--me-cyan);
+      border-color: var(--accent-color);
     }
     .input-field:disabled { opacity: 0.4; cursor: not-allowed; }
     .input-field::placeholder { color: var(--me-text-muted); }
@@ -328,19 +375,19 @@
 
     .btn-blue {
       display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(0, 216, 255, 0.15); color: var(--me-cyan);
+      background: rgba(0, 216, 255, 0.15); color: var(--accent-color);
       font-family: var(--font-family); font-weight: 700;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; cursor: pointer;
       border-radius: var(--card-radius);
       clip-path: var(--btn-clip);
-      border: 1px solid var(--me-cyan);
+      border: 1px solid var(--accent-color);
     }
-    .btn-blue:hover { background: var(--me-cyan); color: #000000; box-shadow: 0 0 10px var(--me-cyan); }
+    .btn-blue:hover { background: var(--accent-color); color: #000000; box-shadow: 0 0 10px var(--accent-color); }
 
     .btn-ghost {
       display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(0, 216, 255, 0.05); color: var(--me-cyan);
+      background: rgba(0, 216, 255, 0.05); color: var(--accent-color);
       font-family: var(--font-family); font-weight: 600;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; border: var(--card-border);
@@ -348,25 +395,25 @@
       clip-path: var(--btn-clip);
       cursor: pointer;
     }
-    .btn-ghost:hover { background: var(--me-cyan); color: #000000; box-shadow: 0 0 10px var(--me-cyan); }
+    .btn-ghost:hover { background: var(--accent-color); color: #000000; box-shadow: 0 0 10px var(--accent-color); }
 
     .hud-btn {
       background: rgba(0, 216, 255, 0.1);
-      border: 1px solid var(--me-cyan);
-      color: var(--me-cyan);
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
       padding: 0.5rem 1.25rem;
       text-transform: uppercase;
       font-size: 0.85rem;
       letter-spacing: 1.5px;
       cursor: pointer;
-      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      clip-path: var(--btn-clip);
       transition: all 0.2s ease;
     }
 
     .hud-btn:hover {
-      background: var(--me-cyan);
+      background: var(--accent-color);
       color: #000;
-      box-shadow: 0 0 10px var(--me-cyan);
+      box-shadow: 0 0 10px var(--accent-color);
     }
 
     .tab-btn {
@@ -378,17 +425,16 @@
     }
 
     .icon-btn { padding: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .icon-btn:hover { color: var(--me-cyan); filter: drop-shadow(0 0 5px var(--me-cyan)); }
+    .icon-btn:hover { color: var(--accent-color); filter: drop-shadow(0 0 5px var(--accent-color)); }
 
     select option { background: var(--me-bg-deep); color: var(--me-text); }
 
-    /* Diagnostic Glow Lights */
     .led-glow-green { background-color: var(--green); box-shadow: 0 0 8px var(--green); }
     .led-glow-red { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
     .led-glow-amber { background-color: var(--amber); box-shadow: 0 0 8px var(--amber); }
 
     /* ==========================================================================
-       4. FOOTER & SETTINGS MODAL (ME-1 CONTROLS)
+       4. FOOTER & SETTINGS MODAL
        ========================================================================== */
     footer {
       background: rgba(7, 11, 16, 0.95);
@@ -409,12 +455,12 @@
       right: 2rem;
       width: 320px;
       background: rgba(10, 16, 24, 0.95);
-      border: 1px solid var(--me-cyan);
+      border: 1px solid var(--accent-color);
       padding: 1.25rem;
       box-shadow: 0 0 20px rgba(0, 216, 255, 0.25);
       backdrop-filter: blur(10px);
       z-index: 100;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      clip-path: var(--card-clip);
     }
 
     .settings-window.active {
@@ -428,7 +474,7 @@
       border-bottom: 1px solid var(--me-bg-panel-border);
       padding-bottom: 0.5rem;
       margin-bottom: 1rem;
-      color: var(--me-amber);
+      color: var(--amber);
       font-size: 0.9rem;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -443,24 +489,24 @@
       display: flex;
       justify-content: space-between;
       font-size: 0.8rem;
-      color: var(--me-text);
+      color: var(--card-text);
       margin-bottom: 0.4rem;
       font-family: var(--font-family);
     }
 
     .control-group input[type="range"] {
       width: 100%;
-      accent-color: var(--me-cyan);
+      accent-color: var(--accent-color);
       cursor: pointer;
     }
   </style>
 </head>
 <body class="relative flex flex-col min-h-screen">
 
-  <!-- Mandatory Splash / Delay Screen -->
+  <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="spinner"></div>
-    <h2 class="font-display font-700 text-xl uppercase tracking-widest text-cyan-400 mb-1" style="text-shadow: 0 0 8px var(--me-cyan);">System Console // ME-1</h2>
+    <h2 class="font-display font-700 text-xl uppercase tracking-widest text-cyan-400 mb-1" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
     <p class="text-xs font-mono tracking-wider uppercase opacity-75">Verifying session and security credentials...</p>
   </div>
 
@@ -474,7 +520,7 @@
       <div class="corner-readout">[ SYS.CONSOLE // AUTH ]</div>
       <div class="flex items-center gap-2 mb-1">
         <span class="hud-title-diamond"></span>
-        <h2 id="auth-header-title" class="font-display font-700 text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--me-cyan);">System Console // ME-1</h2>
+        <h2 id="auth-header-title" class="font-display font-700 text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--accent-color);">System Console // ME-1</h2>
       </div>
       <p class="text-xs mb-5 opacity-70" style="color: var(--me-text-muted);">Security Clearance Required: Sign in to access system logs and pipeline controls.</p>
       
@@ -504,7 +550,7 @@
         
         <!-- Progress Bar Frame -->
         <div class="w-full h-2 bg-slate-900 border border-cyan-500/40 relative overflow-hidden chamfer-xs">
-          <div id="auth-progress-bar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 0%; box-shadow: 0 0 10px var(--me-cyan);"></div>
+          <div id="auth-progress-bar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 0%; box-shadow: 0 0 10px var(--accent-color);"></div>
         </div>
         
         <div class="text-[10px] opacity-60 font-mono uppercase tracking-wider">
@@ -515,7 +561,7 @@
     </div>
   </div>
 
-  <!-- Dynamic Theme Adaptive Header -->
+  <!-- Dynamic Header -->
   <header class="sticky top-0 z-20 backdrop-blur-md" style="padding: 1.25rem 2rem; border-bottom: 2px solid var(--accent-color); background: var(--bg-panel); box-shadow: var(--card-shadow);">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
       <div>
@@ -536,6 +582,8 @@
           <select id="theme-selector" class="input-field !w-auto !py-1.5 !px-2 text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
             <option value="masseffect" selected>Mass Effect 1</option>
             <option value="cyberpunk">Cyberpunk 2077</option>
+            <option value="halo">Halo (UNSC HUD)</option>
+            <option value="division">Division 2 (ISAC)</option>
             <option value="discord">Discord App</option>
           </select>
         </div>
@@ -555,7 +603,7 @@
       </div>
     </div>
 
-    <!-- Collapsible Diagnostic Test HUD Panel -->
+    <!-- Diagnostic HUD Panel -->
     <div id="diag-panel" class="hidden max-w-5xl mx-auto mt-3">
       <div class="hologram-panel p-3 text-xs relative">
         <div class="flex items-center justify-between border-b border-slate-700 pb-2 mb-2">
@@ -582,7 +630,7 @@
     <div id="form-panel" class="hidden hologram-panel mb-6 p-5 relative">
       <div class="cyber-bar"></div>
       <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
-      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--me-text);" aria-label="Close form">
+      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--card-text);" aria-label="Close form">
         <span id="icon-close"></span>
       </button>
       <div class="flex items-center gap-2 mb-4">
@@ -594,7 +642,7 @@
         <div class="relative">
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Game / Module</label>
-            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--me-cyan);">Steam Lookup Active</span>
+            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--accent-color);">Steam Lookup Active</span>
           </div>
           <input id="input-game" class="input-field" placeholder="Type title to search Steam or log manually..." autocomplete="off">
           
@@ -615,7 +663,7 @@
         <div class="sm:col-span-2">
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Draft Title</label>
-            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--me-amber);">
+            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--amber);">
               <input type="checkbox" id="chk-untitled" class="cursor-pointer">
               <span>Mark as Untitled</span>
             </label>
@@ -653,7 +701,7 @@
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description / Citadel Entry Logs</label>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description / Log Entry</label>
           <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video or entry about?"></textarea>
         </div>
         <div>
@@ -674,19 +722,19 @@
 
     <!-- Entries List -->
     <div id="empty-state" class="hidden text-center py-16 text-sm hologram-panel">
-      Citadel Archives Empty. Add your first entry to calibrate the system console.
+      Archives Empty. Add your first entry to calibrate the system console.
     </div>
     <div id="entries-container" class="flex flex-col gap-4"></div>
   </main>
 
-  <!-- Footer with ME-1 Settings Trigger -->
+  <!-- Footer -->
   <footer>
     <div style="font-size: 0.8rem; color: var(--me-text-muted);">
       STATUS: ONLINE // INTERFACE VER. 1.04
     </div>
     <button class="hud-btn" id="toggle-settings">⚙ Calibrate UI</button>
 
-    <!-- Footer Optics Calibration Window Modal -->
+    <!-- Calibration Window -->
     <div class="settings-window" id="settings-window">
       <div class="settings-header">
         <span>Optics Calibration</span>
@@ -729,10 +777,8 @@
       getFirestore, enableIndexedDbPersistence, collection, doc, onSnapshot, setDoc, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Mandatory Delay Settings
     const MANDATORY_DELAY_MS = 2500;
 
-    // Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
       authDomain: "production-log-5c7fb.firebaseapp.com",
@@ -750,7 +796,6 @@
       console.log("Offline persistence fallback active.");
     });
 
-    // Icons
     const ICONS = {
       plus: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`,
       x: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
@@ -833,12 +878,11 @@
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
     function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
 
-    // --- MANDATORY DELAY PROMISE WRAPPER ---
     function startDelayTimer(durationMs) {
       return new Promise(resolve => setTimeout(resolve, durationMs));
     }
 
-    // --- THEME SWITCHING ENGINE ---
+    // --- ENHANCED THEME ENGINE ---
     function setTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('user-theme', themeName);
@@ -849,6 +893,12 @@
       if (themeName === 'cyberpunk') {
         headerTitle.innerText = "NIGHT CITY // LOG";
         if (authHeaderTitle) authHeaderTitle.innerText = "SYS.AUTHENTICATION";
+      } else if (themeName === 'halo') {
+        headerTitle.innerText = "UNSC // TACTICAL ARCHIVE";
+        if (authHeaderTitle) authHeaderTitle.innerText = "UNSC // CLEARANCE REQUIREMENT";
+      } else if (themeName === 'division') {
+        headerTitle.innerText = "ISAC // LOGISTICAL LOG";
+        if (authHeaderTitle) authHeaderTitle.innerText = "ISAC // SYSTEM ACCESS";
       } else if (themeName === 'masseffect') {
         headerTitle.innerText = "SYSTEM CONSOLE // ME-1";
         if (authHeaderTitle) authHeaderTitle.innerText = "System Console // ME-1";
@@ -871,7 +921,6 @@
       }
     }
 
-    // --- OPTICS CALIBRATION SYSTEM (ME-1 CONTROLS) ---
     function initOpticsCalibration() {
       const toggleBtn = document.getElementById('toggle-settings');
       const closeBtn = document.getElementById('close-settings');
@@ -886,7 +935,6 @@
       const pillOpacitySlider = document.getElementById('pill-opacity-slider');
       const pillOpacityVal = document.getElementById('pill-opacity-val');
 
-      // Load saved optics values or defaults
       const savedBrightness = localStorage.getItem('me-banner-brightness') || "95";
       const savedOverlay = localStorage.getItem('me-banner-overlay-darkness') || "25";
       const savedPillOpacity = localStorage.getItem('me-pill-opacity') || "85";
@@ -903,7 +951,6 @@
       pillOpacityVal.textContent = `${savedPillOpacity}%`;
       document.documentElement.style.setProperty('--pill-opacity', savedPillOpacity / 100);
 
-      // Toggle Calibration Window
       toggleBtn.addEventListener('click', () => {
         settingsWindow.classList.toggle('active');
       });
@@ -912,7 +959,6 @@
         settingsWindow.classList.remove('active');
       });
 
-      // Brightness Slider Handler
       brightnessSlider.addEventListener('input', (e) => {
         const val = e.target.value;
         brightnessVal.textContent = `${val}%`;
@@ -920,7 +966,6 @@
         localStorage.setItem('me-banner-brightness', val);
       });
 
-      // Overlay Darkness Handler
       overlaySlider.addEventListener('input', (e) => {
         const val = e.target.value;
         overlayVal.textContent = `${val}%`;
@@ -928,7 +973,6 @@
         localStorage.setItem('me-banner-overlay-darkness', val);
       });
 
-      // Pill Background Opacity Handler
       pillOpacitySlider.addEventListener('input', (e) => {
         const val = e.target.value;
         pillOpacityVal.textContent = `${val}%`;
@@ -937,7 +981,6 @@
       });
     }
 
-    // --- API DIAGNOSTICS ---
     async function executeDiagnosticCheck(name, fetchUrl, validator) {
       const startTime = performance.now();
       try {
@@ -1027,14 +1070,12 @@
       }
     }
 
-    // --- ARTIFICIAL AUTHENTICATION DELAY SEQUENCE ---
     async function simulateAuthenticationSequence() {
       const formControls = document.getElementById("auth-form-controls");
       const loader = document.getElementById("auth-loader");
       const statusText = document.getElementById("auth-status-text");
       const progressBar = document.getElementById("auth-progress-bar");
 
-      // Hide input form and reveal loading animation
       formControls.classList.add("hidden");
       loader.classList.remove("hidden");
 
@@ -1046,7 +1087,6 @@
         { label: "CLEARANCE GRANTED. ACCESSING TERMINAL...", progress: "100%" }
       ];
 
-      // Total duration between 3.5s and 5s
       const totalDuration = Math.floor(Math.random() * 1500) + 3500; 
       const intervalTime = totalDuration / steps.length;
 
@@ -1067,7 +1107,6 @@
       progressBar.style.width = "0%";
     }
 
-    // Authentication Listener Promise to coordinate startup delay
     let resolveInitialAuthCheck;
     const initialAuthPromise = new Promise(resolve => {
       resolveInitialAuthCheck = resolve;
@@ -1098,13 +1137,8 @@
       resolveInitialAuthCheck();
     });
 
-    /**
-     * Synchronizes mandatory startup delay with initial authentication lookup
-     */
     async function initPageWithSplashDelay() {
       const delayPromise = startDelayTimer(MANDATORY_DELAY_MS);
-      
-      // Wait for both the mandatory splash delay AND initial auth check
       await Promise.all([delayPromise, initialAuthPromise]);
 
       const splashScreen = document.getElementById('splash-screen');
@@ -1180,7 +1214,6 @@
       errDiv.innerText = msg; errDiv.classList.remove("hidden");
     }
 
-    // Real-Time Sync
     function attachFirestoreListener() {
       if (!currentUser) return;
       const colRef = collection(db, "users", currentUser.uid, "entries");
@@ -1202,7 +1235,6 @@
       await deleteDoc(docRef);
     }
 
-    // STEAM STORE SEARCH
     async function searchSteamStore(query) {
       if (!query || query.length < 2) return [];
       try {
@@ -1259,7 +1291,7 @@
               <div class="text-[9px] uppercase tracking-wider opacity-60">Steam ID: ${game.id}</div>
             </div>
           </div>`).join("") + `
-          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase cursor-pointer border-t border-slate-700" style="color: var(--me-cyan);">
+          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase cursor-pointer border-t border-slate-700" style="color: var(--accent-color);">
             Keep Manual Entry (Skip Steam Match)
           </div>`;
 
@@ -1282,7 +1314,6 @@
         renderSelectedGenres();
       }
 
-      // Auto-fill Est. Time to Beat using SteamSpy Playtime API
       const timeToBeatInput = document.getElementById("input-timeToBeat");
       if (game.id) {
         timeToBeatInput.placeholder = "Fetching playtime from SteamSpy...";
@@ -1315,7 +1346,7 @@
     }
 
     function renderSelectedGenres() {
-      const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--me-cyan); opacity: 1; font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
+      const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--accent-color); opacity: 1; font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
       document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
         <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">
           ${escapeHtml(g)}
@@ -1525,7 +1556,7 @@
       const listContainer = document.getElementById("entries-container"), emptyState = document.getElementById("empty-state");
       if (visible.length === 0) {
         listContainer.innerHTML = "";
-        emptyState.innerText = entries.length === 0 ? "Citadel Archives Empty. Add your first entry to calibrate the system console." : "No logs match this filter.";
+        emptyState.innerText = entries.length === 0 ? "Archives Empty. Add your first entry to calibrate the system console." : "No logs match this filter.";
         emptyState.classList.remove("hidden"); return;
       }
 
@@ -1538,7 +1569,6 @@
 
         const genreList = entry.genres || [];
         
-        /* Dynamic tag visibility style rules */
         const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--me-bg-panel-border); font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
         const genrePreview = genreList.length ? `
           <span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
@@ -1550,8 +1580,8 @@
         
         const titleHtml = isU ? `<span class="italic text-sm opacity-60">[ UNTITLED LOG ]</span>` : escapeHtml(entry.draftTitle);
 
-        let oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-cyan); border: 1px solid var(--me-cyan);`;
-        if (ownership === "Jack Sparrow") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-amber); border: 1px solid var(--me-amber);`;
+        let oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--accent-color); border: 1px solid var(--accent-color);`;
+        if (ownership === "Jack Sparrow") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--amber); border: 1px solid var(--amber);`;
         else if (ownership === "Unowned") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-text-muted); border: 1px solid var(--me-text-muted);`;
 
         const hasImg = !!entry.image && !c;
@@ -1574,7 +1604,7 @@
                     <span class="hud-title-diamond"></span>
                     <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
                   </div>
-                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,157,0,0.25); color: var(--me-amber); border: 1px solid var(--me-amber);">Finalize Details</span>` : ''}</div>
+                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,157,0,0.25); color: var(--amber); border: 1px solid var(--amber);">Finalize Details</span>` : ''}</div>
                   <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-90">
                     <span class="chamfer-xs px-1.5 py-0.5 hud-pill" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                     ${genrePreview}
@@ -1583,7 +1613,7 @@
                   </div>
                 </div>
                 <div class="flex items-center gap-0.5 shrink-0 z-10">
-                  <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--me-cyan)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                  <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--accent-color)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
                   <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.pencil}</button>
                   <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.trash}</button>
                 </div>
@@ -1591,7 +1621,7 @@
               ${isOpen ? `
                 <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
                   ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
-                  <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No Citadel log details provided.')}</p>
+                  <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No log details provided.')}</p>
                   <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
                     <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase hud-pill" style="${oStyle}">${escapeHtml(ownership)}</span></div>
                     <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
