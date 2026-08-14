@@ -211,9 +211,15 @@
       <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] mb-4" style="color: var(--amber);">New Entry</h2>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Game</label>
-          <input id="input-game" class="input-field" placeholder="Elden Ring">
+        <div class="relative">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600" style="color: #6E8399;">Game</label>
+            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--blue);">Steam Lookup Active</span>
+          </div>
+          <input id="input-game" class="input-field" placeholder="Type title to search Steam or log manually..." autocomplete="off">
+          
+          <!-- Steam Autocomplete Dropdown -->
+          <div id="steam-search-results" class="hidden absolute left-0 right-0 top-full mt-1 z-40 hologram-panel chamfer-sm p-1 max-h-60 overflow-y-auto space-y-1" style="box-shadow: 0 8px 24px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(0,163,224,0.4);"></div>
         </div>
         
         <div>
@@ -427,6 +433,7 @@
     let draftGenres = [];
     let draftImage = null;
     let unsubscribeFirestore = null;
+    let steamDebounceTimer = null;
 
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
     function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -489,6 +496,114 @@
       if (!currentUser) return;
       const docRef = doc(db, "users", currentUser.uid, "entries", id);
       await deleteDoc(docRef);
+    }
+
+    // --- STEAM STORE API INTEGRATION ---
+    async function searchSteamStore(query) {
+      if (!query || query.length < 2) return [];
+      try {
+        const steamUrl = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(query)}&l=english&cc=US`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(steamUrl)}`;
+        
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        
+        if (!data || !data.items) return [];
+        
+        return data.items.map(item => ({
+          id: item.id,
+          name: item.name,
+          // High-res Steam capsule header image for entry banner
+          coverUrl: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
+          genres: item.genres ? item.genres.map(g => mapSteamGenreToTaxonomy(g.name)) : []
+        }));
+      } catch (err) {
+        console.warn("Steam API lookup failed:", err);
+        return [];
+      }
+    }
+
+    // Map broad Steam store tags into your TOP_100_GENRES list
+    function mapSteamGenreToTaxonomy(steamGenre) {
+      const map = {
+        "Action": "Action — Character Action",
+        "RPG": "RPG — Open-World Action RPG",
+        "Strategy": "Strategy — Real-Time Strategy (RTS)",
+        "Adventure": "Adventure — Action-Adventure",
+        "Simulation": "Simulation — Job / Career Sim",
+        "Indie": "Other / Experimental",
+        "Casual": "Casual — Cozy Game",
+        "Racing": "Racing — Arcade Racing",
+        "Sports": "Sports — Arcade / Simulation",
+        "Massively Multiplayer": "RPG — MMO / MMORPG"
+      };
+      return map[steamGenre] || steamGenre;
+    }
+
+    function handleSteamInput(e) {
+      checkFormValidity();
+      const val = e.target.value.trim();
+      const resultsContainer = document.getElementById("steam-search-results");
+      
+      clearTimeout(steamDebounceTimer);
+      if (!val || val.length < 2) {
+        resultsContainer.classList.add("hidden");
+        return;
+      }
+
+      steamDebounceTimer = setTimeout(async () => {
+        const results = await searchSteamStore(val);
+        if (results.length === 0) {
+          resultsContainer.classList.add("hidden");
+          return;
+        }
+
+        resultsContainer.innerHTML = results.map(game => `
+          <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-[#1A232D] cursor-pointer chamfer-xs transition-colors">
+            <img src="${game.coverUrl}" class="w-16 h-8 object-cover chamfer-xs shrink-0" alt="">
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold truncate text-[#EAF3FA]">${escapeHtml(game.name)}</div>
+              <div class="text-[9px] text-[#6E8399] uppercase tracking-wider">Steam ID: ${game.id}</div>
+            </div>
+          </div>
+        `).join("") + `
+          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase text-[#00A3E0] hover:bg-[#1A232D] cursor-pointer border-t border-slate-800">
+            Keep Manual Entry (Skip Steam Match)
+          </div>
+        `;
+
+        resultsContainer.classList.remove("hidden");
+
+        // Bind clicks to search results
+        resultsContainer.querySelectorAll(".steam-result-item").forEach((el, index) => {
+          el.onclick = () => selectSteamGame(results[index]);
+        });
+
+        const manualBtn = document.getElementById("btn-steam-manual-skip");
+        if (manualBtn) {
+          manualBtn.onclick = () => resultsContainer.classList.add("hidden");
+        }
+      }, 350);
+    }
+
+    function selectSteamGame(game) {
+      document.getElementById("input-game").value = game.name;
+      document.getElementById("steam-search-results").classList.add("hidden");
+      
+      // Auto fill cover art if available
+      if (game.coverUrl) {
+        setImagePreview(game.coverUrl);
+      }
+
+      // Merge genre tags without duplicating
+      if (game.genres && game.genres.length > 0) {
+        game.genres.forEach(g => {
+          if (!draftGenres.includes(g)) draftGenres.push(g);
+        });
+        renderSelectedGenres();
+      }
+
+      checkFormValidity();
     }
 
     function initFormSelects() {
@@ -587,6 +702,7 @@
 
     function openNewForm() {
       editingId = null; draftGenres = []; setImagePreview(null);
+      document.getElementById("steam-search-results").classList.add("hidden");
       document.getElementById("input-image-file").value = "";
       document.getElementById("input-game").value = "";
       document.getElementById("input-genre-search").value = "";
@@ -606,6 +722,7 @@
 
     function openEditForm(entry) {
       editingId = entry.id; draftGenres = Array.isArray(entry.genres) ? [...entry.genres] : [];
+      document.getElementById("steam-search-results").classList.add("hidden");
       document.getElementById("input-image-file").value = "";
       setImagePreview(entry.image || null);
       document.getElementById("input-game").value = entry.game || "";
@@ -825,7 +942,18 @@
       document.getElementById("chk-untitled").onchange = handleUntitledToggle;
       document.getElementById("btn-add-genre").onclick = addGenreTag;
       document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
-      document.getElementById("input-game").oninput = checkFormValidity;
+      
+      // Steam Autocomplete Listener
+      const gameInput = document.getElementById("input-game");
+      gameInput.oninput = handleSteamInput;
+      
+      // Hide search dropdown if clicked outside
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest("#input-game") && !e.target.closest("#steam-search-results")) {
+          document.getElementById("steam-search-results").classList.add("hidden");
+        }
+      });
+
       document.getElementById("input-draftTitle").oninput = checkFormValidity;
       document.getElementById("btn-toggle-sort").onclick = () => { sortDir = sortDir === "desc" ? "asc" : "desc"; render(); };
     });
