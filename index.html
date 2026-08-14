@@ -282,7 +282,7 @@
         </div>
         <div>
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Est. Time to Beat (hrs)</label>
-          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="e.g. 35 (Auto-filled via HLTB)">
+          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="Auto-filled via Steam/HLTB">
         </div>
       </div>
 
@@ -468,7 +468,7 @@
       await deleteDoc(docRef);
     }
 
-    // --- STEAM STORE API INTEGRATION ---
+    // --- STEAM STORE & GENRE MAPPING ---
     async function searchSteamStore(query) {
       if (!query || query.length < 2) return [];
       try {
@@ -484,7 +484,7 @@
           id: item.id,
           name: item.name,
           coverUrl: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
-          genres: item.genres ? item.genres.map(g => mapSteamGenreToTaxonomy(g.name)) : []
+          rawGenres: item.genres ? item.genres.map(g => g.name || g) : []
         }));
       } catch (err) {
         console.warn("Steam API lookup failed:", err);
@@ -492,21 +492,34 @@
       }
     }
 
-    // Map Steam tags into TOP_100_GENRES taxonomy
-    function mapSteamGenreToTaxonomy(steamGenre) {
+    function matchSteamGenresToTaxonomy(rawGenres) {
+      const matched = [];
       const map = {
-        "Action": "Action — Character Action",
-        "RPG": "RPG — Open-World Action RPG",
-        "Strategy": "Strategy — Real-Time Strategy (RTS)",
-        "Adventure": "Story — Walking Simulator",
-        "Simulation": "Simulation — Job / Career Sim",
-        "Indie": "Other / Experimental",
-        "Casual": "Casual — Cozy Game",
-        "Racing": "Racing — Arcade Racing",
-        "Sports": "Sports — Arcade / Simulation",
-        "Massively Multiplayer": "RPG — MMO / MMORPG"
+        "action": "Action — Character Action",
+        "rpg": "RPG — Open-World Action RPG",
+        "strategy": "Strategy — Real-Time Strategy (RTS)",
+        "adventure": "Story — Walking Simulator",
+        "simulation": "Simulation — Job / Career Sim",
+        "indie": "Other / Experimental",
+        "casual": "Casual — Cozy Game",
+        "racing": "Racing — Arcade Racing",
+        "sports": "Sports — Arcade / Simulation",
+        "massively multiplayer": "RPG — MMO / MMORPG"
       };
-      return map[steamGenre] || steamGenre;
+
+      rawGenres.forEach(g => {
+        const clean = String(g).toLowerCase().trim();
+        // Check direct map
+        if (map[clean]) {
+          matched.push(map[clean]);
+        } else {
+          // Attempt partial string match in TOP_100_GENRES
+          const matchInTaxonomy = TOP_100_GENRES.find(t => t.toLowerCase().includes(clean));
+          if (matchInTaxonomy) matched.push(matchInTaxonomy);
+        }
+      });
+
+      return matched;
     }
 
     function handleSteamInput(e) {
@@ -554,35 +567,53 @@
       }, 350);
     }
 
-    // --- HOWLONGTOBEAT PROXY FETCHER ---
-    async function fetchHLTBTime(gameTitle) {
+    // --- TIME TO BEAT (SteamSpy Primary + CORS HLTB Proxy Fallback) ---
+    async function fetchPlaytimeOrHLTB(appId, gameTitle) {
       const timeInput = document.getElementById("input-timeToBeat");
       const statusEl = document.getElementById("steam-status");
       
-      if (statusEl) statusEl.innerText = "Fetching HLTB data...";
+      if (statusEl) statusEl.innerText = "Querying Time to Beat...";
 
+      // Attempt 1: Query SteamSpy via direct App ID (Returns average community playtime in minutes)
+      if (appId) {
+        try {
+          const spyRes = await fetch(`https://steamspy.com/api.php?request=appdetails&appid=${appId}`);
+          if (spyRes.ok) {
+            const spyData = await spyRes.json();
+            const averageMins = spyData.average_forever || spyData.median_forever;
+            if (averageMins && averageMins > 0) {
+              const hours = (averageMins / 60).toFixed(1);
+              timeInput.value = hours;
+              if (statusEl) statusEl.innerText = `SteamSpy: ~${hours} hrs auto-filled`;
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn("SteamSpy query bypassed, trying fallback HLTB parser...", e);
+        }
+      }
+
+      // Attempt 2: CORS Proxy HowLongToBeat Search
       try {
-        const proxyUrl = `https://hltb-proxy.fly.dev/v1/query?title=${encodeURIComponent(gameTitle)}`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://hltb-proxy.fly.dev/v1/query?title=${encodeURIComponent(gameTitle)}`)}`;
         const res = await fetch(proxyUrl);
-        
-        if (!res.ok) throw new Error("Proxy response error");
-        const data = await res.json();
-
-        if (data && data.length > 0) {
-          const match = data[0];
-          const mainStoryHours = match.gameplayMain || match.mainStory || (match.times ? match.times.main : null);
-
-          if (mainStoryHours && mainStoryHours > 0) {
-            timeInput.value = mainStoryHours;
-            if (statusEl) statusEl.innerText = `HLTB: ~${mainStoryHours} hrs auto-filled`;
-            return;
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            const match = data[0];
+            const mainStory = match.gameplayMain || match.mainStory || (match.times ? match.times.main : null);
+            if (mainStory && mainStory > 0) {
+              timeInput.value = mainStory;
+              if (statusEl) statusEl.innerText = `HLTB: ~${mainStory} hrs auto-filled`;
+              return;
+            }
           }
         }
-        if (statusEl) statusEl.innerText = "HLTB: No exact match found";
       } catch (err) {
-        console.warn("Community HLTB proxy lookup failed/offline:", err);
-        if (statusEl) statusEl.innerText = "Steam Lookup Active";
+        console.warn("HLTB fallback error:", err);
       }
+
+      if (statusEl) statusEl.innerText = "Steam Lookup Active";
     }
 
     function selectSteamGame(game) {
@@ -593,15 +624,17 @@
         setImagePreview(game.coverUrl);
       }
 
-      if (game.genres && game.genres.length > 0) {
-        game.genres.forEach(g => {
+      // Auto-populate mapped genres
+      if (game.rawGenres && game.rawGenres.length > 0) {
+        const mapped = matchSteamGenresToTaxonomy(game.rawGenres);
+        mapped.forEach(g => {
           if (!draftGenres.includes(g)) draftGenres.push(g);
         });
         renderSelectedGenres();
       }
 
-      // Auto-fetch Time to Beat using HLTB Proxy
-      fetchHLTBTime(game.name);
+      // Auto-fetch Time to Beat
+      fetchPlaytimeOrHLTB(game.id, game.name);
 
       checkFormValidity();
     }
