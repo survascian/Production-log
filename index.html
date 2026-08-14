@@ -24,27 +24,27 @@
        1. THEME DEFINITIONS (SHAPES & STRUCTURES)
        ========================================== */
 
-    /* ---------- CYBERPUNK 2077 ---------- */
+    /* ---------- CYBERPUNK 2077 (NIGHT CITY HUD) ---------- */
     :root, :root[data-theme="cyberpunk"] {
-      --bg-color: #fcee0a;
-      --bg-deep: #fcee0a;
+      --bg-color: #121214;
+      --bg-deep: #08080a;
       --bg-panel: #000000;
       --bg-radial: #fcee0a;
       --card-bg: #000000;
-      --card-text: #00f0ff;
-      --text-main: #00f0ff;
-      --accent-color: #ff0055;
-      --blue: #00f0ff;
+      --card-text: #fcee0a;
+      --text-main: #fcee0a;
+      --accent-color: #ff0055; /* Cyberpunk Magenta/Red */
+      --blue: #00f0ff; /* Neon Cyan */
       --cobalt: #00a8ff;
-      --amber: #ff0055;
-      --amber-hot: #ff3377;
+      --amber: #fcee0a; /* Cyberpunk Yellow */
+      --amber-hot: #ff0055;
       --red: #ff0055;
       --green: #00f0ff;
       --font-family: 'Orbitron', sans-serif;
       
       /* Geometry & Shapes */
       --card-radius: 0px;
-      --card-border: 2px solid #00f0ff;
+      --card-border: 2px solid #fcee0a;
       --card-shadow: 6px 6px 0px #ff0055;
       --card-clip: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
       --btn-clip: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
@@ -52,20 +52,20 @@
       --layout-gap: 20px;
     }
 
-    /* ---------- MASS EFFECT (N7 / HUD) ---------- */
+    /* ---------- MASS EFFECT (N7 ALLIANCE HUD) ---------- */
     :root[data-theme="masseffect"] {
-      --bg-color: #050b14;
-      --bg-deep: #050b14;
-      --bg-panel: rgba(10, 25, 47, 0.92);
+      --bg-color: #030810;
+      --bg-deep: #010408;
+      --bg-panel: rgba(8, 22, 42, 0.92);
       --bg-radial: #0a192f;
-      --card-bg: rgba(10, 25, 47, 0.85);
+      --card-bg: rgba(10, 28, 54, 0.88);
       --card-text: #e6f1ff;
       --text-main: #e6f1ff;
-      --accent-color: #d12229; /* N7 Red */
-      --blue: #4cc9f0;
+      --accent-color: #d12229; /* N7 Stripe Red */
+      --blue: #4cc9f0; /* Holographic Blue */
       --cobalt: #4895ef;
-      --amber: #d12229;
-      --amber-hot: #f72585;
+      --amber: #ff9f1c; /* Omni-tool Orange */
+      --amber-hot: #d12229;
       --red: #d12229;
       --green: #4cc9f0;
       --font-family: 'Orbit', sans-serif;
@@ -73,14 +73,14 @@
       /* Geometry & Shapes */
       --card-radius: 4px;
       --card-border: 1px solid #4cc9f0;
-      --card-shadow: 0 0 15px rgba(76, 201, 240, 0.2), inset 0 0 10px rgba(76, 201, 240, 0.1);
+      --card-shadow: 0 0 18px rgba(76, 201, 240, 0.25), inset 0 0 12px rgba(76, 201, 240, 0.12);
       --card-clip: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-      --btn-clip: none;
+      --btn-clip: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
       --header-transform: uppercase;
       --layout-gap: 24px;
     }
 
-    /* ---------- DISCORD (APP UI) ---------- */
+    /* ---------- DISCORD (APP UI - UNTOUCHED) ---------- */
     :root[data-theme="discord"] {
       --bg-color: #2b2d31;
       --bg-deep: #1e1f22;
@@ -149,12 +149,13 @@
       clip-path: var(--card-clip);
     }
 
-    /* Theme Accent Line Decorations */
+    /* Dynamic Theme Accent Line Decorations */
     .n7-stripe {
       display: none;
-      height: 4px;
-      background: linear-gradient(90deg, #d12229 70%, #ffffff 70%);
+      height: 5px;
+      background: linear-gradient(90deg, #d12229 65%, #ffffff 65%, #ffffff 75%, #000000 75%);
       margin-bottom: 12px;
+      box-shadow: 0 0 10px rgba(209, 34, 41, 0.5);
     }
 
     [data-theme="masseffect"] .n7-stripe {
@@ -165,7 +166,7 @@
       display: none;
       width: 100%;
       height: 6px;
-      background: var(--accent-color);
+      background: linear-gradient(90deg, var(--amber) 0%, var(--accent-color) 70%, var(--blue) 100%);
       margin-bottom: 12px;
     }
 
@@ -287,7 +288,7 @@
   </div>
 
   <!-- Header -->
-  <header class="sticky top-0 z-20 backdrop-blur-md" style="background: rgba(0,0,0,0.5);">
+  <header class="sticky top-0 z-20 backdrop-blur-md" style="background: rgba(0,0,0,0.65);">
     <div class="max-w-4xl mx-auto px-5 py-5 flex items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2.5">
@@ -570,10 +571,10 @@
       const authHeaderTitle = document.getElementById('auth-header-title');
 
       if (themeName === 'cyberpunk') {
-        headerTitle.innerText = "CYBERPUNK 2077 LOG";
+        headerTitle.innerText = "NIGHT CITY // LOG";
         if (authHeaderTitle) authHeaderTitle.innerText = "SYS.AUTHENTICATION";
       } else if (themeName === 'masseffect') {
-        headerTitle.innerText = "COMMANDER SHEPARD // LOG";
+        headerTitle.innerText = "COMMANDER SHEPARD // HUD";
         if (authHeaderTitle) authHeaderTitle.innerText = "SECURITY CLEARANCE";
       } else if (themeName === 'discord') {
         headerTitle.innerText = "# production-log";
