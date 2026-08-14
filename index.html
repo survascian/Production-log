@@ -282,7 +282,7 @@
         </div>
         <div>
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600" style="color: #6E8399;">Est. Time to Beat (hrs)</label>
-          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="e.g. 35">
+          <input id="input-timeToBeat" type="number" min="0" step="0.5" class="input-field" placeholder="e.g. 35 (Auto-filled via HLTB)">
         </div>
       </div>
 
@@ -299,7 +299,7 @@
     <div id="entries-container" class="flex flex-col gap-3"></div>
   </main>
 
-  <!-- Firebase Integration Script -->
+  <!-- Firebase & Application Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -309,22 +309,21 @@
       getFirestore, enableIndexedDbPersistence, collection, doc, onSnapshot, setDoc, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Project Configuration
+    // Firebase Configuration
     const firebaseConfig = {
-				apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
-				authDomain: "production-log-5c7fb.firebaseapp.com",
-				projectId: "production-log-5c7fb",
-				storageBucket: "production-log-5c7fb.firebasestorage.app",
-				messagingSenderId: "377979706481",
-				appId: "1:377979706481:web:67cce5af1a9dc3e3a58fd0"
+      apiKey: "AIzaSyCSDESKeL7Iw_MSCeATKvpe2DivYq3VgnE",
+      authDomain: "production-log-5c7fb.firebaseapp.com",
+      projectId: "production-log-5c7fb",
+      storageBucket: "production-log-5c7fb.firebasestorage.app",
+      messagingSenderId: "377979706481",
+      appId: "1:377979706481:web:67cce5af1a9dc3e3a58fd0"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Enable automatic offline persistence
-    enableIndexedDbPersistence(db).catch((err) => {
+    enableIndexedDbPersistence(db).catch(() => {
       console.log("Offline persistence fallback active.");
     });
 
@@ -348,61 +347,34 @@
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
     
-    // Massively Expanded Taxonomy: Genres, Deep Themes, and Systemic Mechanics
+    // Taxonomy: Genres, Deep Themes, and Systemic Mechanics
     const TOP_100_GENRES = [
-      // Story & Narrative
       "Story — Choice-Driven / Branching", "Story — Narrative Horror", "Story — Interactive Drama / QTE", 
       "Story — Mystery / Detective", "Story — Visual Novel", "Story — Interactive Movie / FMV", "Story — Walking Simulator",
-
-      // RPG Subgenres
       "RPG — Open-World Action RPG", "RPG — ARPG (Isometric / Hack & Slash)", "RPG — Action RPG (Third-Person / Shooter)", 
       "RPG — Tactical / Turn-Based RPG", "RPG — CRPG (Classic / Computer RPG)", "RPG — JRPG (Japanese RPG)", 
       "RPG — Dungeon Crawler", "RPG — Soulslike", "RPG — Roguelike / Roguelite RPG", "RPG — Deckbuilding RPG", 
       "RPG — MMO / MMORPG", "RPG — Monster Tamer",
-
-      // Extraction & Survival
       "Extraction — First-Person / Melee", "Extraction — Shooter", "Extraction — Top-Down / Isometric", 
       "Mechanic — Open World Survival Craft",
-
-      // Horror Subgenres
       "Horror — Survival Horror", "Horror — Psychological Horror", "Horror — Mascot Horror", "Horror — Action Horror", 
       "Horror — Cosmic / Lovecraftian", "Horror — Found Footage / Analog", "Horror — Stealth / Evasion Horror",
-
-      // Shooters
       "Shooter — First-Person Shooter (FPS)", "Shooter — Third-Person Shooter (TPS)", "Shooter — Cover Shooter", 
       "Shooter — Boomer Shooter", "Shooter — Hero Shooter", "Shooter — Loot Shooter", "Shooter — Tactical Shooter", 
       "Shooter — Bullet Hell / Shmup",
-
-      // Action & Combat
       "Action — Character Action", "Action — Hack and Slash", "Action — Beat 'em Up", "Action — Martial Arts", 
       "Action — Mecha / Vehicle Combat", "Action — Boss Rush",
-
-      // Platformers & Sidescrollers
       "Platformer — Metroidvania", "Platformer — 2D Sidescroller", "Platformer — 3D Collectathon", "Platformer — Puzzle Platformer",
-
-      // Strategy & Tactics
       "Strategy — Auto Battler / Autobattler", "Strategy — Real-Time Strategy (RTS)", "Strategy — Turn-Based Strategy (TBS)", 
       "Strategy — Grand Strategy / 4X", "Strategy — Turn-Based Tactics", "Strategy — Tower Defense", "Strategy — Card Game / Digital Tabletop",
-
-      // Simulation & Management
       "Simulation — Emergency / Dispatcher", "Simulation — Job / Career Sim", "Simulation — Management / Tycoon", 
       "Simulation — City Builder", "Simulation — Colony Sim", "Simulation — Immersive Sim", "Simulation — Farming / Life Sim", 
       "Simulation — Space Flight / Exploration", "Simulation — Vehicle / Flight Sim", "Simulation — God Game",
-
-      // Multiplayer & Social
       "Multiplayer — Chaotic Co-Op / 'Friend Slop'", "Multiplayer — Co-Op Survival / PvE", "Multiplayer — Battle Royale", 
       "Multiplayer — MOBA", "Multiplayer — Asymmetrical", "Multiplayer — Social Deduction", "Multiplayer — Party Game / Minigames",
-
-      // Format & Service Models
       "Format — Live Service / Seasons", "Format — Gacha / Hero Collector", "Format — Free-to-Play",
-
-      // Puzzle & Casual
       "Puzzle — Logic / Spatial", "Puzzle — Physics Puzzle", "Puzzle — Match-3 / Tile Puzzle", "Casual — Cozy Game", "Casual — Idle / Incremental",
-
-      // Racing, Sports & Extreme
       "Racing — Arcade Racing", "Racing — Sim Racing", "Sports — Arcade / Simulation", "Sports — Extreme / Skateboarding",
-
-      // --- EXPANDED THEMES & SETTINGS ---
       "Theme — Cyberpunk", "Theme — Sci-Fi / Space", "Theme — Retro-Futurism", "Theme — Hard Sci-Fi / Realistic Space", 
       "Theme — Cyber-Noir", "Theme — Biopunk / Genetic Horror", "Theme — Nanotech / Post-Human", "Theme — High Fantasy", 
       "Theme — Dark Fantasy", "Theme — Urban Fantasy", "Theme — Mythological / Folklore", "Theme — Sword & Sorcery", 
@@ -412,8 +384,6 @@
       "Theme — Surrealism / Dreamscape", "Theme — Retro / Lo-Fi / CRT", "Theme — Minimalist / Abstract", "Theme — Satire / Parody / Comedy", 
       "Theme — Psychological Thriller", "Theme — Post-Apocalyptic", "Theme — Zombie Apocalypse / Outbreak", "Theme — Dystopian Totalitarianism", 
       "Theme — Eco-Collapse / Climate Sci-Fi",
-
-      // --- EXPANDED GAMEPLAY MECHANICS ---
       "Mechanic — Open World", "Mechanic — Physics-Based Sandbox", "Mechanic — Grappling Hook / Fluid Movement", 
       "Mechanic — Platforming / Parkour", "Mechanic — Vehicle-Centric / Driving Physics", "Mechanic — Underwater / Sub-Aquatic", 
       "Mechanic — Grid Inventory / Tetris Management", "Mechanic — Loot & Rarity Grinding", "Mechanic — Crafting / Automation / Factory", 
@@ -476,7 +446,7 @@
       errDiv.innerText = msg; errDiv.classList.remove("hidden");
     }
 
-    // Real-Time Cloud + Offline Listener
+    // Real-Time Sync
     function attachFirestoreListener() {
       if (!currentUser) return;
       const colRef = collection(db, "users", currentUser.uid, "entries");
@@ -513,7 +483,6 @@
         return data.items.map(item => ({
           id: item.id,
           name: item.name,
-          // High-res Steam capsule header image for entry banner
           coverUrl: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
           genres: item.genres ? item.genres.map(g => mapSteamGenreToTaxonomy(g.name)) : []
         }));
@@ -523,13 +492,13 @@
       }
     }
 
-    // Map broad Steam store tags into your TOP_100_GENRES list
+    // Map Steam tags into TOP_100_GENRES taxonomy
     function mapSteamGenreToTaxonomy(steamGenre) {
       const map = {
         "Action": "Action — Character Action",
         "RPG": "RPG — Open-World Action RPG",
         "Strategy": "Strategy — Real-Time Strategy (RTS)",
-        "Adventure": "Adventure — Action-Adventure",
+        "Adventure": "Story — Walking Simulator",
         "Simulation": "Simulation — Job / Career Sim",
         "Indie": "Other / Experimental",
         "Casual": "Casual — Cozy Game",
@@ -574,7 +543,6 @@
 
         resultsContainer.classList.remove("hidden");
 
-        // Bind clicks to search results
         resultsContainer.querySelectorAll(".steam-result-item").forEach((el, index) => {
           el.onclick = () => selectSteamGame(results[index]);
         });
@@ -586,22 +554,54 @@
       }, 350);
     }
 
+    // --- HOWLONGTOBEAT PROXY FETCHER ---
+    async function fetchHLTBTime(gameTitle) {
+      const timeInput = document.getElementById("input-timeToBeat");
+      const statusEl = document.getElementById("steam-status");
+      
+      if (statusEl) statusEl.innerText = "Fetching HLTB data...";
+
+      try {
+        const proxyUrl = `https://hltb-proxy.fly.dev/v1/query?title=${encodeURIComponent(gameTitle)}`;
+        const res = await fetch(proxyUrl);
+        
+        if (!res.ok) throw new Error("Proxy response error");
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+          const match = data[0];
+          const mainStoryHours = match.gameplayMain || match.mainStory || (match.times ? match.times.main : null);
+
+          if (mainStoryHours && mainStoryHours > 0) {
+            timeInput.value = mainStoryHours;
+            if (statusEl) statusEl.innerText = `HLTB: ~${mainStoryHours} hrs auto-filled`;
+            return;
+          }
+        }
+        if (statusEl) statusEl.innerText = "HLTB: No exact match found";
+      } catch (err) {
+        console.warn("Community HLTB proxy lookup failed/offline:", err);
+        if (statusEl) statusEl.innerText = "Steam Lookup Active";
+      }
+    }
+
     function selectSteamGame(game) {
       document.getElementById("input-game").value = game.name;
       document.getElementById("steam-search-results").classList.add("hidden");
       
-      // Auto fill cover art if available
       if (game.coverUrl) {
         setImagePreview(game.coverUrl);
       }
 
-      // Merge genre tags without duplicating
       if (game.genres && game.genres.length > 0) {
         game.genres.forEach(g => {
           if (!draftGenres.includes(g)) draftGenres.push(g);
         });
         renderSelectedGenres();
       }
+
+      // Auto-fetch Time to Beat using HLTB Proxy
+      fetchHLTBTime(game.name);
 
       checkFormValidity();
     }
@@ -629,8 +629,6 @@
       if (val && !draftGenres.includes(val)) { draftGenres.push(val); input.value = ""; renderSelectedGenres(); }
     }
 
-    // Resize + compress an image file into a small JPEG data URL so it stays well under
-    // Firestore's per-document size limit while still reading clearly as a background banner.
     function compressImageFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -841,7 +839,6 @@
 
         const genreList = entry.genres || [];
         const genreBadgeStyle = `color: ${c ? '#3A4452' : '#7D9BBA'}; background: rgba(0,163,224,0.08); box-shadow: inset 0 0 0 1px rgba(0,163,224,0.2);`;
-        const genreBadgesFull = genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("");
         const genrePreview = genreList.length ? `
           <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
           ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: ${c ? '#3A4452' : '#5A6C7D'}; background: rgba(110,131,153,0.08); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.2);">+${genreList.length - 1}</span>`
@@ -854,8 +851,6 @@
         if (ownership === "Jack Sparrow") oStyle = `color: #FF9900; background: rgba(255,153,0,0.1); box-shadow: inset 0 0 0 1px rgba(255,153,0,0.3);`;
         else if (ownership === "Unowned") oStyle = `color: #6E8399; background: rgba(110,131,153,0.1); box-shadow: inset 0 0 0 1px rgba(110,131,153,0.3);`;
 
-        // Poster/banner image: shown faintly behind the entry, dimmed under a dark
-        // window so text stays legible. Skipped on cancelled entries to keep them muted.
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
           <div class="absolute inset-0" style="background-image: url('${entry.image}'); background-size: cover; background-position: center; opacity: 0.45;"></div>
@@ -943,11 +938,9 @@
       document.getElementById("btn-add-genre").onclick = addGenreTag;
       document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
       
-      // Steam Autocomplete Listener
       const gameInput = document.getElementById("input-game");
       gameInput.oninput = handleSteamInput;
       
-      // Hide search dropdown if clicked outside
       document.addEventListener("click", (e) => {
         if (!e.target.closest("#input-game") && !e.target.closest("#steam-search-results")) {
           document.getElementById("steam-search-results").classList.add("hidden");
