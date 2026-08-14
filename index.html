@@ -217,7 +217,7 @@
           <span class="font-display font-bold uppercase text-amber-500 tracking-wider">// API Diagnostics Subsystem</span>
           <button id="btn-run-diag" class="text-[10px] uppercase text-sky-400 hover:text-white font-mono bg-slate-800 px-2 py-0.5 chamfer-xs">Re-run Tests</button>
         </div>
-        <div id="diag-results" class="space-y-1 font-mono">
+        <div id="diag-results" class="space-y-2 font-mono">
           <!-- Diagnostics log populated here -->
         </div>
       </div>
@@ -444,7 +444,57 @@
     function fmtDate(iso) { if (!iso) return "—"; const p = iso.split("-"); return p.length === 3 ? `${p[1]}.${p[2]}.${p[0].slice(2)}` : "—"; }
     function escapeHtml(s) { return s ? String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) : ""; }
 
-    // --- API DIAGNOSTIC SUBSYSTEM ---
+    // --- ENHANCED API DIAGNOSTIC SUBSYSTEM ---
+    async function executeDiagnosticCheck(name, fetchUrl, validator) {
+      const startTime = performance.now();
+      try {
+        const response = await fetch(fetchUrl);
+        const duration = Math.round(performance.now() - startTime);
+
+        if (!response.ok) {
+          let errorBody = "";
+          try {
+            errorBody = await response.text();
+          } catch {
+            errorBody = "<Unreadable response body>";
+          }
+          return {
+            success: false,
+            name,
+            duration,
+            url: fetchUrl,
+            error: `HTTP ${response.status} ${response.statusText}`,
+            cause: errorBody.trim() ? errorBody.slice(0, 250) : "Server returned non-200 status code without a body."
+          };
+        }
+
+        const data = await response.json();
+        const detail = validator(data);
+        return {
+          success: true,
+          name,
+          duration,
+          detail
+        };
+      } catch (err) {
+        const duration = Math.round(performance.now() - startTime);
+        let cause = err.message;
+        
+        if (err.name === 'TypeError' && err.message.includes('fetch')) {
+          cause = "Browser fetch failure (likely CORS block by target server or network disconnect)";
+        }
+
+        return {
+          success: false,
+          name,
+          duration,
+          url: fetchUrl,
+          error: `${err.name || 'FetchError'}: ${err.message}`,
+          cause
+        };
+      }
+    }
+
     async function runApiDiagnostics() {
       const led = document.getElementById("diag-led");
       const label = document.getElementById("diag-label");
@@ -454,74 +504,84 @@
       led.className = "w-2.5 h-2.5 rounded-full transition-all duration-300 led-glow-amber animate-pulse";
       label.innerText = "SYS DIAG: TESTING...";
       label.style.color = "var(--amber)";
-      resultsContainer.innerHTML = `<div class="text-[#6E8399] italic">Executing system API check battery...</div>`;
+      resultsContainer.innerHTML = `<div class="text-[#6E8399] italic">Executing deep API diagnostic battery...</div>`;
 
-      const tests = [
-        {
+      const results = [];
+
+      // 1. Firebase Check
+      const fbStart = performance.now();
+      if (currentUser) {
+        results.push({
+          success: true,
           name: "Firebase Store Engine",
-          run: async () => {
-            if (!currentUser) return "Standby (Awaiting Login)";
-            return `Connected (UID: ${currentUser.uid.slice(0,6)}...)`;
-          }
-        },
-        {
-          name: "Steam Store Search API (CorsProxy)",
-          run: async () => {
-            const url = `https://corsproxy.io/?${encodeURIComponent("https://store.steampowered.com/api/storesearch/?term=portal&l=english&cc=US")}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (!data || !data.items) throw new Error("Invalid response JSON");
-            return `OK (${data.items.length} items parsed)`;
-          }
-        },
-        {
-          name: "SteamSpy Playtime API",
-          run: async () => {
-            const res = await fetch("https://steamspy.com/api.php?request=appdetails&appid=70");
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            if (!data || !data.name) throw new Error("Invalid payload");
-            return `OK (${data.name} query clean)`;
-          }
-        },
-        {
-          name: "HowLongToBeat Proxy Service",
-          run: async () => {
-            const url = `https://corsproxy.io/?${encodeURIComponent("https://hltb-proxy.fly.dev/v1/query?title=portal")}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            return `OK (${Array.isArray(data) ? data.length : 0} results returned)`;
-          }
+          duration: Math.round(performance.now() - fbStart),
+          detail: `Connected (UID: ${currentUser.uid.slice(0,6)}...)`
+        });
+      } else {
+        results.push({
+          success: true,
+          name: "Firebase Store Engine",
+          duration: Math.round(performance.now() - fbStart),
+          detail: "Standby (Awaiting Login)"
+        });
+      }
+
+      // 2. Steam Store Search
+      const steamProxyUrl = `https://corsproxy.io/?${encodeURIComponent("https://store.steampowered.com/api/storesearch/?term=portal&l=english&cc=US")}`;
+      results.push(await executeDiagnosticCheck(
+        "Steam Store Search API (CorsProxy)",
+        steamProxyUrl,
+        (data) => {
+          if (!data || !data.items) throw new Error("Invalid schema");
+          return `OK (${data.items.length} items parsed)`;
         }
-      ];
+      ));
+
+      // 3. SteamSpy Playtime
+      results.push(await executeDiagnosticCheck(
+        "SteamSpy Playtime API",
+        "https://steamspy.com/api.php?request=appdetails&appid=70",
+        (data) => {
+          if (!data || !data.name) throw new Error("Invalid payload structure");
+          return `OK (${data.name} query clean)`;
+        }
+      ));
+
+      // 4. HowLongToBeat Proxy Service
+      const hltbProxyUrl = `https://corsproxy.io/?${encodeURIComponent("https://hltb-proxy.fly.dev/v1/query?title=portal")}`;
+      results.push(await executeDiagnosticCheck(
+        "HowLongToBeat Proxy Service",
+        hltbProxyUrl,
+        (data) => `OK (${Array.isArray(data) ? data.length : 0} results returned)`
+      ));
 
       let failed = 0;
       let logsHtml = "";
 
-      for (const t of tests) {
-        const start = performance.now();
-        try {
-          const detail = await t.run();
-          const ms = Math.round(performance.now() - start);
+      for (const res of results) {
+        if (res.success) {
           logsHtml += `
             <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
               <span class="text-emerald-400 font-semibold flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(t.name)}
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(res.name)}
               </span>
-              <span class="text-[10px] text-slate-400">${escapeHtml(detail)} <span class="text-slate-500">(${ms}ms)</span></span>
+              <span class="text-[10px] text-slate-400">${escapeHtml(res.detail)} <span class="text-slate-500">(${res.duration}ms)</span></span>
             </div>
           `;
-        } catch (err) {
+        } else {
           failed++;
-          const ms = Math.round(performance.now() - start);
           logsHtml += `
-            <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
-              <span class="text-red-400 font-semibold flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${escapeHtml(t.name)}
-              </span>
-              <span class="text-[10px] text-red-400 font-semibold">${escapeHtml(err.message)} <span class="text-slate-500">(${ms}ms)</span></span>
+            <div class="py-1.5 border-b border-slate-800/60">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-red-400 font-semibold flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> ${escapeHtml(res.name)}
+                </span>
+                <span class="text-[10px] text-red-400 font-semibold">${escapeHtml(res.error)} <span class="text-slate-500">(${res.duration}ms)</span></span>
+              </div>
+              <div class="text-[9px] text-slate-400 mt-1 pl-3 font-mono break-all">
+                <span class="text-amber-500/80">URL:</span> ${escapeHtml(res.url)}<br/>
+                <span class="text-red-400/80">Reason:</span> ${escapeHtml(res.cause)}
+              </div>
             </div>
           `;
         }
