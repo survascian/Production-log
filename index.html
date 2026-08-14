@@ -94,7 +94,7 @@
       --layout-gap: 20px;
     }
 
-    /* ---------- DISCORD (APP UI) ---------- */
+/* ---------- DISCORD (APP UI) ---------- */
     :root[data-theme="discord"] {
       --bg-color: #2b2d31;
       --bg-deep: #1e1f22;
@@ -119,6 +119,18 @@
       --btn-clip: none;
       --header-transform: none;
       --layout-gap: 12px;
+
+      /* TAG OPACITY FIX: Solid/higher contrast badge backgrounds for Discord mode */
+      --tag-bg: #383a40;
+      --tag-border: #4e5058;
+      --tag-text: #f2f3f5;
+    }
+
+    /* Base theme defaults for tags */
+    :root {
+      --tag-bg: rgba(0, 216, 255, 0.15);
+      --tag-border: var(--card-border);
+      --tag-text: var(--text-main);
     }
 
     /* ==========================================================================
@@ -431,17 +443,17 @@
     </div>
   </div>
 
-  <!-- ME1 UI Theme Header -->
-  <header class="sticky top-0 z-20 backdrop-blur-md" style="padding: 1.25rem 2rem; border-bottom: 2px solid var(--me-cyan); background: linear-gradient(180deg, rgba(0,216,255,0.1) 0%, rgba(7,11,16,0.9) 100%); box-shadow: 0 0 15px var(--me-cyan-glow);">
+  <!-- Dynamic Theme Adaptive Header -->
+  <header class="sticky top-0 z-20 backdrop-blur-md" style="padding: 1.25rem 2rem; border-bottom: 2px solid var(--accent-color); background: var(--bg-panel); box-shadow: var(--card-shadow);">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2.5">
           <span class="hud-title-diamond"></span>
-          <h1 id="app-header-title" class="font-display font-700 text-[1.5rem] tracking-[3px] uppercase leading-none text-white" style="text-shadow: 0 0 8px var(--me-cyan);">
+          <h1 id="app-header-title" class="font-display font-700 text-[1.5rem] tracking-[3px] uppercase leading-none" style="color: var(--text-main); text-shadow: 0 0 8px var(--accent-color);">
             System Console // ME-1
           </h1>
         </div>
-        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--me-cyan);">
+        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--accent-color);">
           STATUS: ONLINE // INTERFACE VER. 1.04
         </p>
       </div>
@@ -475,7 +487,7 @@
     <div id="diag-panel" class="hidden max-w-5xl mx-auto mt-3">
       <div class="hologram-panel p-3 text-xs relative">
         <div class="flex items-center justify-between border-b border-slate-700 pb-2 mb-2">
-          <span class="font-display font-bold uppercase tracking-wider" style="color: var(--me-amber);">// API Diagnostics Subsystem</span>
+          <span class="font-display font-bold uppercase tracking-wider" style="color: var(--amber);">// API Diagnostics Subsystem</span>
           <button id="btn-run-diag" class="text-[10px] uppercase font-mono btn-ghost !px-2 !py-0.5">Re-run Tests</button>
         </div>
         <div id="diag-results" class="space-y-2 font-mono"></div>
@@ -483,9 +495,9 @@
     </div>
 
     <!-- Filter tabs -->
-    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-cyan-900/40">
+    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-slate-700/50">
       <div id="filter-tabs-container" class="flex gap-1.5"></div>
-      <div class="w-px h-4 shrink-0" style="background: var(--me-cyan); opacity: 0.3;"></div>
+      <div class="w-px h-4 shrink-0" style="background: var(--accent-color); opacity: 0.5;"></div>
       <button id="btn-toggle-sort" class="tab-btn chamfer-xs shrink-0 flex items-center gap-1 btn-ghost" title="Toggle sort order">
         Logged <span id="sort-icon"></span>
       </button>
