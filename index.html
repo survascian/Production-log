@@ -37,6 +37,7 @@
       /* User Adjustments & Dynamic Optics Variables */
       --banner-brightness: 0.95;       /* Default brightness multiplier */
       --banner-overlay-darkness: 0.25;  /* Default darkness overlay opacity */
+      --pill-opacity: 0.85;            /* Dynamic opacity for tags/pills background */
     }
 
     /* ---------- MASS EFFECT 1 (SYSTEM CONSOLE / HUD) ---------- */
@@ -94,7 +95,7 @@
       --layout-gap: 20px;
     }
 
-/* ---------- DISCORD (APP UI) ---------- */
+    /* ---------- DISCORD (APP UI) ---------- */
     :root[data-theme="discord"] {
       --bg-color: #2b2d31;
       --bg-deep: #1e1f22;
@@ -120,16 +121,16 @@
       --header-transform: none;
       --layout-gap: 12px;
 
-      /* TAG OPACITY FIX: Solid/higher contrast badge backgrounds for Discord mode */
-      --tag-bg: #383a40;
+      /* Dynamic Badge background for Discord mode */
+      --tag-bg: rgba(30, 31, 34, var(--pill-opacity));
       --tag-border: #4e5058;
       --tag-text: #f2f3f5;
     }
 
-    /* Base theme defaults for tags */
+    /* Base theme defaults for tags with dynamic contrast */
     :root {
-      --tag-bg: rgba(0, 216, 255, 0.15);
-      --tag-border: var(--card-border);
+      --tag-bg: rgba(7, 14, 23, var(--pill-opacity));
+      --tag-border: var(--me-bg-panel-border);
       --tag-text: var(--text-main);
     }
 
@@ -218,6 +219,13 @@
       letter-spacing: 0.08em;
       color: var(--blue);
       opacity: 0.7;
+    }
+
+    /* Dynamic Tag/Pill Styling Base Class */
+    .hud-pill {
+      background: rgba(7, 14, 23, var(--pill-opacity));
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     }
 
     /* ==========================================================================
@@ -636,6 +644,14 @@
         </label>
         <input type="range" id="overlay-slider" min="0" max="80" value="25">
       </div>
+
+      <div class="control-group">
+        <label for="pill-opacity-slider">
+          <span>Pill / Tag Opacity</span>
+          <span id="pill-opacity-val">85%</span>
+        </label>
+        <input type="range" id="pill-opacity-slider" min="20" max="100" value="85">
+      </div>
     </div>
   </footer>
 
@@ -794,9 +810,13 @@
       const overlaySlider = document.getElementById('overlay-slider');
       const overlayVal = document.getElementById('overlay-val');
 
+      const pillOpacitySlider = document.getElementById('pill-opacity-slider');
+      const pillOpacityVal = document.getElementById('pill-opacity-val');
+
       // Load saved optics values or defaults
       const savedBrightness = localStorage.getItem('me-banner-brightness') || "95";
       const savedOverlay = localStorage.getItem('me-banner-overlay-darkness') || "25";
+      const savedPillOpacity = localStorage.getItem('me-pill-opacity') || "85";
 
       brightnessSlider.value = savedBrightness;
       brightnessVal.textContent = `${savedBrightness}%`;
@@ -805,6 +825,10 @@
       overlaySlider.value = savedOverlay;
       overlayVal.textContent = `${savedOverlay}%`;
       document.documentElement.style.setProperty('--banner-overlay-darkness', savedOverlay / 100);
+
+      pillOpacitySlider.value = savedPillOpacity;
+      pillOpacityVal.textContent = `${savedPillOpacity}%`;
+      document.documentElement.style.setProperty('--pill-opacity', savedPillOpacity / 100);
 
       // Toggle Calibration Window
       toggleBtn.addEventListener('click', () => {
@@ -829,6 +853,14 @@
         overlayVal.textContent = `${val}%`;
         document.documentElement.style.setProperty('--banner-overlay-darkness', val / 100);
         localStorage.setItem('me-banner-overlay-darkness', val);
+      });
+
+      // Pill Background Opacity Handler
+      pillOpacitySlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        pillOpacityVal.textContent = `${val}%`;
+        document.documentElement.style.setProperty('--pill-opacity', val / 100);
+        localStorage.setItem('me-pill-opacity', val);
       });
     }
 
@@ -1094,9 +1126,9 @@
     }
 
     function renderSelectedGenres() {
-      const genreBadgeStyle = `background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); opacity: 1; font-weight: 600;`;
+      const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--me-cyan); opacity: 1; font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
       document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
-        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="${genreBadgeStyle}">
+        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">
           ${escapeHtml(g)}
           <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
         </span>`).join("");
@@ -1316,16 +1348,22 @@
         const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
 
         const genreList = entry.genres || [];
-        const genreBadgeStyle = `background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); opacity: 1; font-weight: 600;`;
+        
+        /* Dynamic tag visibility style rules */
+        const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--me-bg-panel-border); font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
         const genrePreview = genreList.length ? `
-          <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
-          ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: var(--card-text); border: var(--card-border); opacity: 0.7;">+${genreList.length - 1}</span>` : ''}` : '';
-        const typeStyle = isTbd ? `color: var(--me-text-muted); border: 1px dashed rgba(107,140,158,0.4);` : `border: var(--card-border); color: var(--card-text);`;
+          <span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
+          ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--card-text); border: var(--card-border); opacity: 0.85;">+${genreList.length - 1}</span>` : ''}` : '';
+        
+        const typeStyle = isTbd 
+          ? `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-text-muted); border: 1px dashed rgba(107,140,158,0.5);` 
+          : `background: rgba(7, 14, 23, var(--pill-opacity)); border: var(--card-border); color: var(--card-text);`;
+        
         const titleHtml = isU ? `<span class="italic text-sm opacity-60">[ UNTITLED LOG ]</span>` : escapeHtml(entry.draftTitle);
 
-        let oStyle = `color: var(--me-cyan); border: var(--card-border);`;
-        if (ownership === "Jack Sparrow") oStyle = `color: var(--me-amber); border: var(--card-border);`;
-        else if (ownership === "Unowned") oStyle = `color: var(--me-text-muted); border: var(--card-border);`;
+        let oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-cyan); border: 1px solid var(--me-cyan);`;
+        if (ownership === "Jack Sparrow") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-amber); border: 1px solid var(--me-amber);`;
+        else if (ownership === "Unowned") oStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--me-text-muted); border: 1px solid var(--me-text-muted);`;
 
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
@@ -1347,12 +1385,12 @@
                     <span class="hud-title-diamond"></span>
                     <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
                   </div>
-                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,157,0,0.15); color: var(--me-amber);">Finalize Details</span>` : ''}</div>
-                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-80">
-                    <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
+                  <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs hud-pill" style="background: rgba(255,157,0,0.25); color: var(--me-amber); border: 1px solid var(--me-amber);">Finalize Details</span>` : ''}</div>
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-90">
+                    <span class="chamfer-xs px-1.5 py-0.5 hud-pill" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                     ${genrePreview}
-                    ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; border: 1px solid ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
-                    <span class="ml-auto opacity-60 font-mono">${fmtDate(entry.dateCreated)}</span>
+                    ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill" style="color: ${sColor}; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid ${sColor}; box-shadow: inset 0 0 8px ${sColor}33;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs hud-pill" style="color: #FF0033; background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid #FF0033;">Cancelled</span>'}
+                    <span class="ml-auto opacity-70 font-mono text-xs px-1.5 py-0.5 chamfer-xs hud-pill" style="background: rgba(7, 14, 23, var(--pill-opacity)); border: 1px solid rgba(255,255,255,0.1);">${fmtDate(entry.dateCreated)}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-0.5 shrink-0 z-10">
@@ -1363,10 +1401,10 @@
               </div>
               ${isOpen ? `
                 <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 relative z-10 ${c ? 'opacity-50' : ''}">
-                  ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
+                  ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
                   <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No Citadel log details provided.')}</p>
                   <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
-                    <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
+                    <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase hud-pill" style="${oStyle}">${escapeHtml(ownership)}</span></div>
                     <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
                   </div>
                   ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
