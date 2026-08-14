@@ -778,6 +778,7 @@
     let draftImage = null;
     let unsubscribeFirestore = null;
     let steamDebounceTimer = null;
+    let isAuthenticating = false;
 
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
     function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -1020,10 +1021,14 @@
       const logoutBtn = document.getElementById("btn-logout");
       
       if (user) {
-        modal.classList.add("hidden");
-        logoutBtn.classList.remove("hidden");
-        attachFirestoreListener();
+        if (!isAuthenticating) {
+          modal.classList.add("hidden");
+          resetAuthUI();
+          logoutBtn.classList.remove("hidden");
+          attachFirestoreListener();
+        }
       } else {
+        isAuthenticating = false;
         resetAuthUI();
         modal.classList.remove("hidden");
         logoutBtn.classList.add("hidden");
@@ -1046,10 +1051,19 @@
         return;
       }
 
+      isAuthenticating = true;
       try {
-        await signInWithEmailAndPassword(auth, e, p);
-        await simulateAuthenticationSequence();
+        const authPromise = signInWithEmailAndPassword(auth, e, p);
+        const delayPromise = simulateAuthenticationSequence();
+        await Promise.all([authPromise, delayPromise]);
+
+        isAuthenticating = false;
+        document.getElementById("auth-modal").classList.add("hidden");
+        resetAuthUI();
+        document.getElementById("btn-logout").classList.remove("hidden");
+        attachFirestoreListener();
       } catch(err) {
+        isAuthenticating = false;
         resetAuthUI();
         showAuthError(err.message);
       }
@@ -1067,10 +1081,19 @@
         return;
       }
 
+      isAuthenticating = true;
       try {
-        await createUserWithEmailAndPassword(auth, e, p);
-        await simulateAuthenticationSequence();
+        const authPromise = createUserWithEmailAndPassword(auth, e, p);
+        const delayPromise = simulateAuthenticationSequence();
+        await Promise.all([authPromise, delayPromise]);
+
+        isAuthenticating = false;
+        document.getElementById("auth-modal").classList.add("hidden");
+        resetAuthUI();
+        document.getElementById("btn-logout").classList.remove("hidden");
+        attachFirestoreListener();
       } catch(err) {
+        isAuthenticating = false;
         resetAuthUI();
         showAuthError(err.message);
       }
