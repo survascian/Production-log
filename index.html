@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Production Log</title>
+  <title>System Console // ME-1 Production Log</title>
 
-	<!-- Browser Tab Icon -->
-	<link rel="icon" type="image/png" href="logo-64.png">
+  <!-- Browser Tab Icon -->
+  <link rel="icon" type="image/png" href="logo-64.png">
 
-	<!-- Phone & Tablet Home Screen Icon -->
-	<link rel="apple-touch-icon" href="logo-180.png">
+  <!-- Phone & Tablet Home Screen Icon -->
+  <link rel="apple-touch-icon" href="logo-180.png">
 	
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,12 +20,55 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* ==========================================
-       1. THEME DEFINITIONS (SHAPES & STRUCTURES)
-       ========================================== */
+    /* ==========================================================================
+       1. MASS EFFECT 1 UI DESIGN SYSTEM & THEME DEFINITIONS
+       ========================================================================== */
+    :root {
+      /* ME1 Color Palette Baseline */
+      --me-bg-deep: #070b10;
+      --me-bg-panel: rgba(12, 22, 34, 0.75);
+      --me-bg-panel-border: rgba(0, 216, 255, 0.35);
+      --me-cyan: #00d8ff;
+      --me-cyan-glow: rgba(0, 216, 255, 0.4);
+      --me-amber: #ff9d00;
+      --me-text: #d2f2ff;
+      --me-text-muted: #6b8c9e;
+
+      /* User Adjustments & Dynamic Optics Variables */
+      --banner-brightness: 0.95;       /* Default brightness multiplier */
+      --banner-overlay-darkness: 0.25;  /* Default darkness overlay opacity */
+    }
+
+    /* ---------- MASS EFFECT 1 (SYSTEM CONSOLE / HUD) ---------- */
+    :root, :root[data-theme="masseffect"] {
+      --bg-color: var(--me-bg-deep);
+      --bg-deep: #03070d;
+      --bg-panel: var(--me-bg-panel);
+      --bg-radial: #0a192f;
+      --card-bg: var(--me-bg-panel);
+      --card-text: var(--me-text);
+      --text-main: var(--me-text);
+      --accent-color: var(--me-cyan);
+      --blue: var(--me-cyan);
+      --cobalt: #0099ff;
+      --amber: var(--me-amber);
+      --amber-hot: #ff5500;
+      --red: #ff3355;
+      --green: #00ffcc;
+      --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+
+      /* Geometry & Shapes */
+      --card-radius: 0px;
+      --card-border: 1px solid var(--me-bg-panel-border);
+      --card-shadow: 0 0 12px var(--me-cyan-glow);
+      --card-clip: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+      --btn-clip: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      --header-transform: uppercase;
+      --layout-gap: 24px;
+    }
 
     /* ---------- CYBERPUNK 2077 (NIGHT CITY HUD) ---------- */
-    :root, :root[data-theme="cyberpunk"] {
+    :root[data-theme="cyberpunk"] {
       --bg-color: #121214;
       --bg-deep: #08080a;
       --bg-panel: #000000;
@@ -33,16 +76,15 @@
       --card-bg: #000000;
       --card-text: #fcee0a;
       --text-main: #fcee0a;
-      --accent-color: #ff0055; /* Cyberpunk Magenta/Red */
-      --blue: #00f0ff; /* Neon Cyan */
+      --accent-color: #ff0055;
+      --blue: #00f0ff;
       --cobalt: #00a8ff;
-      --amber: #fcee0a; /* Cyberpunk Yellow */
+      --amber: #fcee0a;
       --amber-hot: #ff0055;
       --red: #ff0055;
       --green: #00f0ff;
       --font-family: 'Orbitron', sans-serif;
       
-      /* Geometry & Shapes */
       --card-radius: 0px;
       --card-border: 2px solid #fcee0a;
       --card-shadow: 6px 6px 0px #ff0055;
@@ -52,35 +94,7 @@
       --layout-gap: 20px;
     }
 
-    /* ---------- MASS EFFECT (N7 ALLIANCE HUD) ---------- */
-    :root[data-theme="masseffect"] {
-      --bg-color: #030810;
-      --bg-deep: #010408;
-      --bg-panel: rgba(8, 22, 42, 0.92);
-      --bg-radial: #0a192f;
-      --card-bg: rgba(10, 28, 54, 0.88);
-      --card-text: #e6f1ff;
-      --text-main: #e6f1ff;
-      --accent-color: #d12229; /* N7 Stripe Red */
-      --blue: #4cc9f0; /* Holographic Blue */
-      --cobalt: #4895ef;
-      --amber: #ff9f1c; /* Omni-tool Orange */
-      --amber-hot: #d12229;
-      --red: #d12229;
-      --green: #4cc9f0;
-      --font-family: 'Orbit', sans-serif;
-
-      /* Geometry & Shapes */
-      --card-radius: 4px;
-      --card-border: 1px solid #4cc9f0;
-      --card-shadow: 0 0 18px rgba(76, 201, 240, 0.25), inset 0 0 12px rgba(76, 201, 240, 0.12);
-      --card-clip: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-      --btn-clip: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-      --header-transform: uppercase;
-      --layout-gap: 24px;
-    }
-
-    /* ---------- DISCORD (APP UI - UNTOUCHED) ---------- */
+    /* ---------- DISCORD (APP UI) ---------- */
     :root[data-theme="discord"] {
       --bg-color: #2b2d31;
       --bg-deep: #1e1f22;
@@ -89,7 +103,7 @@
       --card-bg: #313338;
       --card-text: #dbdee1;
       --text-main: #dbdee1;
-      --accent-color: #5865f2; /* Blurple */
+      --accent-color: #5865f2;
       --blue: #5865f2;
       --cobalt: #4752c4;
       --amber: #5865f2;
@@ -98,7 +112,6 @@
       --green: #23a55a;
       --font-family: 'Rajdhani', sans-serif;
 
-      /* Geometry & Shapes */
       --card-radius: 12px;
       --card-border: 1px solid #3f4147;
       --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -108,9 +121,9 @@
       --layout-gap: 12px;
     }
 
-    /* ==========================================
+    /* ==========================================================================
        2. BASE LAYOUT & COMPONENT STYLES
-       ========================================== */
+       ========================================================================== */
 
     * {
       box-sizing: border-box;
@@ -123,6 +136,13 @@
       font-family: var(--font-family);
       min-height: 100vh;
       margin: 0;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 216, 255, 0.08) 0%, transparent 60%),
+        linear-gradient(rgba(0, 216, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 216, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 30px 30px, 30px 30px;
     }
 
     .font-display { font-family: var(--font-family); }
@@ -139,7 +159,7 @@
       border-radius: var(--card-radius);
     }
 
-    ::selection { background: var(--accent-color); color: #ffffff; }
+    ::selection { background: var(--accent-color); color: #000000; }
 
     .hologram-panel {
       background: var(--card-bg);
@@ -147,21 +167,25 @@
       box-shadow: var(--card-shadow);
       border-radius: var(--card-radius);
       clip-path: var(--card-clip);
+      backdrop-filter: blur(8px);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hologram-panel:hover {
+      border-color: var(--me-cyan);
+      box-shadow: 0 0 15px var(--me-cyan-glow);
+    }
+
+    /* ME1 Diamond HUD Header Indicator */
+    .hud-title-diamond {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: var(--me-amber);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     }
 
     /* Dynamic Theme Accent Line Decorations */
-    .n7-stripe {
-      display: none;
-      height: 5px;
-      background: linear-gradient(90deg, #d12229 65%, #ffffff 65%, #ffffff 75%, #000000 75%);
-      margin-bottom: 12px;
-      box-shadow: 0 0 10px rgba(209, 34, 41, 0.5);
-    }
-
-    [data-theme="masseffect"] .n7-stripe {
-      display: block;
-    }
-
     .cyber-bar {
       display: none;
       width: 100%;
@@ -184,6 +208,38 @@
       opacity: 0.7;
     }
 
+    /* ==========================================================================
+       3. ENTRY CONTAINER & BANNER CARDS
+       ========================================================================== */
+    .banner-window {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--me-bg-panel-border);
+      background-color: #000;
+    }
+
+    .banner-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Dynamic brightness applied via JavaScript/CSS variable */
+      filter: brightness(var(--banner-brightness));
+      transition: filter 0.2s ease;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(7, 11, 16, 0.1) 0%, rgba(7, 11, 16, 0.8) 100%);
+      opacity: var(--banner-overlay-darkness);
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
     .input-field {
       width: 100%;
       background: var(--bg-deep);
@@ -197,111 +253,200 @@
     }
     .input-field:focus {
       box-shadow: 0 0 10px var(--accent-color);
+      border-color: var(--me-cyan);
     }
     .input-field:disabled { opacity: 0.4; cursor: not-allowed; }
-    .input-field::placeholder { color: #6E8399; }
+    .input-field::placeholder { color: var(--me-text-muted); }
 
     .btn-amber {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      background: var(--accent-color); color: #ffffff;
+      background: var(--amber); color: #000000;
       font-family: var(--font-family); font-weight: 700;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.6rem 1.05rem; cursor: pointer;
       border-radius: var(--card-radius);
       clip-path: var(--btn-clip);
-      box-shadow: var(--card-shadow);
-      border: var(--card-border);
+      box-shadow: 0 0 8px rgba(255, 157, 0, 0.4);
+      border: 1px solid var(--amber);
     }
-    .btn-amber:hover { filter: brightness(1.2); }
+    .btn-amber:hover { filter: brightness(1.2); box-shadow: 0 0 12px var(--amber); }
     .btn-amber:active { transform: scale(0.96); }
 
     .btn-blue {
       display: inline-flex; align-items: center; justify-content: center;
-      background: var(--blue); color: #0A0D11;
+      background: rgba(0, 216, 255, 0.15); color: var(--me-cyan);
       font-family: var(--font-family); font-weight: 700;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; cursor: pointer;
       border-radius: var(--card-radius);
       clip-path: var(--btn-clip);
+      border: 1px solid var(--me-cyan);
     }
-    .btn-blue:hover { background: var(--cobalt); color: #ffffff; }
+    .btn-blue:hover { background: var(--me-cyan); color: #000000; box-shadow: 0 0 10px var(--me-cyan); }
 
     .btn-ghost {
       display: inline-flex; align-items: center; justify-content: center;
-      background: transparent; color: var(--card-text);
-      font-family: var(--font-family); font-weight: 700;
+      background: rgba(0, 216, 255, 0.05); color: var(--me-cyan);
+      font-family: var(--font-family); font-weight: 600;
       text-transform: var(--header-transform); letter-spacing: 0.06em; font-size: 0.875rem;
       padding: 0.55rem 1.05rem; border: var(--card-border);
       border-radius: var(--card-radius);
+      clip-path: var(--btn-clip);
       cursor: pointer;
     }
-    .btn-ghost:hover { background: var(--accent-color); color: #ffffff; }
+    .btn-ghost:hover { background: var(--me-cyan); color: #000000; box-shadow: 0 0 10px var(--me-cyan); }
+
+    .hud-btn {
+      background: rgba(0, 216, 255, 0.1);
+      border: 1px solid var(--me-cyan);
+      color: var(--me-cyan);
+      padding: 0.5rem 1.25rem;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      transition: all 0.2s ease;
+    }
+
+    .hud-btn:hover {
+      background: var(--me-cyan);
+      color: #000;
+      box-shadow: 0 0 10px var(--me-cyan);
+    }
 
     .tab-btn {
-      font-family: var(--font-family); font-size: 0.7rem;
-      text-transform: var(--header-transform); letter-spacing: 0.04em; padding: 0.35rem 0.65rem;
+      font-family: var(--font-family); font-size: 0.75rem;
+      text-transform: var(--header-transform); letter-spacing: 0.05em; padding: 0.4rem 0.85rem;
       white-space: nowrap; cursor: pointer;
       border-radius: var(--card-radius);
+      clip-path: var(--btn-clip);
     }
 
     .icon-btn { padding: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .icon-btn:hover { color: var(--accent-color); }
+    .icon-btn:hover { color: var(--me-cyan); filter: drop-shadow(0 0 5px var(--me-cyan)); }
 
-    select option { background: var(--bg-panel); color: var(--card-text); }
+    select option { background: var(--me-bg-deep); color: var(--me-text); }
 
     /* Diagnostic Glow Lights */
     .led-glow-green { background-color: var(--green); box-shadow: 0 0 8px var(--green); }
     .led-glow-red { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
     .led-glow-amber { background-color: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+    /* ==========================================================================
+       4. FOOTER & SETTINGS MODAL (ME-1 CONTROLS)
+       ========================================================================== */
+    footer {
+      background: rgba(7, 11, 16, 0.95);
+      border-top: 1px solid var(--me-bg-panel-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin-top: auto;
+      z-index: 40;
+    }
+
+    .settings-window {
+      display: none;
+      position: absolute;
+      bottom: 70px;
+      right: 2rem;
+      width: 320px;
+      background: rgba(10, 16, 24, 0.95);
+      border: 1px solid var(--me-cyan);
+      padding: 1.25rem;
+      box-shadow: 0 0 20px rgba(0, 216, 255, 0.25);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+
+    .settings-window.active {
+      display: block;
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--me-bg-panel-border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--me-amber);
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: var(--font-family);
+    }
+
+    .control-group {
+      margin-bottom: 1rem;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--me-text);
+      margin-bottom: 0.4rem;
+      font-family: var(--font-family);
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--me-cyan);
+      cursor: pointer;
+    }
   </style>
 </head>
-<body class="relative">
+<body class="relative flex flex-col min-h-screen">
 
   <!-- Scanline Overlay -->
   <div class="pointer-events-none fixed inset-0 z-30" style="background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; opacity: 0.4;"></div>
 
   <!-- Authentication Overlay -->
-  <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);">
+  <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(7, 11, 16, 0.92); backdrop-filter: blur(8px);">
     <div class="hologram-panel w-full max-w-md p-6 relative">
       <div class="cyber-bar"></div>
-      <div class="n7-stripe"></div>
-      <div class="corner-readout">[ SYS.AUTH // ACTIVE ]</div>
-      <h2 id="auth-header-title" class="font-display font-700 text-2xl uppercase tracking-wider mb-1" style="color: var(--accent-color);">Security Clearance</h2>
-      <p class="text-xs mb-5 opacity-70">Sign in to sync your production pipeline across devices.</p>
+      <div class="corner-readout">[ SYS.CONSOLE // AUTH ]</div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="hud-title-diamond"></span>
+        <h2 id="auth-header-title" class="font-display font-700 text-2xl uppercase tracking-wider text-white" style="text-shadow: 0 0 8px var(--me-cyan);">System Console // ME-1</h2>
+      </div>
+      <p class="text-xs mb-5 opacity-70" style="color: var(--me-text-muted);">Security Clearance Required: Sign in to access system logs and pipeline controls.</p>
       
       <div class="space-y-4">
         <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600 opacity-70">Email</label>
-          <input id="auth-email" type="email" class="input-field" placeholder="operator@pipeline.com">
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600 opacity-70">Email / Operator ID</label>
+          <input id="auth-email" type="email" class="input-field" placeholder="operator@citadel.alliance">
         </div>
         <div>
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600 opacity-70">Password</label>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1 font-display font-600 opacity-70">Security Passcode</label>
           <input id="auth-password" type="password" class="input-field" placeholder="••••••••">
         </div>
         <div id="auth-error" class="hidden text-xs text-red-400 font-mono"></div>
         <div class="flex gap-2 pt-2">
-          <button id="btn-login" class="btn-blue chamfer-sm flex-1">Sign In</button>
-          <button id="btn-register" class="btn-ghost chamfer-sm flex-1">Register</button>
+          <button id="btn-login" class="btn-blue chamfer-sm flex-1">Authenticate</button>
+          <button id="btn-register" class="btn-ghost chamfer-sm flex-1">Register Terminal</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="sticky top-0 z-20 backdrop-blur-md" style="background: rgba(0,0,0,0.65);">
-    <div class="max-w-4xl mx-auto px-5 py-5 flex items-center justify-between gap-4">
+  <!-- ME1 UI Theme Header -->
+  <header class="sticky top-0 z-20 backdrop-blur-md" style="padding: 1.25rem 2rem; border-bottom: 2px solid var(--me-cyan); background: linear-gradient(180deg, rgba(0,216,255,0.1) 0%, rgba(7,11,16,0.9) 100%); box-shadow: 0 0 15px var(--me-cyan-glow);">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2.5">
-          <span class="relative flex items-center justify-center w-3 h-3">
-            <span class="absolute inline-flex w-full h-full rounded-full opacity-60 animate-ping" style="background: var(--accent-color);"></span>
-            <span class="relative w-1.5 h-1.5 rounded-full" style="background: var(--accent-color);"></span>
-          </span>
-          <h1 id="app-header-title" class="font-display font-700 text-[1.9rem] tracking-[0.04em] uppercase leading-none" style="color: var(--card-text);">
-            Commander Shepard // HUD
+          <span class="hud-title-diamond"></span>
+          <h1 id="app-header-title" class="font-display font-700 text-[1.5rem] tracking-[3px] uppercase leading-none text-white" style="text-shadow: 0 0 8px var(--me-cyan);">
+            System Console // ME-1
           </h1>
         </div>
-        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--blue);">
-          // gameplay.pipeline &nbsp;·&nbsp; offline engine ready
+        <p id="entry-count-readout" class="text-[10px] mt-1.5 tracking-[0.15em] uppercase" style="color: var(--me-cyan);">
+          STATUS: ONLINE // INTERFACE VER. 1.04
         </p>
       </div>
 
@@ -309,7 +454,7 @@
         <!-- Theme Switcher Selector -->
         <div class="relative flex items-center">
           <select id="theme-selector" class="input-field !w-auto !py-1.5 !px-2 text-[10px] uppercase cursor-pointer" title="Select Interface Theme">
-            <option value="masseffect" selected>Mass Effect</option>
+            <option value="masseffect" selected>Mass Effect 1</option>
             <option value="cyberpunk">Cyberpunk 2077</option>
             <option value="discord">Discord App</option>
           </select>
@@ -324,17 +469,17 @@
         <button id="btn-open-new" class="btn-amber chamfer-sm shrink-0">
           <span id="icon-plus"></span> New Entry
         </button>
-        <button id="btn-logout" class="btn-ghost chamfer-xs !p-2 hidden" title="Sign Out">
+        <button id="btn-logout" class="btn-ghost chamfer-xs !p-2 hidden" title="Sign Out Terminal">
           <span id="icon-logout"></span>
         </button>
       </div>
     </div>
 
     <!-- Collapsible Diagnostic Test HUD Panel -->
-    <div id="diag-panel" class="hidden max-w-4xl mx-auto px-5 mb-3">
+    <div id="diag-panel" class="hidden max-w-5xl mx-auto mt-3">
       <div class="hologram-panel p-3 text-xs relative">
         <div class="flex items-center justify-between border-b border-slate-700 pb-2 mb-2">
-          <span class="font-display font-bold uppercase tracking-wider" style="color: var(--accent-color);">// API Diagnostics Subsystem</span>
+          <span class="font-display font-bold uppercase tracking-wider" style="color: var(--me-amber);">// API Diagnostics Subsystem</span>
           <button id="btn-run-diag" class="text-[10px] uppercase font-mono btn-ghost !px-2 !py-0.5">Re-run Tests</button>
         </div>
         <div id="diag-results" class="space-y-2 font-mono"></div>
@@ -342,32 +487,34 @@
     </div>
 
     <!-- Filter tabs -->
-    <div class="max-w-4xl mx-auto px-5 py-3 flex items-center gap-2 overflow-x-auto">
+    <div class="max-w-5xl mx-auto mt-3 pt-2 flex items-center gap-2 overflow-x-auto border-t border-cyan-900/40">
       <div id="filter-tabs-container" class="flex gap-1.5"></div>
-      <div class="w-px h-4 shrink-0" style="background: var(--blue); opacity: 0.3;"></div>
+      <div class="w-px h-4 shrink-0" style="background: var(--me-cyan); opacity: 0.3;"></div>
       <button id="btn-toggle-sort" class="tab-btn chamfer-xs shrink-0 flex items-center gap-1 btn-ghost" title="Toggle sort order">
         Logged <span id="sort-icon"></span>
       </button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="max-w-4xl mx-auto px-5 py-6 relative">
+  <!-- Main Content Container -->
+  <main class="max-w-5xl mx-auto w-full px-4 py-6 relative flex-1">
     <!-- Form Panel -->
     <div id="form-panel" class="hidden hologram-panel mb-6 p-5 relative">
       <div class="cyber-bar"></div>
-      <div class="n7-stripe"></div>
       <div id="form-readout" class="corner-readout">[ FORM.NEW // 0xNEW ]</div>
-      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--card-text);" aria-label="Close form">
+      <button id="btn-close-form" class="absolute top-4 right-4 icon-btn" style="color: var(--me-text);" aria-label="Close form">
         <span id="icon-close"></span>
       </button>
-      <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] mb-4" style="color: var(--accent-color);">New Entry</h2>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="hud-title-diamond"></span>
+        <h2 id="form-title" class="font-display font-700 uppercase text-lg tracking-[0.08em] text-white">New Entry</h2>
+      </div>
 
       <div class="grid sm:grid-cols-2 gap-4">
         <div class="relative">
           <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Game</label>
-            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--blue);">Steam Lookup Active</span>
+            <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Game / Module</label>
+            <span id="steam-status" class="text-[9px] uppercase tracking-wider" style="color: var(--me-cyan);">Steam Lookup Active</span>
           </div>
           <input id="input-game" class="input-field" placeholder="Type title to search Steam or log manually..." autocomplete="off">
           
@@ -388,7 +535,7 @@
         <div class="sm:col-span-2">
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-[10px] uppercase tracking-[0.15em] font-display font-600 opacity-70">Draft Title</label>
-            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--accent-color);">
+            <label class="flex items-center gap-1.5 text-[11px] cursor-pointer" style="color: var(--me-amber);">
               <input type="checkbox" id="chk-untitled" class="cursor-pointer">
               <span>Mark as Untitled</span>
             </label>
@@ -426,8 +573,8 @@
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description</label>
-          <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video about?"></textarea>
+          <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Description / Citadel Entry Logs</label>
+          <textarea id="input-description" class="input-field min-h-[80px] resize-y" placeholder="What's this video or entry about?"></textarea>
         </div>
         <div>
           <label class="block text-[10px] uppercase tracking-[0.15em] mb-1.5 font-display font-600 opacity-70">Date Uploaded</label>
@@ -447,10 +594,42 @@
 
     <!-- Entries List -->
     <div id="empty-state" class="hidden text-center py-16 text-sm hologram-panel">
-      Nothing logged yet. Add your first entry to start the pipeline.
+      Citadel Archives Empty. Add your first entry to calibrate the system console.
     </div>
-    <div id="entries-container" class="flex flex-col gap-3"></div>
+    <div id="entries-container" class="flex flex-col gap-4"></div>
   </main>
+
+  <!-- Footer with ME-1 Settings Trigger -->
+  <footer>
+    <div style="font-size: 0.8rem; color: var(--me-text-muted);">
+      STATUS: ONLINE // INTERFACE VER. 1.04
+    </div>
+    <button class="hud-btn" id="toggle-settings">⚙ Calibrate UI</button>
+
+    <!-- Footer Optics Calibration Window Modal -->
+    <div class="settings-window" id="settings-window">
+      <div class="settings-header">
+        <span>Optics Calibration</span>
+        <span style="cursor:pointer;" id="close-settings">✕</span>
+      </div>
+
+      <div class="control-group">
+        <label for="brightness-slider">
+          <span>Banner Brightness</span>
+          <span id="brightness-val">95%</span>
+        </label>
+        <input type="range" id="brightness-slider" min="50" max="150" value="95">
+      </div>
+
+      <div class="control-group">
+        <label for="overlay-slider">
+          <span>Overlay Darkness</span>
+          <span id="overlay-val">25%</span>
+        </label>
+        <input type="range" id="overlay-slider" min="0" max="80" value="25">
+      </div>
+    </div>
+  </footer>
 
   <!-- Firebase & Application Script -->
   <script type="module">
@@ -496,7 +675,7 @@
     };
 
     const STAGES = ["Backlog", "Planned", "Recording", "Queue", "Editing", "Review", "Published"];
-    const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#00A3E0", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#FF9900", "Review": "#EAB308", "Published": "#10B981" };
+    const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#00d8ff", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#ff9d00", "Review": "#EAB308", "Published": "#10B981" };
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
     
@@ -574,8 +753,8 @@
         headerTitle.innerText = "NIGHT CITY // LOG";
         if (authHeaderTitle) authHeaderTitle.innerText = "SYS.AUTHENTICATION";
       } else if (themeName === 'masseffect') {
-        headerTitle.innerText = "COMMANDER SHEPARD // HUD";
-        if (authHeaderTitle) authHeaderTitle.innerText = "SECURITY CLEARANCE";
+        headerTitle.innerText = "SYSTEM CONSOLE // ME-1";
+        if (authHeaderTitle) authHeaderTitle.innerText = "System Console // ME-1";
       } else if (themeName === 'discord') {
         headerTitle.innerText = "# production-log";
         if (authHeaderTitle) authHeaderTitle.innerText = "Welcome back!";
@@ -593,6 +772,56 @@
           setTheme(e.target.value);
         });
       }
+    }
+
+    // --- OPTICS CALIBRATION SYSTEM (ME-1 CONTROLS) ---
+    function initOpticsCalibration() {
+      const toggleBtn = document.getElementById('toggle-settings');
+      const closeBtn = document.getElementById('close-settings');
+      const settingsWindow = document.getElementById('settings-window');
+
+      const brightnessSlider = document.getElementById('brightness-slider');
+      const brightnessVal = document.getElementById('brightness-val');
+
+      const overlaySlider = document.getElementById('overlay-slider');
+      const overlayVal = document.getElementById('overlay-val');
+
+      // Load saved optics values or defaults
+      const savedBrightness = localStorage.getItem('me-banner-brightness') || "95";
+      const savedOverlay = localStorage.getItem('me-banner-overlay-darkness') || "25";
+
+      brightnessSlider.value = savedBrightness;
+      brightnessVal.textContent = `${savedBrightness}%`;
+      document.documentElement.style.setProperty('--banner-brightness', savedBrightness / 100);
+
+      overlaySlider.value = savedOverlay;
+      overlayVal.textContent = `${savedOverlay}%`;
+      document.documentElement.style.setProperty('--banner-overlay-darkness', savedOverlay / 100);
+
+      // Toggle Calibration Window
+      toggleBtn.addEventListener('click', () => {
+        settingsWindow.classList.toggle('active');
+      });
+
+      closeBtn.addEventListener('click', () => {
+        settingsWindow.classList.remove('active');
+      });
+
+      // Brightness Slider Handler
+      brightnessSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        brightnessVal.textContent = `${val}%`;
+        document.documentElement.style.setProperty('--banner-brightness', val / 100);
+        localStorage.setItem('me-banner-brightness', val);
+      });
+
+      // Overlay Darkness Handler
+      overlaySlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        overlayVal.textContent = `${val}%`;
+        document.documentElement.style.setProperty('--banner-overlay-darkness', val / 100);
+        localStorage.setItem('me-banner-overlay-darkness', val);
+      });
     }
 
     // --- API DIAGNOSTICS ---
@@ -655,7 +884,7 @@
         if (res.success) {
           logsHtml += `
             <div class="flex items-center justify-between text-xs py-1 border-b border-slate-800/60">
-              <span class="text-emerald-400 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ${escapeHtml(res.name)}</span>
+              <span class="text-cyan-400 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> ${escapeHtml(res.name)}</span>
               <span class="text-[10px] opacity-70">${escapeHtml(res.detail)} <span>(${res.duration}ms)</span></span>
             </div>`;
         } else {
@@ -794,14 +1023,14 @@
         if (results.length === 0) { resultsContainer.classList.add("hidden"); return; }
 
         resultsContainer.innerHTML = results.map(game => `
-          <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-slate-800/80 cursor-pointer chamfer-xs transition-colors">
+          <div data-steam-id="${game.id}" class="steam-result-item flex items-center gap-3 p-2 hover:bg-cyan-950/60 cursor-pointer chamfer-xs transition-colors">
             <img src="${game.coverUrl}" class="w-16 h-8 object-cover chamfer-xs shrink-0" alt="">
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-bold truncate text-[#EAF3FA]">${escapeHtml(game.name)}</div>
+              <div class="text-xs font-bold truncate text-[#d2f2ff]">${escapeHtml(game.name)}</div>
               <div class="text-[9px] uppercase tracking-wider opacity-60">Steam ID: ${game.id}</div>
             </div>
           </div>`).join("") + `
-          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase cursor-pointer border-t border-slate-700" style="color: var(--blue);">
+          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase cursor-pointer border-t border-slate-700" style="color: var(--me-cyan);">
             Keep Manual Entry (Skip Steam Match)
           </div>`;
 
@@ -858,7 +1087,7 @@
 
     function renderSelectedGenres() {
       document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
-        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0,163,224,0.15); color: var(--blue); border: var(--card-border);">
+        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0, 216, 255, 0.15); color: var(--me-cyan); border: var(--card-border);">
           ${escapeHtml(g)}
           <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
         </span>`).join("");
@@ -941,6 +1170,7 @@
       editingId = null; draftGenres = []; setImagePreview(null);
       document.getElementById("steam-search-results").classList.add("hidden");
       document.getElementById("input-image-file").value = "";
+      document.getElementById("image-status").innerText = "";
       document.getElementById("input-game").value = "";
       document.getElementById("input-genre-search").value = "";
       document.getElementById("chk-untitled").checked = false;
@@ -961,6 +1191,7 @@
       editingId = entry.id; draftGenres = Array.isArray(entry.genres) ? [...entry.genres] : [];
       document.getElementById("steam-search-results").classList.add("hidden");
       document.getElementById("input-image-file").value = "";
+      document.getElementById("image-status").innerText = "";
       setImagePreview(entry.image || null);
       document.getElementById("input-game").value = entry.game || "";
       const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video";
@@ -1023,10 +1254,10 @@
 
     function createStageRing(stage, cancelled, size = 34) {
       const idx = STAGES.indexOf(stage), total = STAGES.length, segDeg = 360 / total, gapDeg = 6;
-      const activeColor = STAGE_COLORS[stage] || "#FF9900", stops = [];
+      const activeColor = STAGE_COLORS[stage] || "#ff9d00", stops = [];
       for (let i = 0; i < total; i++) {
         const start = i * segDeg, end = start + (segDeg - gapDeg);
-        let color = cancelled ? "#3A1620" : (i <= idx ? (STAGE_COLORS[STAGES[i]] || "#00A3E0") : "#1D242D");
+        let color = cancelled ? "#3A1620" : (i <= idx ? (STAGE_COLORS[STAGES[i]] || "#00d8ff") : "#1D242D");
         stops.push(`${color} ${start}deg ${end}deg`);
         stops.push(`transparent ${end}deg ${start + segDeg}deg`);
       }
@@ -1044,9 +1275,9 @@
       const tabs = ["All", ...STAGES, "Cancelled"];
 
       document.getElementById("filter-tabs-container").innerHTML = tabs.map(f => {
-        const active = filter === f, isC = f === "Cancelled", sColor = STAGE_COLORS[f] || (isC ? "#FF0033" : "#FF9900");
+        const active = filter === f, isC = f === "Cancelled", sColor = STAGE_COLORS[f] || (isC ? "#FF0033" : "#ff9d00");
         let badge = (f !== "All" && f !== "Cancelled" && counts[f] > 0) ? `<span class="ml-1 opacity-70">${counts[f]}</span>` : (isC && cancelledCount > 0 ? `<span class="ml-1 opacity-70">${cancelledCount}</span>` : '');
-        const style = active ? `background: ${sColor}; color: #0A0D11; font-weight: 700;` : `background: rgba(0,163,224,0.06); color: var(--card-text); border: var(--card-border);`;
+        const style = active ? `background: ${sColor}; color: #000000; font-weight: 700; box-shadow: 0 0 10px ${sColor};` : `background: rgba(0,216,255,0.06); color: var(--card-text); border: var(--card-border);`;
         return `<button data-filter="${escapeHtml(f)}" class="tab-btn chamfer-xs filter-tab-btn" style="${style}">${escapeHtml(f)}${badge}</button>`;
       }).join("");
 
@@ -1064,68 +1295,70 @@
       const listContainer = document.getElementById("entries-container"), emptyState = document.getElementById("empty-state");
       if (visible.length === 0) {
         listContainer.innerHTML = "";
-        emptyState.innerText = entries.length === 0 ? "Nothing logged yet. Add your first entry to start." : "No entries match this filter.";
+        emptyState.innerText = entries.length === 0 ? "Citadel Archives Empty. Add your first entry to calibrate the system console." : "No logs match this filter.";
         emptyState.classList.remove("hidden"); return;
       }
 
       emptyState.classList.add("hidden");
       listContainer.innerHTML = visible.map(entry => {
-        const c = entry.cancelled, isOpen = !!expanded[entry.id], sColor = STAGE_COLORS[entry.stage] || "#FF9900";
+        const c = entry.cancelled, isOpen = !!expanded[entry.id], sColor = STAGE_COLORS[entry.stage] || "#ff9d00";
         const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video", isTbd = entry.videoType === "TBD / Unassigned";
         const ownership = entry.ownership || "Owned";
         const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
 
         const genreList = entry.genres || [];
-        const genreBadgeStyle = `color: var(--card-text); border: var(--card-border); background: rgba(0,163,224,0.08);`;
+        const genreBadgeStyle = `color: var(--card-text); border: var(--card-border); background: rgba(0,216,255,0.08);`;
         const genrePreview = genreList.length ? `
           <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
           ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: var(--card-text); border: var(--card-border); opacity: 0.7;">+${genreList.length - 1}</span>` : ''}` : '';
-        const typeStyle = isTbd ? `color: #6E8399; border: 1px dashed rgba(110,131,153,0.4);` : `border: var(--card-border); color: var(--card-text);`;
-        const titleHtml = isU ? `<span class="italic text-sm opacity-60">[ UNTITLED PROJECT ]</span>` : escapeHtml(entry.draftTitle);
+        const typeStyle = isTbd ? `color: var(--me-text-muted); border: 1px dashed rgba(107,140,158,0.4);` : `border: var(--card-border); color: var(--card-text);`;
+        const titleHtml = isU ? `<span class="italic text-sm opacity-60">[ UNTITLED LOG ]</span>` : escapeHtml(entry.draftTitle);
 
-        let oStyle = `color: var(--blue); border: var(--card-border);`;
-        if (ownership === "Jack Sparrow") oStyle = `color: var(--amber); border: var(--card-border);`;
-        else if (ownership === "Unowned") oStyle = `color: #6E8399; border: var(--card-border);`;
+        let oStyle = `color: var(--me-cyan); border: var(--card-border);`;
+        if (ownership === "Jack Sparrow") oStyle = `color: var(--me-amber); border: var(--card-border);`;
+        else if (ownership === "Unowned") oStyle = `color: var(--me-text-muted); border: var(--card-border);`;
 
         const hasImg = !!entry.image && !c;
         const bannerLayer = hasImg ? `
-          <div class="absolute inset-0" style="background-image: url('${entry.image}'); background-size: cover; background-position: center; opacity: 0.35;"></div>
-          <div class="absolute inset-0" style="background: linear-gradient(100deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 100%);"></div>` : '';
+          <div class="banner-window">
+            <img class="banner-image" src="${escapeHtml(entry.image)}" alt="Banner Image">
+            <div class="banner-overlay"></div>
+          </div>` : '';
 
         return `
-          <div class="hologram-panel relative overflow-hidden">
+          <article class="hologram-panel entry-card relative overflow-hidden">
             ${bannerLayer}
-            <div class="relative z-10">
+            <div class="entry-content relative z-10">
             <div class="cyber-bar"></div>
-            <div class="n7-stripe"></div>
-            <div class="flex items-start gap-3 px-4 py-3">
+            <div class="flex items-start gap-3 px-5 py-4">
               <button data-action="toggle" data-id="${entry.id}" class="mt-1 icon-btn shrink-0" style="color: var(--card-text);">${isOpen ? ICONS.chevronUp : ICONS.chevronDown}</button>
               ${createStageRing(entry.stage, c)}
               <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: var(--card-text);">${escapeHtml(entry.game)}</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="hud-title-diamond"></span>
+                  <span class="entry-title font-display font-700 text-lg uppercase leading-none ${c ? 'line-through opacity-50' : ''}" style="color: #fff;">${escapeHtml(entry.game)}</span>
                 </div>
-                <div class="mt-1 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,153,0,0.15); color: var(--amber);">Finalize Details</span>` : ''}</div>
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[10px] uppercase tracking-wide opacity-80">
+                <div class="mt-1.5 flex items-center gap-2" style="color: var(--card-text);">${titleHtml}${needsFinalizing ? `<span class="text-[9px] px-1.5 uppercase font-semibold chamfer-xs" style="background: rgba(255,157,0,0.15); color: var(--me-amber);">Finalize Details</span>` : ''}</div>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2.5 text-[10px] uppercase tracking-wide opacity-80">
                   <span class="chamfer-xs px-1.5 py-0.5" style="${typeStyle}">${isTbd ? 'TBD' : escapeHtml(entry.videoType)}</span>
                   ${genrePreview}
-                  ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
-                  <span class="ml-auto opacity-60">${fmtDate(entry.dateCreated)}</span>
+                  ${!c ? `<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: ${sColor}; background: ${sColor}18; border: 1px solid ${sColor}44;">${escapeHtml(entry.stage)}</span>` : '<span class="font-semibold px-2 py-0.5 chamfer-xs" style="color: #FF0033; background: rgba(255,0,51,0.1);">Cancelled</span>'}
+                  <span class="ml-auto opacity-60 font-mono">${fmtDate(entry.dateCreated)}</span>
                 </div>
               </div>
               <div class="flex items-center gap-0.5 shrink-0">
-                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--blue)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
+                <button data-action="cancel" data-id="${entry.id}" class="icon-btn" style="color: ${c ? 'var(--me-cyan)' : 'var(--card-text)'};">${c ? ICONS.rotateCcw : ICONS.ban}</button>
                 <button data-action="edit" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.pencil}</button>
                 <button data-action="delete" data-id="${entry.id}" class="icon-btn" style="color: var(--card-text);">${ICONS.trash}</button>
               </div>
             </div>
             ${isOpen ? `
-              <div class="px-4 pb-4 pt-3 ml-11 border-t border-slate-700/50 ${c ? 'opacity-50' : ''}">
+              <div class="px-5 pb-4 pt-3 ml-11 border-t border-cyan-900/40 ${c ? 'opacity-50' : ''}">
                 ${genreList.length ? `<div class="flex flex-wrap gap-1.5 mb-3">${genreList.map(g => `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(g)}</span>`).join("")}</div>` : ''}
-                <p class="text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No description.')}</p>
+                <p class="entry-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(entry.description || 'No Citadel log details provided.')}</p>
                 <div class="flex flex-wrap items-center justify-between gap-y-2 mt-3 text-[11px] opacity-80">
                   <div class="flex items-center gap-2"><span>Ownership:</span><span class="px-1.5 py-0.5 chamfer-xs font-semibold uppercase" style="${oStyle}">${escapeHtml(ownership)}</span></div>
-                  <div class="flex items-center gap-4"><span>Logged: <span>${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span>${fmtDate(entry.dateUploaded)}</span></span></div>
+                  <div class="flex items-center gap-4"><span>Logged: <span class="font-mono">${fmtDate(entry.dateCreated)}</span></span><span>Uploaded: <span class="font-mono">${fmtDate(entry.dateUploaded)}</span></span></div>
                 </div>
                 ${(entry.timeToBeat !== null && entry.timeToBeat !== undefined && entry.timeToBeat !== "") ? `
                 <div class="mt-2 text-[11px] opacity-80">
@@ -1133,7 +1366,7 @@
                 </div>` : ''}
               </div>` : ''}
             </div>
-          </div>`;
+          </article>`;
       }).join("");
 
       listContainer.onclick = function(e) {
@@ -1147,16 +1380,18 @@
     }
 
     function render() {
-      document.getElementById("entry-count-readout").innerHTML = `// gameplay.pipeline &nbsp;·&nbsp; ${entries.length} entr${entries.length === 1 ? "y" : "ies"} synced`;
+      document.getElementById("entry-count-readout").innerHTML = `STATUS: ONLINE // ${entries.length} LOG${entries.length === 1 ? "" : "S"} SYNCED`;
       document.getElementById("icon-plus").innerHTML = ICONS.plus;
       document.getElementById("icon-close").innerHTML = ICONS.x;
       document.getElementById("icon-logout").innerHTML = ICONS.logout;
+      document.getElementById("icon-image").innerHTML = ICONS.image;
       document.getElementById("sort-icon").innerHTML = sortDir === "desc" ? ICONS.chevronDown : ICONS.chevronUp;
       renderTabs(); renderList();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       initThemeEngine();
+      initOpticsCalibration();
       initFormSelects();
       document.getElementById("btn-open-new").onclick = openNewForm;
       document.getElementById("btn-close-form").onclick = closeForm;
@@ -1172,6 +1407,14 @@
       document.addEventListener("click", (e) => {
         if (!e.target.closest("#input-game") && !e.target.closest("#steam-search-results")) {
           document.getElementById("steam-search-results").classList.add("hidden");
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeForm();
+          document.getElementById("steam-search-results").classList.add("hidden");
+          document.getElementById("settings-window").classList.remove("active");
         }
       });
 
