@@ -1094,8 +1094,9 @@
     }
 
     function renderSelectedGenres() {
+      const genreBadgeStyle = `background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); opacity: 1; font-weight: 600;`;
       document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
-        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="background: rgba(0, 216, 255, 0.15); color: var(--me-cyan); border: var(--card-border);">
+        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs" style="${genreBadgeStyle}">
           ${escapeHtml(g)}
           <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
         </span>`).join("");
@@ -1315,7 +1316,7 @@
         const needsFinalizing = !c && ["Queue", "Editing", "Review", "Published"].includes(entry.stage) && (isU || isTbd);
 
         const genreList = entry.genres || [];
-        const genreBadgeStyle = `color: var(--card-text); border: var(--card-border); background: rgba(0,216,255,0.08);`;
+        const genreBadgeStyle = `background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); opacity: 1; font-weight: 600;`;
         const genrePreview = genreList.length ? `
           <span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="${genreBadgeStyle}">${escapeHtml(genreList[0])}</span>
           ${genreList.length > 1 ? `<span class="text-[10px] px-1.5 py-0.5 chamfer-xs" style="color: var(--card-text); border: var(--card-border); opacity: 0.7;">+${genreList.length - 1}</span>` : ''}` : '';
