@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="division">
+<html lang="en" data-theme="division" data-style="matrix">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -469,6 +469,28 @@
       accent-color: var(--accent-color);
       cursor: pointer;
     }
+
+    /* Dynamic Style Container Multi-Layout Options */
+    [data-style="matrix"] #entries-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    [data-style="timeline"] #entries-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+      padding-left: 1rem;
+      border-left: 2px dashed rgba(255, 102, 0, 0.3);
+    }
+
+    [data-style="terminal"] #entries-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
   </style>
 </head>
 <body class="relative flex flex-col min-h-screen overflow-x-hidden">
@@ -597,6 +619,15 @@
             <option value="cyberpunk">Cyberpunk 2077</option>
             <option value="halo">Halo (UNSC HUD)</option>
             <option value="discord">Discord App</option>
+          </select>
+        </div>
+
+        <!-- Style Switcher Selector (Card Layout Options) -->
+        <div class="relative flex items-center shrink-0">
+          <select id="style-selector" class="input-field !w-auto !py-1 !px-2 text-[9px] sm:text-[10px] uppercase cursor-pointer" title="Select Card Visual Style">
+            <option value="matrix" selected>Style: Directive Matrix</option>
+            <option value="timeline">Style: Tactical Feed</option>
+            <option value="terminal">Style: Data Terminal</option>
           </select>
         </div>
 
@@ -739,7 +770,7 @@
       <div id="empty-state" class="hidden text-center py-16 text-sm hologram-panel">
         Archives Empty. Add your first entry to calibrate the system console.
       </div>
-      <div id="entries-container" class="flex flex-col gap-4"></div>
+      <div id="entries-container"></div>
     </section>
 
     <!-- MODULE 2: MEAL PLAN & DIRECTIVES SECTION -->
@@ -869,7 +900,7 @@
     const STAGE_COLORS = { "Backlog": "#6C7D93", "Planned": "#ff6600", "Recording": "#FF2A55", "Queue": "#A855F7", "Editing": "#ff9d00", "Review": "#EAB308", "Published": "#10B981" };
     const VIDEO_TYPES = ["TBD / Unassigned", "Critical Hit List", "Lets Play Vay", "Funny Moments", "Content Piece", "Montage"];
     const OWNERSHIP_OPTIONS = ["Owned", "Jack Sparrow", "Unowned"];
-    
+
     const TOP_100_GENRES = [
       "Story — Choice-Driven / Branching", "Story — Narrative Horror", "Story — Interactive Drama / QTE", 
       "Story — Mystery / Detective", "Story — Visual Novel", "Story — Interactive Movie / FMV", "Story — Walking Simulator",
@@ -1134,7 +1165,7 @@
       }
     }
 
-    // --- THEME ENGINE ---
+    // --- THEME & LAYOUT ENGINE ---
     function setTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('user-theme', themeName);
@@ -1160,16 +1191,29 @@
       }
     }
 
+    function setLayoutStyle(styleName) {
+      document.documentElement.setAttribute('data-style', styleName);
+      localStorage.setItem('user-style', styleName);
+      render();
+    }
+
     function initThemeEngine() {
       const savedTheme = localStorage.getItem("user-theme") || "division";
       setTheme(savedTheme);
 
+      const savedStyle = localStorage.getItem("user-style") || "matrix";
+      setLayoutStyle(savedStyle);
+
       const themeSelect = document.getElementById("theme-selector");
       if (themeSelect) {
         themeSelect.value = savedTheme;
-        themeSelect.addEventListener("change", (e) => {
-          setTheme(e.target.value);
-        });
+        themeSelect.addEventListener("change", (e) => setTheme(e.target.value));
+      }
+
+      const styleSelect = document.getElementById("style-selector");
+      if (styleSelect) {
+        styleSelect.value = savedStyle;
+        styleSelect.addEventListener("change", (e) => setLayoutStyle(e.target.value));
       }
     }
 
@@ -1818,7 +1862,7 @@
         focus: focusEl ? focusEl.value : "Carbohydrates"
       });
 
-      sec.showAddForm = false; // Hide form again after saving
+      sec.showAddForm = false;
       syncSaveMealPlan();
       renderMealPlan();
     };
@@ -1906,338 +1950,420 @@
               <div class="text-xs font-bold truncate text-[#f1f5f9]">${escapeHtml(game.name)}</div>
               <div class="text-[9px] uppercase tracking-wider opacity-60">Steam ID: ${game.id}</div>
             </div>
-          </div>`).join("") + `
-          <div id="btn-steam-manual-skip" class="p-1.5 text-center text-[10px] uppercase cursor-pointer border-t border-slate-700" style="color: var(--accent-color);">
-            Keep Manual Entry (Skip Steam Match)
-          </div>`;
+          </div>`).join("");
 
         resultsContainer.classList.remove("hidden");
-        resultsContainer.querySelectorAll(".steam-result-item").forEach((el, index) => {
-          el.onclick = () => selectSteamGame(results[index]);
+
+        resultsContainer.querySelectorAll(".steam-result-item").forEach(item => {
+          item.onclick = async () => {
+            const selectedGame = results.find(g => String(g.id) === item.dataset.steamId);
+            if (selectedGame) {
+              document.getElementById("input-game").value = selectedGame.name;
+              draftImage = selectedGame.coverUrl;
+              updateImagePreview();
+              
+              const matched = matchSteamGenresToTaxonomy(selectedGame.rawGenres);
+              matched.forEach(g => { if (!draftGenres.includes(g)) draftGenres.push(g); });
+              renderDraftGenres();
+            }
+            resultsContainer.classList.add("hidden");
+            checkFormValidity();
+          };
         });
-        const manualBtn = document.getElementById("btn-steam-manual-skip");
-        if (manualBtn) manualBtn.onclick = () => resultsContainer.classList.add("hidden");
       }, 350);
     }
 
-    async function selectSteamGame(game) {
-      document.getElementById("input-game").value = game.name;
-      document.getElementById("steam-search-results").classList.add("hidden");
-      if (game.coverUrl) setImagePreview(game.coverUrl);
-      if (game.rawGenres && game.rawGenres.length > 0) {
-        const mapped = matchSteamGenresToTaxonomy(game.rawGenres);
-        mapped.forEach(g => { if (!draftGenres.includes(g)) draftGenres.push(g); });
-        renderSelectedGenres();
-      }
-
-      const timeToBeatInput = document.getElementById("input-timeToBeat");
-      if (game.id) {
-        timeToBeatInput.placeholder = "Fetching playtime from SteamSpy...";
-        try {
-          const spyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://steamspy.com/api.php?request=appdetails&appid=${game.id}`)}`;
-          const res = await fetch(spyUrl);
-          if (res.ok) {
-            const spyData = await res.json();
-            const minutes = spyData.average_forever || spyData.median_forever || 0;
-            if (minutes > 0) {
-              const hours = Math.round((minutes / 60) * 10) / 10;
-              timeToBeatInput.value = hours;
-            }
-          }
-        } catch (err) {
-          console.warn("Could not retrieve SteamSpy playtime:", err);
-        } finally {
-          timeToBeatInput.placeholder = "Auto-filled via Steam/HLTB";
-        }
-      }
-
-      checkFormValidity();
-    }
-
-    function initFormSelects() {
-      document.getElementById("genre-datalist").innerHTML = TOP_100_GENRES.map(g => `<option value="${escapeHtml(g)}"></option>`).join("");
-      document.getElementById("input-videoType").innerHTML = VIDEO_TYPES.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
-      document.getElementById("input-stage").innerHTML = STAGES.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-      document.getElementById("input-ownership").innerHTML = OWNERSHIP_OPTIONS.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
-    }
-
-    function renderSelectedGenres() {
-      const genreBadgeStyle = `background: rgba(7, 14, 23, var(--pill-opacity)); color: var(--tag-text); border: 1px solid var(--accent-color); opacity: 1; font-weight: 600; backdrop-filter: blur(6px); shadow: 0 2px 5px rgba(0,0,0,0.5);`;
-      document.getElementById("selected-genres-container").innerHTML = draftGenres.map((g, idx) => `
-        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 chamfer-xs hud-pill" style="${genreBadgeStyle}">
-          ${escapeHtml(g)}
-          <button type="button" onclick="window.removeGenreTag(${idx})" class="hover:text-white ml-0.5">${ICONS.xSmall}</button>
-        </span>`).join("");
-    }
-
-    window.removeGenreTag = (idx) => { draftGenres.splice(idx, 1); renderSelectedGenres(); };
-
-    function addGenreTag() {
-      const input = document.getElementById("input-genre-search"), val = input.value.trim();
-      if (val && !draftGenres.includes(val)) { draftGenres.push(val); input.value = ""; renderSelectedGenres(); }
-    }
-
-    function compressImageFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("Could not read file."));
-        reader.onload = () => {
-          const img = new Image();
-          img.onerror = () => reject(new Error("Could not decode image."));
-          img.onload = () => {
-            const maxW = 1000;
-            const scale = Math.min(1, maxW / img.width);
-            const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
-            const canvas = document.createElement("canvas");
-            canvas.width = w; canvas.height = h;
-            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-            let quality = 0.72, dataUrl = canvas.toDataURL("image/jpeg", quality);
-            while (dataUrl.length > 700000 && quality > 0.35) {
-              quality -= 0.1;
-              dataUrl = canvas.toDataURL("image/jpeg", quality);
-            }
-            resolve(dataUrl);
-          };
-          img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function setImagePreview(dataUrl) {
-      draftImage = dataUrl;
-      const wrap = document.getElementById("image-preview-wrap"), img = document.getElementById("image-preview");
-      const removeBtn = document.getElementById("btn-remove-image"), status = document.getElementById("image-status");
-      if (dataUrl) {
-        img.src = dataUrl; wrap.classList.remove("hidden"); removeBtn.classList.remove("hidden");
-        status.innerText = `~${Math.round(dataUrl.length / 1024)}kb`;
+    function checkFormValidity() {
+      const g = document.getElementById("input-game").value.trim();
+      const btn = document.getElementById("btn-save-entry");
+      if (g) {
+        btn.disabled = false;
+        btn.classList.remove("opacity-30", "cursor-not-allowed");
       } else {
-        img.src = ""; wrap.classList.add("hidden"); removeBtn.classList.add("hidden"); status.innerText = "";
+        btn.disabled = true;
+        btn.classList.add("opacity-30", "cursor-not-allowed");
       }
     }
 
-    document.getElementById("btn-choose-image").onclick = () => document.getElementById("input-image-file").click();
-    document.getElementById("btn-remove-image").onclick = () => { setImagePreview(null); document.getElementById("input-image-file").value = ""; };
-    document.getElementById("input-image-file").onchange = async (e) => {
-      const file = e.target.files[0]; if (!file) return;
-      const status = document.getElementById("image-status");
-      status.innerText = "Processing…";
-      try {
-        const dataUrl = await compressImageFile(file);
-        setImagePreview(dataUrl);
-      } catch (err) { status.innerText = "Error processing image."; }
+    function populateFormSelects() {
+      const vSelect = document.getElementById("input-videoType");
+      vSelect.innerHTML = VIDEO_TYPES.map(vt => `<option value="${vt}">${vt}</option>`).join("");
+
+      const sSelect = document.getElementById("input-stage");
+      sSelect.innerHTML = STAGES.map(st => `<option value="${st}">${st}</option>`).join("");
+
+      const oSelect = document.getElementById("input-ownership");
+      oSelect.innerHTML = OWNERSHIP_OPTIONS.map(o => `<option value="${o}">${o}</option>`).join("");
+
+      const datalist = document.getElementById("genre-datalist");
+      datalist.innerHTML = TOP_100_GENRES.map(g => `<option value="${g}"></option>`).join("");
+    }
+
+    function renderDraftGenres() {
+      const container = document.getElementById("selected-genres-container");
+      container.innerHTML = draftGenres.map(g => `
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] chamfer-xs hud-pill border border-cyan-500/40 text-cyan-300">
+          ${escapeHtml(g)}
+          <button type="button" onclick="window.removeDraftGenre('${escapeHtml(g)}')" class="hover:text-red-400 ml-1">${ICONS.xSmall}</button>
+        </span>
+      `).join("");
+    }
+
+    window.removeDraftGenre = (g) => {
+      draftGenres = draftGenres.filter(item => item !== g);
+      renderDraftGenres();
     };
 
-    function handleUntitledToggle() {
-      const isU = document.getElementById("chk-untitled").checked, tInput = document.getElementById("input-draftTitle");
-      if (isU) { tInput.value = "Untitled Video"; tInput.disabled = true; } 
-      else { if (tInput.value === "Untitled Video") tInput.value = ""; tInput.disabled = false; tInput.focus(); }
-      checkFormValidity();
+    function updateImagePreview() {
+      const wrap = document.getElementById("image-preview-wrap");
+      const img = document.getElementById("image-preview");
+      const rmBtn = document.getElementById("btn-remove-image");
+      if (draftImage) {
+        img.src = draftImage;
+        wrap.classList.remove("hidden");
+        rmBtn.classList.remove("hidden");
+      } else {
+        img.src = "";
+        wrap.classList.add("hidden");
+        rmBtn.classList.add("hidden");
+      }
     }
 
-    function checkFormValidity() {
-      const g = document.getElementById("input-game").value.trim(), isU = document.getElementById("chk-untitled").checked, t = document.getElementById("input-draftTitle").value.trim();
+    function openForm(id = null) {
+      editingId = id;
+      const panel = document.getElementById("form-panel");
+      const title = document.getElementById("form-title");
       const saveBtn = document.getElementById("btn-save-entry");
-      if (g && (isU || t)) { saveBtn.disabled = false; saveBtn.classList.remove("opacity-30", "cursor-not-allowed"); } 
-      else { saveBtn.disabled = true; saveBtn.classList.add("opacity-30", "cursor-not-allowed"); }
+      const readout = document.getElementById("form-readout");
+
+      draftGenres = [];
+      draftImage = null;
+
+      if (id) {
+        const entry = entries.find(e => e.id === id);
+        if (!entry) return;
+        title.innerText = "Edit Log Entry";
+        saveBtn.innerText = "Update Entry";
+        readout.innerText = `[ FORM.EDIT // ${id.slice(0, 6)} ]`;
+
+        document.getElementById("input-game").value = entry.game || "";
+        document.getElementById("input-draftTitle").value = entry.draftTitle || "";
+        document.getElementById("chk-untitled").checked = entry.isUntitled || false;
+        document.getElementById("input-videoType").value = entry.videoType || VIDEO_TYPES[0];
+        document.getElementById("input-stage").value = entry.stage || STAGES[0];
+        document.getElementById("input-ownership").value = entry.ownership || OWNERSHIP_OPTIONS[0];
+        document.getElementById("input-description").value = entry.description || "";
+        document.getElementById("input-dateUploaded").value = entry.dateUploaded || "";
+        document.getElementById("input-timeToBeat").value = entry.timeToBeat || "";
+
+        draftGenres = entry.genres ? [...entry.genres] : [];
+        draftImage = entry.imageUrl || null;
+      } else {
+        title.innerText = "New Entry";
+        saveBtn.innerText = "Add Entry";
+        readout.innerText = "[ FORM.NEW // 0xNEW ]";
+
+        document.getElementById("input-game").value = "";
+        document.getElementById("input-draftTitle").value = "";
+        document.getElementById("chk-untitled").checked = false;
+        document.getElementById("input-videoType").value = VIDEO_TYPES[0];
+        document.getElementById("input-stage").value = STAGES[0];
+        document.getElementById("input-ownership").value = OWNERSHIP_OPTIONS[0];
+        document.getElementById("input-description").value = "";
+        document.getElementById("input-dateUploaded").value = todayISO();
+        document.getElementById("input-timeToBeat").value = "";
+      }
+
+      renderDraftGenres();
+      updateImagePreview();
+      checkFormValidity();
+      panel.classList.remove("hidden");
+      panel.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function openNewForm() {
-      editingId = null; draftGenres = []; setImagePreview(null);
-      document.getElementById("steam-search-results").classList.add("hidden");
-      document.getElementById("input-image-file").value = "";
-      document.getElementById("image-status").innerText = "";
-      document.getElementById("input-game").value = "";
-      document.getElementById("input-genre-search").value = "";
-      document.getElementById("chk-untitled").checked = false;
-      document.getElementById("input-draftTitle").disabled = false;
-      document.getElementById("input-draftTitle").value = "";
-      document.getElementById("input-videoType").value = VIDEO_TYPES[0];
-      document.getElementById("input-stage").value = STAGES[0];
-      document.getElementById("input-ownership").value = OWNERSHIP_OPTIONS[0];
-      document.getElementById("input-description").value = "";
-      document.getElementById("input-dateUploaded").value = "";
-      document.getElementById("input-timeToBeat").value = "";
-      document.getElementById("form-title").innerText = "New Entry";
-      document.getElementById("btn-save-entry").innerText = "Add Entry";
-      renderSelectedGenres(); checkFormValidity(); showForm();
+    function closeForm() {
+      document.getElementById("form-panel").classList.add("hidden");
+      editingId = null;
     }
 
-    function openEditForm(entry) {
-      editingId = entry.id; draftGenres = Array.isArray(entry.genres) ? [...entry.genres] : [];
-      document.getElementById("steam-search-results").classList.add("hidden");
-      document.getElementById("input-image-file").value = "";
-      document.getElementById("image-status").innerText = "";
-      setImagePreview(entry.image || null);
-      document.getElementById("input-game").value = entry.game || "";
-      const isU = !!entry.isUntitled || entry.draftTitle === "Untitled Video";
-      document.getElementById("chk-untitled").checked = isU;
-      document.getElementById("input-draftTitle").disabled = isU;
-      document.getElementById("input-draftTitle").value = entry.draftTitle || (isU ? "Untitled Video" : "");
-      document.getElementById("input-videoType").value = entry.videoType || VIDEO_TYPES[0];
-      document.getElementById("input-stage").value = entry.stage || STAGES[0];
-      document.getElementById("input-ownership").value = entry.ownership || OWNERSHIP_OPTIONS[0];
-      document.getElementById("input-description").value = entry.description || "";
-      document.getElementById("input-dateUploaded").value = entry.dateUploaded || "";
-      document.getElementById("input-timeToBeat").value = entry.timeToBeat || "";
-      document.getElementById("form-title").innerText = "Edit Entry";
-      document.getElementById("btn-save-entry").innerText = "Save Changes";
-      renderSelectedGenres(); checkFormValidity(); showForm();
-    }
+    async function saveForm() {
+      const game = document.getElementById("input-game").value.trim();
+      if (!game) return;
 
-    function showForm() { document.getElementById("form-panel").classList.remove("hidden"); }
-    function hideForm() { document.getElementById("form-panel").classList.add("hidden"); }
-
-    async function saveEntry() {
-      const g = document.getElementById("input-game").value.trim();
-      const isU = document.getElementById("chk-untitled").checked;
-      const t = document.getElementById("input-draftTitle").value.trim();
-      if (!g || (!isU && !t)) return;
+      const isUntitled = document.getElementById("chk-untitled").checked;
+      const draftTitle = isUntitled ? "Untitled Video" : (document.getElementById("input-draftTitle").value.trim() || "Untitled Video");
 
       const entry = {
         id: editingId || uid(),
-        game: g,
-        isUntitled: isU,
-        draftTitle: isU ? "Untitled Video" : t,
+        game,
+        draftTitle,
+        isUntitled,
         videoType: document.getElementById("input-videoType").value,
         stage: document.getElementById("input-stage").value,
         ownership: document.getElementById("input-ownership").value,
-        genres: [...draftGenres],
-        image: draftImage || "",
+        genres: draftGenres,
+        imageUrl: draftImage || "",
         description: document.getElementById("input-description").value.trim(),
         dateUploaded: document.getElementById("input-dateUploaded").value || todayISO(),
         timeToBeat: Number(document.getElementById("input-timeToBeat").value) || 0,
-        updatedAt: todayISO()
+        createdAt: editingId ? (entries.find(e => e.id === editingId)?.createdAt || todayISO()) : todayISO()
       };
 
       await syncSaveEntry(entry);
-      hideForm();
+      closeForm();
     }
 
     async function deleteEntry(id) {
       await syncDeleteEntry(id);
     }
 
-    function renderFilterTabs() {
-      const container = document.getElementById("filter-tabs-container");
-      const filters = ["All", ...STAGES];
-      container.innerHTML = filters.map(f => `
-        <button onclick="window.setFilter('${f}')" class="tab-btn chamfer-xs ${filter === f ? 'btn-amber' : 'btn-ghost'}">
-          ${f}
-        </button>`).join("");
+    /* ==========================================================================
+       CARD RENDER ENGINE (3 DISTINCT STYLES)
+       ========================================================================== */
+    function renderCardStyleMatrix(entry, stageColor) {
+      return `
+        <div class="hologram-panel relative p-4 sm:p-5 flex flex-col md:flex-row gap-4 items-stretch">
+          ${entry.imageUrl ? `
+            <div class="w-full md:w-48 h-32 md:h-auto shrink-0 chamfer-xs overflow-hidden relative border border-slate-700">
+              <img src="${escapeHtml(entry.imageUrl)}" class="w-full h-full object-cover banner-image" alt="${escapeHtml(entry.game)}">
+              <div class="banner-overlay"></div>
+            </div>
+          ` : ''}
+
+          <div class="flex-1 flex flex-col justify-between min-w-0">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                <span class="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 chamfer-xs font-bold" style="background: ${stageColor}22; color: ${stageColor}; border: 1px solid ${stageColor}88;">
+                  ● ${escapeHtml(entry.stage)}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400">[ ${fmtDate(entry.dateUploaded)} ]</span>
+              </div>
+
+              <h3 class="font-display font-700 text-lg sm:text-xl text-white truncate">${escapeHtml(entry.game)}</h3>
+              <div class="text-xs font-mono mb-2" style="color: var(--accent-color);">${escapeHtml(entry.draftTitle)}</div>
+
+              ${entry.description ? `<p class="text-xs text-slate-300 opacity-90 line-clamp-2 mb-3">${escapeHtml(entry.description)}</p>` : ''}
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                <span class="text-[9px] uppercase font-mono px-2 py-0.5 chamfer-xs bg-slate-900 border border-slate-700 text-slate-300">
+                  ${escapeHtml(entry.videoType)}
+                </span>
+                <span class="text-[9px] uppercase font-mono px-2 py-0.5 chamfer-xs bg-slate-900 border border-slate-700 text-slate-300">
+                  ${escapeHtml(entry.ownership)}
+                </span>
+                ${entry.timeToBeat ? `<span class="text-[9px] uppercase font-mono px-2 py-0.5 chamfer-xs bg-slate-900 border border-slate-700 text-amber-400">⏱ ${entry.timeToBeat}h</span>` : ''}
+                ${(entry.genres || []).map(g => `<span class="text-[9px] font-mono px-2 py-0.5 chamfer-xs bg-cyan-950/40 border border-cyan-800 text-cyan-300">${escapeHtml(g)}</span>`).join('')}
+              </div>
+
+              <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+                <button onclick="window.openForm('${entry.id}')" class="btn-ghost chamfer-xs !text-xs !py-1 !px-2.5 flex items-center gap-1">
+                  ${ICONS.pencil} Edit
+                </button>
+                <button onclick="window.openDeleteModal('${entry.id}')" class="btn-ghost chamfer-xs !text-xs !py-1 !px-2.5 !text-red-400 border-red-500/40 hover:!bg-red-500 hover:!text-white flex items-center gap-1">
+                  ${ICONS.trash} Purge
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
-    window.setFilter = (f) => { filter = f; renderFilterTabs(); renderEntries(); };
+    function renderCardStyleTimeline(entry, stageColor) {
+      return `
+        <div class="hologram-panel relative p-4 flex flex-col sm:flex-row gap-4 items-center">
+          <div class="absolute -left-[1.4rem] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-black" style="background: ${stageColor}; shadow: 0 0 8px ${stageColor};"></div>
+          
+          ${entry.imageUrl ? `
+            <img src="${escapeHtml(entry.imageUrl)}" class="w-16 h-16 object-cover rounded-full border-2 border-slate-700 shrink-0" alt="">
+          ` : `
+            <div class="w-12 h-12 rounded-full border border-slate-700 bg-slate-900 shrink-0 flex items-center justify-center text-xs font-mono font-bold" style="color: ${stageColor};">
+              ${entry.game.slice(0, 2).toUpperCase()}
+            </div>
+          `}
 
-    function renderEntries() {
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-display font-700 text-base sm:text-lg text-white truncate">${escapeHtml(entry.game)}</h3>
+              <span class="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full font-bold shrink-0" style="background: ${stageColor}33; color: ${stageColor}; border: 1px solid ${stageColor};">
+                ${escapeHtml(entry.stage)}
+              </span>
+            </div>
+            
+            <div class="text-xs font-mono mb-1 text-slate-300 truncate">${escapeHtml(entry.draftTitle)}</div>
+            
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-mono opacity-75">
+              <span>📅 ${fmtDate(entry.dateUploaded)}</span>
+              <span>•</span>
+              <span>🎮 ${escapeHtml(entry.ownership)}</span>
+              <span>•</span>
+              <span>🎬 ${escapeHtml(entry.videoType)}</span>
+              ${entry.timeToBeat ? `<span>•</span><span class="text-amber-400">⏱ ${entry.timeToBeat}h</span>` : ''}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick="window.openForm('${entry.id}')" class="icon-btn text-slate-400 hover:text-cyan-400" title="Edit">
+              ${ICONS.pencil}
+            </button>
+            <button onclick="window.openDeleteModal('${entry.id}')" class="icon-btn text-slate-400 hover:text-red-400" title="Purge">
+              ${ICONS.trash}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCardStyleTerminal(entry, stageColor) {
+      return `
+        <div class="hologram-panel relative p-2.5 px-4 flex items-center justify-between gap-3 hover:bg-slate-900/60 transition-colors">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <span class="w-2 h-2 rounded-full shrink-0" style="background: ${stageColor}; shadow: 0 0 6px ${stageColor};"></span>
+            <div class="font-mono text-xs text-white font-bold truncate shrink-0 max-w-[150px] sm:max-w-[200px]">${escapeHtml(entry.game)}</div>
+            <div class="text-xs font-mono text-slate-400 truncate flex-1 min-w-0">${escapeHtml(entry.draftTitle)}</div>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0 font-mono text-[10px]">
+            <span class="hidden sm:inline-block px-2 py-0.5 bg-black/50 border border-slate-800 text-slate-300 chamfer-xs">${escapeHtml(entry.videoType)}</span>
+            <span class="px-2 py-0.5 chamfer-xs font-bold" style="color: ${stageColor}; border: 1px solid ${stageColor}66;">${escapeHtml(entry.stage)}</span>
+            <span class="text-slate-500">${fmtDate(entry.dateUploaded)}</span>
+
+            <div class="flex items-center gap-1">
+              <button onclick="window.openForm('${entry.id}')" class="icon-btn text-slate-400 hover:text-white" title="Edit">
+                ${ICONS.pencil}
+              </button>
+              <button onclick="window.openDeleteModal('${entry.id}')" class="icon-btn text-slate-400 hover:text-red-400" title="Purge">
+                ${ICONS.trash}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
       const container = document.getElementById("entries-container");
       const emptyState = document.getElementById("empty-state");
+      const filterContainer = document.getElementById("filter-tabs-container");
       const readout = document.getElementById("entry-count-readout");
 
-      let filtered = entries.filter(e => filter === "All" || e.stage === filter);
+      if (!container) return;
+
+      const currentStyle = document.documentElement.getAttribute('data-style') || 'matrix';
+
+      // Render Stage Filters
+      const counts = {};
+      STAGES.forEach(s => counts[s] = 0);
+      entries.forEach(e => { if (counts[e.stage] !== undefined) counts[e.stage]++; });
+
+      filterContainer.innerHTML = `
+        <button onclick="window.setFilter('All')" class="tab-btn chamfer-xs ${filter === 'All' ? 'btn-amber' : 'btn-ghost'}">
+          All (${entries.length})
+        </button>
+      ` + STAGES.map(s => `
+        <button onclick="window.setFilter('${s}')" class="tab-btn chamfer-xs ${filter === s ? 'btn-amber' : 'btn-ghost'}">
+          ${s} (${counts[s]})
+        </button>
+      `).join("");
+
+      // Filter & Sort Data
+      let filtered = filter === "All" ? [...entries] : entries.filter(e => e.stage === filter);
       filtered.sort((a, b) => {
-        const dA = a.dateUploaded || "", dB = b.dateUploaded || "";
-        return sortDir === "desc" ? dB.localeCompare(dA) : dA.localeCompare(dB);
+        const dA = new Date(a.dateUploaded || 0);
+        const dB = new Date(b.dateUploaded || 0);
+        return sortDir === "desc" ? dB - dA : dA - dB;
       });
 
-      readout.innerText = `STATUS: ONLINE // ${filtered.length} LOGS DISPLAYED`;
+      readout.innerText = `STATUS: ONLINE // ARCHIVE COUNT: ${filtered.length} LOGS`;
 
       if (filtered.length === 0) {
-        emptyState.classList.remove("hidden");
         container.innerHTML = "";
+        emptyState.classList.remove("hidden");
         return;
       }
       emptyState.classList.add("hidden");
 
-      container.innerHTML = filtered.map(e => {
-        const isExp = !!expanded[e.id];
-        const stageColor = STAGE_COLORS[e.stage] || "#ff6600";
-        return `
-          <div class="hologram-panel p-4 relative overflow-hidden">
-            ${e.image ? `
-              <div class="entry-card-bg-layer">
-                <img src="${e.image}" class="banner-image" alt="">
-                <div class="banner-overlay"></div>
-              </div>` : ''}
-            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2 mb-1">
-                  <span class="text-xs font-mono font-bold px-2 py-0.5 chamfer-xs" style="background: rgba(0,0,0,0.6); color: ${stageColor}; border: 1px solid ${stageColor};">${escapeHtml(e.stage)}</span>
-                  <span class="text-xs font-mono opacity-80">${escapeHtml(e.videoType)}</span>
-                  <span class="text-xs font-mono opacity-60">&bull; ${fmtDate(e.dateUploaded)}</span>
-                </div>
-                <h3 class="font-display font-700 text-base sm:text-lg tracking-wide uppercase truncate text-white" style="text-shadow: 0 0 5px rgba(0,0,0,0.8);">
-                  ${escapeHtml(e.game)}: <span style="color: var(--accent-color);">${escapeHtml(e.draftTitle)}</span>
-                </h3>
-                ${Array.isArray(e.genres) && e.genres.length > 0 ? `
-                  <div class="flex flex-wrap gap-1 mt-2">
-                    ${e.genres.map(g => `<span class="text-[10px] px-2 py-0.5 chamfer-xs hud-pill" style="border: 1px solid var(--accent-color);">${escapeHtml(g)}</span>`).join("")}
-                  </div>` : ''}
-              </div>
-
-              <div class="flex items-center gap-2 shrink-0">
-                <button onclick="window.toggleExpand('${e.id}')" class="btn-ghost chamfer-xs !text-xs !py-1.5 !px-2.5">
-                  ${isExp ? 'Hide Details' : 'View Details'}
-                </button>
-                <button onclick="window.editEntry('${e.id}')" class="icon-btn text-cyan-400 hover:text-white" title="Edit Entry">
-                  ${ICONS.pencil}
-                </button>
-                <button onclick="window.confirmDelete('${e.id}')" class="icon-btn text-red-400 hover:text-red-300" title="Delete Entry">
-                  ${ICONS.trash}
-                </button>
-              </div>
-            </div>
-
-            ${isExp ? `
-              <div class="relative z-10 mt-4 pt-3 border-t border-slate-700/80 text-xs space-y-2 font-mono">
-                <div><span class="text-slate-400">Ownership:</span> ${escapeHtml(e.ownership || 'Owned')}</div>
-                <div><span class="text-slate-400">Est. Time to Beat:</span> ${e.timeToBeat ? e.timeToBeat + ' hrs' : '—'}</div>
-                ${e.description ? `<div><span class="text-slate-400">Description:</span><p class="mt-1 text-slate-200 whitespace-pre-wrap">${escapeHtml(e.description)}</p></div>` : ''}
-              </div>` : ''}
-          </div>`;
+      // Render Cards according to active style
+      container.innerHTML = filtered.map(entry => {
+        const stageColor = STAGE_COLORS[entry.stage] || "#ff6600";
+        if (currentStyle === 'timeline') {
+          return renderCardStyleTimeline(entry, stageColor);
+        } else if (currentStyle === 'terminal') {
+          return renderCardStyleTerminal(entry, stageColor);
+        } else {
+          return renderCardStyleMatrix(entry, stageColor);
+        }
       }).join("");
     }
 
-    function render() {
-      renderFilterTabs();
-      renderEntries();
-    }
+    window.setFilter = (f) => { filter = f; render(); };
+    window.openForm = openForm;
+    window.openDeleteModal = openDeleteModal;
 
-    window.toggleExpand = (id) => { expanded[id] = !expanded[id]; renderEntries(); };
-    window.editEntry = (id) => { const entry = entries.find(e => e.id === id); if (entry) openEditForm(entry); };
-    window.confirmDelete = (id) => { openDeleteModal(id); };
-
-    document.getElementById("btn-open-new").onclick = openNewForm;
-    document.getElementById("btn-close-form").onclick = hideForm;
-    document.getElementById("btn-cancel-form").onclick = hideForm;
-    document.getElementById("btn-save-entry").onclick = saveEntry;
-
-    document.getElementById("input-game").oninput = handleSteamInput;
-    document.getElementById("chk-untitled").onchange = handleUntitledToggle;
-    document.getElementById("btn-add-genre").onclick = addGenreTag;
-    document.getElementById("input-genre-search").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); addGenreTag(); } };
+    document.getElementById("btn-open-new").onclick = () => openForm();
+    document.getElementById("btn-close-form").onclick = closeForm;
+    document.getElementById("btn-cancel-form").onclick = closeForm;
+    document.getElementById("btn-save-entry").onclick = saveForm;
 
     document.getElementById("btn-toggle-sort").onclick = () => {
       sortDir = sortDir === "desc" ? "asc" : "desc";
-      document.getElementById("sort-icon").innerHTML = sortDir === "desc" ? ICONS.chevronDown : ICONS.chevronUp;
-      renderEntries();
+      document.getElementById("sort-icon").innerText = sortDir === "desc" ? "▼" : "▲";
+      render();
+    };
+
+    document.getElementById("input-game").oninput = handleSteamInput;
+    document.getElementById("chk-untitled").onchange = (e) => {
+      const dt = document.getElementById("input-draftTitle");
+      dt.disabled = e.target.checked;
+      if (e.target.checked) dt.value = "Untitled Video";
+    };
+
+    document.getElementById("btn-add-genre").onclick = () => {
+      const input = document.getElementById("input-genre-search");
+      const val = input.value.trim();
+      if (val && !draftGenres.includes(val)) {
+        draftGenres.push(val);
+        input.value = "";
+        renderDraftGenres();
+      }
+    };
+
+    document.getElementById("btn-choose-image").onclick = () => {
+      document.getElementById("input-image-file").click();
+    };
+
+    document.getElementById("input-image-file").onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        draftImage = evt.target.result;
+        updateImagePreview();
+      };
+      reader.readAsDataURL(file);
+    };
+
+    document.getElementById("btn-remove-image").onclick = () => {
+      draftImage = null;
+      document.getElementById("input-image-file").value = "";
+      updateImagePreview();
     };
 
     document.getElementById("diag-status-pill").onclick = () => {
-      const panel = document.getElementById("diag-panel");
-      panel.classList.toggle("hidden");
-      if (!panel.classList.contains("hidden")) {
-        runApiDiagnostics();
-      }
+      const diagPanel = document.getElementById("diag-panel");
+      diagPanel.classList.toggle("hidden");
     };
+
     document.getElementById("btn-run-diag").onclick = runApiDiagnostics;
 
+    // Initialization Call
     initThemeEngine();
     initModuleNavigation();
     initOpticsCalibration();
+    populateFormSelects();
     initHoldToDeleteListeners();
-    initFormSelects();
     initPageWithSplashDelay();
   </script>
 </body>
